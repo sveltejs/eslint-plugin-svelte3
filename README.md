@@ -1,6 +1,6 @@
 # eslint-plugin-svelte3
 
-ESLint plugin for linting Svelte v3 components.
+An ESLint plugin for Svelte v3 components.
 
 ## Installation
 
@@ -29,6 +29,4 @@ settings:
 
 ## License
 
-Copyright (c) 2018 Conduitry
-
-- [MIT](LICENSE)
+[MIT](LICENSE)
