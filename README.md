@@ -4,9 +4,9 @@ ESLint plugin for linting Svelte v3 components.
 
 ## Installation
 
-For now, either install from this Git repo, or clone somewhere and symlink.
+This is not published to npm. Install from Git tags. See [the documentation on `npm install`](https://docs.npmjs.com/cli/install) for how to do this.
 
-This plugin needs to be able to `require('svelte/compiler')`.
+This plugin needs to be able to `require('svelte/compiler')`. It requires Svelte 3.0.0-alpha2 or later.
 
 ## Usage
 
