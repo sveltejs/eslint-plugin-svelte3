@@ -2,6 +2,13 @@
 
 An ESLint plugin for Svelte v3 components.
 
+## Features
+
+- Svelte compiler errors and warnings are exposed as ESLint messages
+- Variables referred to in your template won't be marked as unused in your scripts
+- Messages about self-assignments are suppressed, as this is an official pattern for manually triggering reactive updates
+- Messages about unused labels called `$` are suppressed, as this is the syntax for reactive assignments
+
 ## Installation
 
 This is not published to npm. Install from Git tags. See [the documentation on `npm install`](https://docs.npmjs.com/cli/install) for how to do this.
