@@ -220,8 +220,7 @@ Linter.prototype.verify = function(code, config, options) {
 		if (extensions.some(extension => options.filename.endsWith(extension))) {
 			// lint this Svelte file
 			const data = {};
-			options.preprocess = preprocess.bind(null, data);
-			options.postprocess = postprocess.bind(null, data);
+			options = Object.assign({}, options, { preprocess: preprocess.bind(null, data), postprocess: postprocess.bind(null, data) });
 		}
 	}
 
