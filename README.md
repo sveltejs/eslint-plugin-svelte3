@@ -2,6 +2,13 @@
 
 An ESLint plugin for Svelte v3 components.
 
+## Accomplishes
+
+- reports Svelte compiler error/warning messages
+- marks variables referenced in the template as "used" for the purposes of `no-unused-vars`
+- disables self-assignment messages (used as a defactor force-rerender mechanism)
+- removes warnings about `$:` being unused labels
+
 ## Installation
 
 This is not published to npm. Install from Git tags. See [the documentation on `npm install`](https://docs.npmjs.com/cli/install) for how to do this.
