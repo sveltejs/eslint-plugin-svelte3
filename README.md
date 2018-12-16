@@ -11,9 +11,9 @@ An ESLint plugin for Svelte v3 components.
 
 ## Installation
 
-This is not published to npm. Install from Git tags. See [the documentation on `npm install`](https://docs.npmjs.com/cli/install) for how to do this.
+For now, this is not published to npm. Install from Git tags. See [the documentation on `npm install`](https://docs.npmjs.com/cli/install) for how to do this.
 
-This plugin needs to be able to `require('svelte/compiler')`. It requires Svelte 3.0.0-alpha2 or later.
+Untagged releases may depend on unreleased Svelte 3 features. Tagged releases should always work with the specified Svelte version. The latest tagged version requires at least Svelte 3.0.0-alpha2.
 
 ## Usage
 
@@ -23,6 +23,8 @@ Just specify it in your `.eslintrc`.
 plugins:
   - svelte3
 ```
+
+This plugin needs to be able to `require('svelte/compiler')`. If ESLint, this plugin, and Svelte are all installed locally in your project, this should not be a problem.
 
 ## Configuration
 
