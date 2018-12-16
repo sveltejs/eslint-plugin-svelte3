@@ -149,6 +149,7 @@ const preprocess = (data, text) => {
 
 	// build a string that we can send along to ESLint
 	let str = '';
+	data.moduleUnoffsets - getOffsets(str);
 
 	// include module script
 	if (moduleJs) {
@@ -176,7 +177,7 @@ const preprocess = (data, text) => {
 };
 
 // combine and transform linting messages
-const postprocess = ({ messages, moduleOffsets, instanceUnoffsets, instanceOffsets, moduleDedent, instanceDedent }, [rawMessages]) => {
+const postprocess = ({ messages, moduleUnoffsets, moduleOffsets, instanceUnoffsets, instanceOffsets, moduleDedent, instanceDedent }, [rawMessages]) => {
 	// filter messages and fix their offsets
 	if (rawMessages) {
 		for (let i = 0; i < rawMessages.length; i++) {
@@ -185,7 +186,7 @@ const postprocess = ({ messages, moduleOffsets, instanceUnoffsets, instanceOffse
 				if (instanceUnoffsets && message.line >= instanceUnoffsets.lines) {
 					messages.push(shiftByOffsets(undedentCode(unshiftByOffsets(message, instanceUnoffsets), instanceDedent), instanceOffsets));
 				} else if (moduleOffsets) {
-					messages.push(shiftByOffsets(undedentCode(message, moduleDedent), moduleOffsets));
+					messages.push(shiftByOffsets(undedentCode(unshiftByOffsets(message, moduleUnoffsets), moduleDedent), moduleOffsets));
 				}
 			}
 		}
