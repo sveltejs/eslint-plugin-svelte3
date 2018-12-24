@@ -149,7 +149,7 @@ const preprocess = (data, text) => {
 
 	// build a string that we can send along to ESLint
 	let str = '';
-	data.moduleUnoffsets - getOffsets(str);
+	data.moduleUnoffsets = getOffsets(str);
 
 	// include module script
 	if (moduleJs) {
