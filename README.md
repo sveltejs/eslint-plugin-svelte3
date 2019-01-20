@@ -36,6 +36,41 @@ settings:
     - .html
 ```
 
+## Integration
+
+It's probably a good idea to make sure you can lint from the command line before proceeding with configuring your editor.
+
+### CLI
+
+Using this with the command line `eslint` tool shouldn't require any special actions. Remember that you need to tell `eslint` which nonstandard file extensions you want to lint if you are passing it a directory.
+
+If you are linting a Sapper project, you'll need to change the `svelte3/extensions` configuration value to `['.html']`. Also make sure you do not have `eslint-plugin-html` enabled on the files you want linted as Svelte components, as the two plugins won't get along.
+
+### Visual Studio Code
+
+You'll need the [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) extension installed.
+
+If you're using a different extension than `.html` for your Svelte components, you'll need to configure `files.associations` to associate it with the `html` language.
+
+Then, you'll need to tell the ESLint extension to also lint files with language `html` and to enable automatically fixable problems. The default languages it lints are `javascript` and `javascriptreact`, so put this in your `settings.json`:
+
+```
+	"eslint.validate": [
+		"javascript",
+		"javascriptreact",
+		{
+			"language": "html",
+			"autoFix": true,
+		},
+	],
+```
+
+Cross your fingers and give it a go!
+
+### Other integrations
+
+If you've gotten this plugin to work with other editors, let me know how you did it!
+
 ## License
 
 [MIT](LICENSE)
