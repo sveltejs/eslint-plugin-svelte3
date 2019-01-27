@@ -107,9 +107,6 @@ const undedentCode = (message, { offsets, totalOffsets }) => {
 
 const { compile } = require('svelte/compiler');
 
-// given a script AST, determine whether it has the attribute content="module"
-const isModuleScript = script => script.attributes.some(attribute => attribute.name === 'context' && attribute.value.length === 1 && attribute.value[0].data === 'module');
-
 // extract scripts to lint from component definition
 const preprocess = (data, text) => {
 	// get information about the component
@@ -130,11 +127,7 @@ const preprocess = (data, text) => {
 		];
 		return [];
 	}
-	const { ast: { js }, stats: { templateReferences, warnings } } = info;
-
-	// find the ASTs for the module and instance scripts
-	const moduleJs = js.find(isModuleScript);
-	const instanceJs = js.find(script => !isModuleScript(script));
+	const { ast: { module: moduleJs, instance: instanceJs }, stats: { templateReferences, warnings } } = info;
 
 	// convert warnings to eslint messages
 	data.messages = warnings.map(({ code, message, start, end }) => ({
