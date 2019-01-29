@@ -127,7 +127,9 @@ const preprocess = (data, text) => {
 		];
 		return [];
 	}
-	const { ast: { module: moduleJs, instance: instanceJs }, stats: { templateReferences, warnings } } = info;
+	const { ast: { module: moduleJs, instance: instanceJs }, stats: { vars, warnings } } = info;
+	const injectedVars = vars.filter(v => v.injected);
+	const referencedVars = vars.filter(v => v.referenced);
 
 	// convert warnings to eslint messages
 	data.messages = warnings.map(({ code, message, start, end }) => ({
@@ -140,8 +142,10 @@ const preprocess = (data, text) => {
 		endColumn: end && end.column + 1,
 	}));
 
-	// build a string that we can send along to ESLint
-	let str = '';
+	// build a string that we can send along to ESLint to get the remaining messages
+
+	// include declarations of all injected identifiers
+	let str = injectedVars.length ? `let ${injectedVars.map(v => v.name).join(',')}; // eslint-disable-line\n` : '';
 	data.moduleUnoffsets = getOffsets(str);
 
 	// include module script
@@ -162,8 +166,10 @@ const preprocess = (data, text) => {
 		data.instanceDedent = offsets;
 	}
 
-	// 'use' all of the properties referred to by the template
-	str += `\n{${[...templateReferences].join(';')}} // eslint-disable-line`;
+	// create references to all identifiers referred to by the template
+	if (referencedVars.length) {
+		str += `\n{${referencedVars.map(v => v.reassigned ? v.name + '=0;' + v.name : v.name).join(';')}} // eslint-disable-line`;
+	}
 
 	// return processed string
 	return [str];
