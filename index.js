@@ -112,8 +112,8 @@ const preprocess = (data, text) => {
 	// get information about the component
 	let info;
 	try {
-		// compile the component
-		info = compile(text, { dev: true, generate: 'ssr', onwarn: () => null });
+		// get ASTs and stats for the component
+		info = compile(text, { dev: true, generate: false, onwarn: () => {} });
 	} catch ({ name, message, start }) {
 		// convert the error to an eslint message, store it, and return
 		data.messages = [
