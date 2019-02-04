@@ -66,11 +66,31 @@ Then, you'll need to tell the ESLint extension to also lint files with language 
 	],
 ```
 
-Cross your fingers and give it a go!
+Reload VS Code and give it a go!
+
+### Sublime Text
+
+You'll need the [SublimeLinter](https://github.com/SublimeLinter/SublimeLinter) and [SublimeLinter-eslint](https://github.com/SublimeLinter/SublimeLinter-eslint) package installed.
+
+If you're using a different extension than `.html` for your Svelte components, you'll need to configure Sublime to associate it with the `text.html` syntax.
+
+Then, you'll need to tell SublimeLinter-eslint to lint entire files with the `text.html` syntax, and not just the contents of their `<script>` tags (which is the default). In your SublimeLinter configuration, you'll need to add `text.html` to `linters.eslint.selector`. Starting with the default values, this would mean:
+
+```
+{
+	"linters": {
+		"eslint": {
+			"selector": "source.js - meta.attribute-with-value, text.html"
+		}
+	}
+}
+```
+
+Reload Sublime and give it a go!
 
 ### Other integrations
 
-If you've gotten this plugin to work with other editors, let me know how you did it!
+If you've gotten this plugin to work with other editors, please let us know!
 
 ## License
 
