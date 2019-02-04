@@ -130,6 +130,7 @@ const preprocess = (data, text) => {
 	const { ast: { module: moduleJs, instance: instanceJs }, stats: { vars, warnings } } = info;
 	const injectedVars = vars.filter(v => v.injected);
 	const referencedVars = vars.filter(v => v.referenced);
+	const reassignedVars = vars.filter(v => v.reassigned || v.export_name);
 
 	// convert warnings to eslint messages
 	data.messages = warnings.map(({ code, message, start, end }) => ({
@@ -166,9 +167,14 @@ const preprocess = (data, text) => {
 		data.instanceDedent = offsets;
 	}
 
-	// create references to all identifiers referred to by the template
+	// no-unused-vars: create references to all identifiers referred to by the template
 	if (referencedVars.length) {
-		str += `\n{${referencedVars.map(v => v.reassigned ? v.name + '=0;' + v.name : v.name).join(';')}} // eslint-disable-line`;
+		str += `\n{${referencedVars.map(v => v.name).join(';')}} // eslint-disable-line`;
+	}
+
+	// prefer-const: create reassignments for all vars reassigned in component and for all exports
+	if (reassignedVars.length) {
+		str += `\n{${reassignedVars.map(v => v.name + '=0').join(';')}} // eslint-disable-line`;
 	}
 
 	// return processed string
