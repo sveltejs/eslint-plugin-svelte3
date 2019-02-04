@@ -68,6 +68,25 @@ Then, you'll need to tell the ESLint extension to also lint files with language 
 
 Reload VS Code and give it a go!
 
+### Atom
+
+You'll need the [linter](https://atom.io/packages/linter) and [linter-eslint](https://atom.io/packages/linter-eslint) packages installed.
+
+If you're using a different extension than `.html` for your Svelte components, you'll need to configure `core.customFileTypes` to associate it with the `test.html.basic` language. In `config.cson`:
+
+```
+"*":
+  core:
+    customFileTypes:
+      "text.html.basic": [
+        "svelte"
+      ]
+```
+
+Then, you'll need to tell linter-eslint to also lint HTML files. Add `source.html` to the list of scopes to run ESLint on in the linter-eslint settings.
+
+Reload Atom and give it a go!
+
 ### Sublime Text
 
 You'll need the [SublimeLinter](https://github.com/SublimeLinter/SublimeLinter) and [SublimeLinter-eslint](https://github.com/SublimeLinter/SublimeLinter-eslint) package installed.
