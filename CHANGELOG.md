@@ -1,3 +1,7 @@
+# v0.2.2
+
+- Include the position of the end of a compiler error message, when available
+
 # v0.2.1
 
 - Don't warn about `export let`s with default values and no other reassignments when using `prefer-const`
