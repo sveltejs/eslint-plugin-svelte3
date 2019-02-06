@@ -114,7 +114,7 @@ const preprocess = (data, text) => {
 	try {
 		// get ASTs and stats for the component
 		info = compile(text, { dev: true, generate: false, onwarn: () => {} });
-	} catch ({ name, message, start }) {
+	} catch ({ name, message, start, end }) {
 		// convert the error to an eslint message, store it, and return
 		data.messages = [
 			{
@@ -123,6 +123,8 @@ const preprocess = (data, text) => {
 				message,
 				line: start && start.line,
 				column: start && start.column + 1,
+				endLine: end && end.line,
+				endColumn: end && end.column + 1,
 			},
 		];
 		return [];
