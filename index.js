@@ -107,8 +107,10 @@ const undedentCode = (message, { offsets, totalOffsets }) => {
 
 const { compile } = require('svelte/compiler');
 
+let messages, moduleUnoffsets, moduleOffsets, instanceUnoffsets, instanceOffsets, moduleDedent, instanceDedent;
+
 // extract scripts to lint from component definition
-const preprocess = (data, text) => {
+const preprocess = text => {
 	// get information about the component
 	let info;
 	try {
@@ -116,7 +118,7 @@ const preprocess = (data, text) => {
 		info = compile(text, { dev: true, generate: false, onwarn: () => {} });
 	} catch ({ name, message, start, end }) {
 		// convert the error to an eslint message, store it, and return
-		data.messages = [
+		messages = [
 			{
 				ruleId: name,
 				severity: 2,
@@ -135,7 +137,7 @@ const preprocess = (data, text) => {
 	const reassignedVars = vars.filter(v => v.reassigned || v.export_name);
 
 	// convert warnings to eslint messages
-	data.messages = warnings.map(({ code, message, start, end }) => ({
+	messages = warnings.map(({ code, message, start, end }) => ({
 		ruleId: code,
 		severity: 1,
 		message,
@@ -145,28 +147,37 @@ const preprocess = (data, text) => {
 		endColumn: end && end.column + 1,
 	}));
 
+	if (!moduleJs && !instanceJs) {
+		return [];
+	}
+
 	// build a string that we can send along to ESLint to get the remaining messages
 
 	// include declarations of all injected identifiers
 	let str = injectedVars.length ? `let ${injectedVars.map(v => v.name).join(',')}; // eslint-disable-line\n` : '';
-	data.moduleUnoffsets = getOffsets(str);
 
 	// include module script
 	if (moduleJs) {
+		moduleUnoffsets = getOffsets(str);
 		const { dedented, offsets } = dedentCode(text.slice(moduleJs.content.start, moduleJs.content.end));
 		str += dedented;
-		data.moduleOffsets = getOffsets(text.slice(0, moduleJs.content.start));
-		data.moduleDedent = offsets;
+		moduleOffsets = getOffsets(text.slice(0, moduleJs.content.start));
+		moduleDedent = offsets;
+	} else {
+		moduleUnoffsets = null;
 	}
+
+	str += '\n';
 
 	// include instance script
 	if (instanceJs) {
-		str += '\n';
-		data.instanceUnoffsets = getOffsets(str);
+		instanceUnoffsets = getOffsets(str);
 		const { dedented, offsets } = dedentCode(text.slice(instanceJs.content.start, instanceJs.content.end));
 		str += dedented;
-		data.instanceOffsets = getOffsets(text.slice(0, instanceJs.content.start));
-		data.instanceDedent = offsets;
+		instanceOffsets = getOffsets(text.slice(0, instanceJs.content.start));
+		instanceDedent = offsets;
+	} else {
+		instanceUnoffsets = null;
 	}
 
 	// no-unused-vars: create references to all identifiers referred to by the template
@@ -184,7 +195,7 @@ const preprocess = (data, text) => {
 };
 
 // combine and transform linting messages
-const postprocess = ({ messages, moduleUnoffsets, moduleOffsets, instanceUnoffsets, instanceOffsets, moduleDedent, instanceDedent }, [rawMessages]) => {
+const postprocess = ([rawMessages]) => {
 	// filter messages and fix their offsets
 	if (rawMessages) {
 		for (let i = 0; i < rawMessages.length; i++) {
@@ -192,7 +203,7 @@ const postprocess = ({ messages, moduleUnoffsets, moduleOffsets, instanceUnoffse
 			if (message.ruleId !== 'no-self-assign' && (message.ruleId !== 'no-unused-labels' || !message.message.includes("'$:'"))) {
 				if (instanceUnoffsets && message.line >= instanceUnoffsets.lines) {
 					messages.push(shiftByOffsets(undedentCode(unshiftByOffsets(message, instanceUnoffsets), instanceDedent), instanceOffsets));
-				} else if (moduleOffsets) {
+				} else if (moduleUnoffsets) {
 					messages.push(shiftByOffsets(undedentCode(unshiftByOffsets(message, moduleUnoffsets), moduleDedent), moduleOffsets));
 				}
 			}
@@ -227,8 +238,7 @@ Linter.prototype.verify = function(code, config, options) {
 
 		if (extensions.some(extension => options.filename.endsWith(extension))) {
 			// lint this Svelte file
-			const data = {};
-			options = Object.assign({}, options, { preprocess: preprocess.bind(null, data), postprocess: postprocess.bind(null, data) });
+			options = Object.assign({}, options, { preprocess, postprocess });
 		}
 	}
 
