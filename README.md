@@ -34,7 +34,8 @@ By default, all `.svelte` files will be linted. You can set the `svelte3/extensi
 ```yaml
 settings:
   svelte3/extensions:
-    - .html
+    - .some-extension
+    - .some-other-extension
 ```
 
 ## Integration
@@ -43,25 +44,25 @@ It's probably a good idea to make sure you can lint from the command line before
 
 ### CLI
 
-Using this with the command line `eslint` tool shouldn't require any special actions. Remember that you need to tell `eslint` which nonstandard file extensions you want to lint if you are passing it a directory.
+Using this with the command line `eslint` tool shouldn't require any special actions. Just remember that if you are running `eslint` on a directory, you need to pass it the `--ext` flag to tell it which nonstandard file extensions you want to lint.
 
-If you are linting a Sapper project, you'll need to change the `svelte3/extensions` configuration value to `['.html']`. Also make sure you do not have `eslint-plugin-html` enabled on the files you want linted as Svelte components, as the two plugins won't get along.
+Also make sure you do not have `eslint-plugin-html` enabled on the files you want linted as Svelte components, as the two plugins won't get along.
 
 ### Visual Studio Code
 
 You'll need the [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) extension installed.
 
-If you're using an extension other than `.html` for your Svelte components, you'll need to configure `files.associations` to associate it with the `html` language. In your `settings.json`:
+Unless you're using `.html` for your Svelte components, you'll need to configure `files.associations` to associate the appropriate file extension with the `html` language. For example, to associate `.svelte`, put this in your `settings.json`:
 
 ```json
 {
   "files.associations": {
-    "*.your-extension": "html"
+    "*.svelte": "html"
   }
 }
 ```
 
-Then, you'll need to tell the ESLint extension to also lint files with language `html` and to enable autofixing problems. If you haven't adjusted the `eslint.validate` setting, it defaults to `javascript` and `javascriptreact`, so put this in your `settings.json`:
+Then, you'll need to tell the ESLint extension to also lint files with language `html` and to enable autofixing problems. If you haven't adjusted the `eslint.validate` setting, it defaults to `[ "javascript", "javascriptreact" ]`, so put this in your `settings.json`:
 
 ```json
 {
@@ -82,18 +83,18 @@ Reload VS Code and give it a go!
 
 You'll need the [linter](https://atom.io/packages/linter) and [linter-eslint](https://atom.io/packages/linter-eslint) packages installed.
 
-If you're using an extension other than `.html` for your Svelte components, you'll need to configure `*.core.customFileTypes` to associate it with the `test.html.basic` language. In your `config.cson`:
+Unless you're using `.html` for your Svelte components, you'll need to configure `*`.`core`.`customFileTypes` to associate the appropriate file extension with the `test.html.basic` language. For example, to associate `.svelte`, put this in your `config.cson`:
 
 ```cson
 "*":
   core:
     customFileTypes:
       "text.html.basic": [
-        "your-extension"
+        "svelte"
       ]
 ```
 
-Then, you'll need to tell linter-eslint to also lint HTML files. Add `source.html` to the list of scopes to run ESLint on in the linter-eslint settings.
+Then, you'll need to tell linter-eslint to also lint HTML files: add `source.html` to the list of scopes to run ESLint on in the linter-eslint settings.
 
 Reload Atom and give it a go!
 
@@ -101,9 +102,9 @@ Reload Atom and give it a go!
 
 You'll need the [SublimeLinter](https://github.com/SublimeLinter/SublimeLinter) and [SublimeLinter-eslint](https://github.com/SublimeLinter/SublimeLinter-eslint) packages installed.
 
-If you're using an extension other than `.html` for your Svelte components, you'll need to configure Sublime to associate it with the `text.html` syntax. Go to `View > Syntax > Open all with current extension as... > HTML`.
+Unless you're using `.html` for your Svelte components, you'll need to configure Sublime to associate the appropriate file extension with the `text.html` syntax. Open any Svelte component, and go to **View > Syntax > Open all with current extension as... > HTML**.
 
-Then, you'll need to tell SublimeLinter-eslint to lint entire files with the `text.html` syntax, and not just the contents of their `<script>` tags (which is the default). In your SublimeLinter configuration, you'll need to add `text.html` to `linters.eslint.selector`. If you're starting with the default values, this would mean:
+Then, you'll need to tell SublimeLinter-eslint to lint entire files with the `text.html` syntax, and not just the contents of their `<script>` tags (which is the default). In your SublimeLinter configuration, you'll need to add `text.html` to `linters`.`eslint`.`selector`. If you're starting with the default values, this would mean:
 
 ```json
 {
