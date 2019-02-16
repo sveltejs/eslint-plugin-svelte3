@@ -1,3 +1,7 @@
+# v0.2.3
+
+- Add `svelte3/ignore` setting for ignoring specific compiler warnings
+
 # v0.2.2
 
 - Include the position of the end of a compiler error message, when available
