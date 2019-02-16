@@ -107,7 +107,7 @@ const undedentCode = (message, { offsets, totalOffsets }) => {
 
 const { compile } = require('svelte/compiler');
 
-let messages, moduleUnoffsets, moduleOffsets, instanceUnoffsets, instanceOffsets, moduleDedent, instanceDedent;
+let messages, ignore, moduleUnoffsets, moduleOffsets, instanceUnoffsets, instanceOffsets, moduleDedent, instanceDedent;
 
 // extract scripts to lint from component definition
 const preprocess = text => {
@@ -137,7 +137,7 @@ const preprocess = text => {
 	const reassignedVars = vars.filter(v => v.reassigned || v.export_name);
 
 	// convert warnings to eslint messages
-	messages = warnings.map(({ code, message, start, end }) => ({
+	messages = warnings.filter(({ code }) => !ignore.includes(code)).map(({ code, message, start, end }) => ({
 		ruleId: code,
 		severity: 1,
 		message,
@@ -235,6 +235,7 @@ Linter.prototype.verify = function(code, config, options) {
 		if (!Array.isArray(extensions)) {
 			throw new Error('Setting svelte3/extensions is not an array');
 		}
+		ignore = config && config.settings && config.settings['svelte3/ignore'] || [];
 
 		if (extensions.some(extension => options.filename.endsWith(extension))) {
 			// lint this Svelte file
