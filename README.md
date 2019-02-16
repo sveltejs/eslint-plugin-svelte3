@@ -38,6 +38,15 @@ settings:
     - .some-other-extension
 ```
 
+Also by default, all compiler warnings will be presented as ESLint warnings. You can set the `svelte3/ignore` setting to an array of warning codes to ignore specific warnings.
+
+```yaml
+settings:
+  svelte3/ignore:
+    - some-warning-code-to-ignore
+    - another-warning-code
+```
+
 ## Integration
 
 It's probably a good idea to make sure you can lint from the command line before proceeding with configuring your editor.
