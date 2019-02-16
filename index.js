@@ -223,6 +223,15 @@ if (!LinterPath) {
 }
 const Linter = require(LinterPath);
 
+// get an array-valued setting from ESLint config
+const getArraySetting = (config, key, defaultValue) => {
+	const value = config && config.settings && config.settings[key] || defaultValue;
+	if (!Array.isArray(value)) {
+		throw new Error(`Setting ${key} is not an array`);
+	}
+	return value;
+};
+
 // patch Linter#verify
 const { verify } = Linter.prototype;
 Linter.prototype.verify = function(code, config, options) {
@@ -230,13 +239,8 @@ Linter.prototype.verify = function(code, config, options) {
 		options = { filename: options };
 	}
 	if (options && options.filename) {
-		// get 'svelte3/extensions' settings value
-		const extensions = config && config.settings && config.settings['svelte3/extensions'] || ['.svelte'];
-		if (!Array.isArray(extensions)) {
-			throw new Error('Setting svelte3/extensions is not an array');
-		}
-		ignore = config && config.settings && config.settings['svelte3/ignore'] || [];
-
+		const extensions = getArraySetting(config, 'svelte3/extensions', ['.svelte']);
+		ignore = getArraySetting(config, 'svelte3/ignore', []);
 		if (extensions.some(extension => options.filename.endsWith(extension))) {
 			// lint this Svelte file
 			options = Object.assign({}, options, { preprocess, postprocess });
