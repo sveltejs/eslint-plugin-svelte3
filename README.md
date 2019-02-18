@@ -27,6 +27,8 @@ plugins:
 
 This plugin needs to be able to `require('svelte/compiler')`. If ESLint, this plugin, and Svelte are all installed locally in your project, this should not be a problem.
 
+**Important!** Make sure you do not have `eslint-plugin-html` enabled on the files you want linted as Svelte components, as the two plugins won't get along.
+
 ## Configuration
 
 By default, all `.svelte` files will be linted. You can set the `svelte3/extensions` setting in your `.eslintrc` to an array of file extensions to override this.
@@ -54,8 +56,6 @@ It's probably a good idea to make sure you can lint from the command line before
 ### CLI
 
 Using this with the command line `eslint` tool shouldn't require any special actions. Just remember that if you are running `eslint` on a directory, you need to pass it the `--ext` flag to tell it which nonstandard file extensions you want to lint.
-
-Also make sure you do not have `eslint-plugin-html` enabled on the files you want linted as Svelte components, as the two plugins won't get along.
 
 ### Visual Studio Code
 
