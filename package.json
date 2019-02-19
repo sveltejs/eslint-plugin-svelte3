@@ -1,6 +1,6 @@
 {
 	"name": "eslint-plugin-svelte3",
-	"version": "0.2.3",
+	"version": "0.3.0",
 	"description": "An ESLint plugin for Svelte v3 components.",
 	"keywords": [
 		"eslint",

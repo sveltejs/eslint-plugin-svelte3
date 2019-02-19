@@ -1,3 +1,7 @@
+# v0.3.0
+
+- Support and require at least beta 4
+
 # v0.2.3
 
 - Add `svelte3/ignore` setting for ignoring specific compiler warnings
