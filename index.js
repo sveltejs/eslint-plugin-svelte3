@@ -114,8 +114,7 @@ const preprocess = text => {
 	// get information about the component
 	let info;
 	try {
-		// get ASTs and stats for the component
-		info = compile(text, { dev: true, generate: false, onwarn: () => {} });
+		info = compile(text, { generate: false });
 	} catch ({ name, message, start, end }) {
 		// convert the error to an eslint message, store it, and return
 		messages = [
@@ -131,7 +130,7 @@ const preprocess = text => {
 		];
 		return [];
 	}
-	const { ast: { module: moduleJs, instance: instanceJs }, stats: { vars, warnings } } = info;
+	const { ast: { module: moduleJs, instance: instanceJs }, warnings, vars } = info;
 	const injectedVars = vars.filter(v => v.injected);
 	const referencedVars = vars.filter(v => v.referenced);
 	const reassignedVars = vars.filter(v => v.reassigned || v.export_name);
