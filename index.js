@@ -112,9 +112,9 @@ let messages, ignore, moduleUnoffsets, moduleOffsets, instanceUnoffsets, instanc
 // extract scripts to lint from component definition
 const preprocess = text => {
 	// get information about the component
-	let info;
+	let result;
 	try {
-		info = compile(text, { generate: false });
+		result = compile(text, { generate: false });
 	} catch ({ name, message, start, end }) {
 		// convert the error to an eslint message, store it, and return
 		messages = [
@@ -130,7 +130,7 @@ const preprocess = text => {
 		];
 		return [];
 	}
-	const { ast: { module: moduleJs, instance: instanceJs }, warnings, vars } = info;
+	const { ast, warnings, vars } = result;
 	const injectedVars = vars.filter(v => v.injected);
 	const referencedVars = vars.filter(v => v.referenced);
 	const reassignedVars = vars.filter(v => v.reassigned || v.export_name);
@@ -146,7 +146,7 @@ const preprocess = text => {
 		endColumn: end && end.column + 1,
 	}));
 
-	if (!moduleJs && !instanceJs) {
+	if (!ast.module && !ast.instance) {
 		return [];
 	}
 
@@ -156,11 +156,12 @@ const preprocess = text => {
 	let str = injectedVars.length ? `let ${injectedVars.map(v => v.name).join(',')}; // eslint-disable-line\n` : '';
 
 	// include module script
-	if (moduleJs) {
+	if (ast.module) {
 		moduleUnoffsets = getOffsets(str);
-		const { dedented, offsets } = dedentCode(text.slice(moduleJs.content.start, moduleJs.content.end));
+		const { content } = ast.module;
+		const { dedented, offsets } = dedentCode(text.slice(content.start, content.end));
 		str += dedented;
-		moduleOffsets = getOffsets(text.slice(0, moduleJs.content.start));
+		moduleOffsets = getOffsets(text.slice(0, content.start));
 		moduleDedent = offsets;
 	} else {
 		moduleUnoffsets = null;
@@ -169,11 +170,12 @@ const preprocess = text => {
 	str += '\n';
 
 	// include instance script
-	if (instanceJs) {
+	if (ast.instance) {
 		instanceUnoffsets = getOffsets(str);
-		const { dedented, offsets } = dedentCode(text.slice(instanceJs.content.start, instanceJs.content.end));
+		const { content } = ast.instance;
+		const { dedented, offsets } = dedentCode(text.slice(content.start, content.end));
 		str += dedented;
-		instanceOffsets = getOffsets(text.slice(0, instanceJs.content.start));
+		instanceOffsets = getOffsets(text.slice(0, content.start));
 		instanceDedent = offsets;
 	} else {
 		instanceUnoffsets = null;
