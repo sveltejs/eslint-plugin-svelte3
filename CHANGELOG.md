@@ -1,3 +1,10 @@
+# v0.4.0
+
+- Reworked configuration to be more flexible:
+  - `svelte3/ignore` has been renamed to `svelte3/ignore-warnings`
+  - `svelte3/extensions` has been removed and `svelte3/enabled` has been added (which works differently but is more powerful)
+- `svelte3/ignore-styles` has been added as an immediate solution for components with styles written in something other than normal CSS
+
 # v0.3.0
 
 - Support and require at least beta 4
