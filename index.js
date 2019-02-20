@@ -107,7 +107,7 @@ const undedentCode = (message, { offsets, totalOffsets }) => {
 
 const { compile } = require('svelte/compiler');
 
-let messages, ignore, moduleUnoffsets, moduleOffsets, instanceUnoffsets, instanceOffsets, moduleDedent, instanceDedent;
+let messages, ignoreWarnings, moduleUnoffsets, moduleOffsets, instanceUnoffsets, instanceOffsets, moduleDedent, instanceDedent;
 
 // extract scripts to lint from component definition
 const preprocess = text => {
@@ -136,7 +136,7 @@ const preprocess = text => {
 	const reassignedVars = vars.filter(v => v.reassigned || v.export_name);
 
 	// convert warnings to eslint messages
-	messages = warnings.filter(({ code }) => !ignore.includes(code)).map(({ code, message, start, end }) => ({
+	messages = (ignoreWarnings ? warnings.filter(({ code }) => !ignoreWarnings(code)) : warnings).map(({ code, message, start, end }) => ({
 		ruleId: code,
 		severity: 1,
 		message,
@@ -224,13 +224,16 @@ if (!LinterPath) {
 }
 const Linter = require(LinterPath);
 
-// get an array-valued setting from ESLint config
-const getArraySetting = (config, key, defaultValue) => {
-	const value = config && config.settings && config.settings[key] || defaultValue;
-	if (!Array.isArray(value)) {
-		throw new Error(`Setting ${key} is not an array`);
+// get a setting from the ESLint config
+const getSettingFunction = (config, key, defaultValue) => {
+	if (!config || !config.settings || !(key in config.settings)) {
+		return defaultValue;
 	}
-	return value;
+	const value = config.settings[key];
+	return typeof value === 'function' ? value :
+		typeof value === 'boolean' ? () => value :
+			Array.isArray(value) ? Array.prototype.includes.bind(value) :
+				v => v === value;
 };
 
 // patch Linter#verify
@@ -240,11 +243,22 @@ Linter.prototype.verify = function(code, config, options) {
 		options = { filename: options };
 	}
 	if (options && options.filename) {
-		const extensions = getArraySetting(config, 'svelte3/extensions', ['.svelte']);
-		ignore = getArraySetting(config, 'svelte3/ignore', []);
-		if (extensions.some(extension => options.filename.endsWith(extension))) {
+		if (getSettingFunction(config, 'svelte3/enabled', n => n.endsWith('.svelte'))(options.filename)) {
 			// lint this Svelte file
 			options = Object.assign({}, options, { preprocess, postprocess });
+			ignoreWarnings = getSettingFunction(config, 'svelte3/ignore-warnings', false);
+			const ignoreStyles = getSettingFunction(config, 'svelte3/ignore-styles', false);
+			if (ignoreStyles) {
+				// wipe the appropriate <style> tags in the file
+				code = code.replace(/<style([^]*?)>[^]*?<\/style>/gi, (match, attributes) => {
+					const attrs = {};
+					attributes.split(/\s+/).filter(Boolean).forEach(attr => {
+						const [name, value] = attr.split('=');
+						attrs[name] = value ? /^['"]/.test(value) ? value.slice(1, -1) : value : true;
+					});
+					return ignoreStyles(attrs) ? match.replace(/\S/g, ' ') : match;
+				});
+			}
 		}
 	}
 
