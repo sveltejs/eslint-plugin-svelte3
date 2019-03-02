@@ -75,7 +75,19 @@ const dedentCode = str => {
 	let dedented = '';
 	const offsets = [];
 	const totalOffsets = [0];
+	let initialOffset = 0;
 	for (let i = 0; i < str.length; i++) {
+		// remove first line if it's empty (because the code is in a script tag)
+		if (i === 0) {
+			if (str[0] === '\n') {
+				i += 1;
+				initialOffset = 1;
+			} else if (str.slice(0, 2) === '\r\n') {
+				i += 2;
+				initialOffset = 2;
+			}
+		}
+
 		if (i === 0 || str[i - 1] === '\n') {
 			if (str.slice(i, i + length) === indentation) {
 				i += length;
@@ -87,11 +99,11 @@ const dedentCode = str => {
 		}
 		dedented += str[i];
 	}
-	return { dedented, offsets: { offsets, totalOffsets } };
+	return { dedented, offsets: { offsets, totalOffsets, initialOffset } };
 };
 
 // adjust position references in a message according to the previous dedenting
-const undedentCode = (message, { offsets, totalOffsets }) => {
+const undedentCode = (message, { offsets, totalOffsets, initialOffset }) => {
 	message.column += offsets[message.line - 1];
 	if (message.endColumn) {
 		message.endColumn += offsets[message.endLine - 1];
@@ -100,6 +112,14 @@ const undedentCode = (message, { offsets, totalOffsets }) => {
 		message.fix.range[0] += totalOffsets[message.line];
 		message.fix.range[1] += totalOffsets[message.line];
 	}
+
+	// if there's an initial offset, need to account for first line that was removed
+	const lineOffset = initialOffset === 0 ? 0 : 1;
+	message.line += lineOffset;
+	if (message.endLine) {
+		message.endLine += lineOffset;
+	}
+
 	return message;
 };
 
@@ -167,8 +187,6 @@ const preprocess = text => {
 		moduleUnoffsets = null;
 	}
 
-	str += '\n';
-
 	// include instance script
 	if (ast.instance) {
 		instanceUnoffsets = getOffsets(str);
@@ -183,12 +201,12 @@ const preprocess = text => {
 
 	// no-unused-vars: create references to all identifiers referred to by the template
 	if (referencedVars.length) {
-		str += `\n{${referencedVars.map(v => v.name).join(';')}} // eslint-disable-line`;
+		str += `{${referencedVars.map(v => v.name).join(';')}} // eslint-disable-line\n`;
 	}
 
 	// prefer-const: create reassignments for all vars reassigned in component and for all exports
 	if (reassignedVars.length) {
-		str += `\n{${reassignedVars.map(v => v.name + '=0').join(';')}} // eslint-disable-line`;
+		str += `{${reassignedVars.map(v => v.name + '=0').join(';')}} // eslint-disable-line\n`;
 	}
 
 	// return processed string
