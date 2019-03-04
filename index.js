@@ -1,5 +1,9 @@
 'use strict';
 
+const { compile } = require('svelte/compiler');
+
+let messages, transformedCode, ignoreWarnings, moduleInfo, instanceInfo;
+
 // get the total length, number of lines, and length of the last line of a string
 const getOffsets = str => {
 	const { length } = str;
@@ -50,6 +54,17 @@ const dedentCode = str => {
 
 // transform a linter message according to the module/instance script info we've gathered
 const transformMessage = (message, { unoffsets, dedent, offsets, range }) => {
+	// strip out the beginning and ending of the fix if they are not actually changes
+	if (message.fix) {
+		while (transformedCode[message.fix.range[0]] === message.fix.text[0]) {
+			message.fix.range[0]++;
+			message.fix.text = message.fix.text.slice(1);
+		}
+		while (transformedCode[message.fix.range[1] - 1] === message.fix.text[message.fix.text.length - 1]) {
+			message.fix.range[1]--;
+			message.fix.text = message.fix.text.slice(0, -1);
+		}
+	}
 	// shift position reference backward according to unoffsets
 	{
 		const { length, lines, last } = unoffsets;
@@ -99,26 +114,20 @@ const transformMessage = (message, { unoffsets, dedent, offsets, range }) => {
 		}
 	}
 	// make sure the fix doesn't include anything outside the range of the script
-	{
-		if (message.fix) {
-			if (message.fix.range[0] < range[0]) {
-				message.fix.text = message.fix.text.slice(range[0] - message.fix.range[0]);
-				message.fix.range[0] = range[0];
-			}
-			if (message.fix.range[1] > range[1]) {
-				message.fix.text = message.fix.text.slice(0, range[1] - message.fix.range[1]);
-				message.fix.range[1] = range[1];
-			}
+	if (message.fix) {
+		if (message.fix.range[0] < range[0]) {
+			message.fix.text = message.fix.text.slice(range[0] - message.fix.range[0]);
+			message.fix.range[0] = range[0];
+		}
+		if (message.fix.range[1] > range[1]) {
+			message.fix.text = message.fix.text.slice(0, range[1] - message.fix.range[1]);
+			message.fix.range[1] = range[1];
 		}
 	}
 	return message;
 };
 
 /// PRE- AND POSTPROCESSING FUNCTIONS FOR SVELTE COMPONENTS ///
-
-const { compile } = require('svelte/compiler');
-
-let messages, ignoreWarnings, moduleInfo, instanceInfo;
 
 // extract scripts to lint from component definition
 const preprocess = text => {
@@ -164,35 +173,35 @@ const preprocess = text => {
 	// build a string that we can send along to ESLint to get the remaining messages
 
 	// include declarations of all injected identifiers
-	let str = injectedVars.length ? `let ${injectedVars.map(v => v.name).join(',')}; // eslint-disable-line\n` : '';
+	transformedCode = injectedVars.length ? `let ${injectedVars.map(v => v.name).join(',')}; // eslint-disable-line\n` : '';
 
 	// get moduleInfo/instanceInfo and include the processed scripts in str
 	const getInfo = script => {
-		const info = { unoffsets: getOffsets(str) };
+		const info = { unoffsets: getOffsets(transformedCode) };
 		const { content } = script;
 		info.range = [content.start, content.end];
 		const { dedented, offsets } = dedentCode(text.slice(content.start, content.end));
-		str += dedented;
+		transformedCode += dedented;
 		info.offsets = getOffsets(text.slice(0, content.start));
 		info.dedent = offsets;
 		return info;
 	};
 	moduleInfo = ast.module && getInfo(ast.module);
-	str += '\n';
+	transformedCode += '\n';
 	instanceInfo = ast.instance && getInfo(ast.instance);
 
 	// no-unused-vars: create references to all identifiers referred to by the template
 	if (referencedVars.length) {
-		str += `\n{${referencedVars.map(v => v.name).join(';')}} // eslint-disable-line`;
+		transformedCode += `\n{${referencedVars.map(v => v.name).join(';')}} // eslint-disable-line`;
 	}
 
 	// prefer-const: create reassignments for all vars reassigned in component and for all exports
 	if (reassignedVars.length) {
-		str += `\n{${reassignedVars.map(v => v.name + '=0').join(';')}} // eslint-disable-line`;
+		transformedCode += `\n{${reassignedVars.map(v => v.name + '=0').join(';')}} // eslint-disable-line`;
 	}
 
 	// return processed string
-	return [str];
+	return [transformedCode];
 };
 
 // combine and transform linting messages
