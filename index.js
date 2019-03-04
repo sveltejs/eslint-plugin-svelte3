@@ -1,7 +1,5 @@
 'use strict';
 
-/// UTILITIES TO DEAL WITH OFFSETS TO CODE AND TO LINTING MESSAGES ///
-
 // get the total length, number of lines, and length of the last line of a string
 const getOffsets = str => {
 	const { length } = str;
@@ -17,46 +15,6 @@ const getOffsets = str => {
 	}
 	return { length, lines, last };
 };
-
-// shift position references in a message forward according to given offsets
-const shiftByOffsets = (message, { length, lines, last }) => {
-	if (message.line === 1) {
-		message.column += last;
-	}
-	if (message.endColumn && message.endLine === 1) {
-		message.endColumn += last;
-	}
-	message.line += lines - 1;
-	if (message.endLine) {
-		message.endLine += lines - 1;
-	}
-	if (message.fix) {
-		message.fix.range[0] += length;
-		message.fix.range[1] += length;
-	}
-	return message;
-};
-
-// shift position references in a message backward according to given offsets
-const unshiftByOffsets = (message, { length, lines, last }) => {
-	if (message.line === lines) {
-		message.column -= last;
-	}
-	if (message.endColumn && message.endLine === lines) {
-		message.endColumn -= last;
-	}
-	message.line -= lines - 1;
-	if (message.endLine) {
-		message.endLine -= lines - 1;
-	}
-	if (message.fix) {
-		message.fix.range[0] -= length;
-		message.fix.range[1] -= length;
-	}
-	return message;
-};
-
-/// UTILITIES TO DEAL WITH INDENTATION OF SCRIPT BLOCKS ///
 
 // dedent a script block, and get offsets necessary to later adjust linting messages about the block
 const dedentCode = str => {
@@ -90,15 +48,68 @@ const dedentCode = str => {
 	return { dedented, offsets: { offsets, totalOffsets } };
 };
 
-// adjust position references in a message according to the previous dedenting
-const undedentCode = (message, { offsets, totalOffsets }) => {
-	message.column += offsets[message.line - 1];
-	if (message.endColumn) {
-		message.endColumn += offsets[message.endLine - 1];
+// transform a linter message according to the module/instance script info we've gathered
+const transformMessage = (message, { unoffsets, dedent, offsets, range }) => {
+	// shift position reference backward according to unoffsets
+	{
+		const { length, lines, last } = unoffsets;
+		if (message.line === lines) {
+			message.column -= last;
+		}
+		if (message.endColumn && message.endLine === lines) {
+			message.endColumn -= last;
+		}
+		message.line -= lines - 1;
+		if (message.endLine) {
+			message.endLine -= lines - 1;
+		}
+		if (message.fix) {
+			message.fix.range[0] -= length;
+			message.fix.range[1] -= length;
+		}
 	}
-	if (message.fix) {
-		message.fix.range[0] += totalOffsets[message.line];
-		message.fix.range[1] += totalOffsets[message.line];
+	// adjust position reference according to the previous dedenting
+	{
+		const { offsets, totalOffsets } = dedent;
+		message.column += offsets[message.line - 1];
+		if (message.endColumn) {
+			message.endColumn += offsets[message.endLine - 1];
+		}
+		if (message.fix) {
+			message.fix.range[0] += totalOffsets[message.line];
+			message.fix.range[1] += totalOffsets[message.line];
+		}
+	}
+	// shift position reference in a message forward according to offsets
+	{
+		const { length, lines, last } = offsets;
+		if (message.line === 1) {
+			message.column += last;
+		}
+		if (message.endColumn && message.endLine === 1) {
+			message.endColumn += last;
+		}
+		message.line += lines - 1;
+		if (message.endLine) {
+			message.endLine += lines - 1;
+		}
+		if (message.fix) {
+			message.fix.range[0] += length;
+			message.fix.range[1] += length;
+		}
+	}
+	// make sure the fix doesn't include anything outside the range of the script
+	{
+		if (message.fix) {
+			if (message.fix.range[0] < range[0]) {
+				message.fix.text = message.fix.text.slice(range[0] - message.fix.range[0]);
+				message.fix.range[0] = range[0];
+			}
+			if (message.fix.range[1] > range[1]) {
+				message.fix.text = message.fix.text.slice(0, range[1] - message.fix.range[1]);
+				message.fix.range[1] = range[1];
+			}
+		}
 	}
 	return message;
 };
@@ -107,7 +118,7 @@ const undedentCode = (message, { offsets, totalOffsets }) => {
 
 const { compile } = require('svelte/compiler');
 
-let messages, ignoreWarnings, moduleUnoffsets, moduleOffsets, instanceUnoffsets, instanceOffsets, moduleDedent, instanceDedent;
+let messages, ignoreWarnings, moduleInfo, instanceInfo;
 
 // extract scripts to lint from component definition
 const preprocess = text => {
@@ -155,31 +166,20 @@ const preprocess = text => {
 	// include declarations of all injected identifiers
 	let str = injectedVars.length ? `let ${injectedVars.map(v => v.name).join(',')}; // eslint-disable-line\n` : '';
 
-	// include module script
-	if (ast.module) {
-		moduleUnoffsets = getOffsets(str);
-		const { content } = ast.module;
+	// get moduleInfo/instanceInfo and include the processed scripts in str
+	const getInfo = script => {
+		const info = { unoffsets: getOffsets(str) };
+		const { content } = script;
+		info.range = [content.start, content.end];
 		const { dedented, offsets } = dedentCode(text.slice(content.start, content.end));
 		str += dedented;
-		moduleOffsets = getOffsets(text.slice(0, content.start));
-		moduleDedent = offsets;
-	} else {
-		moduleUnoffsets = null;
-	}
-
+		info.offsets = getOffsets(text.slice(0, content.start));
+		info.dedent = offsets;
+		return info;
+	};
+	moduleInfo = ast.module && getInfo(ast.module);
 	str += '\n';
-
-	// include instance script
-	if (ast.instance) {
-		instanceUnoffsets = getOffsets(str);
-		const { content } = ast.instance;
-		const { dedented, offsets } = dedentCode(text.slice(content.start, content.end));
-		str += dedented;
-		instanceOffsets = getOffsets(text.slice(0, content.start));
-		instanceDedent = offsets;
-	} else {
-		instanceUnoffsets = null;
-	}
+	instanceInfo = ast.instance && getInfo(ast.instance);
 
 	// no-unused-vars: create references to all identifiers referred to by the template
 	if (referencedVars.length) {
@@ -202,10 +202,10 @@ const postprocess = ([rawMessages]) => {
 		for (let i = 0; i < rawMessages.length; i++) {
 			const message = rawMessages[i];
 			if (message.ruleId !== 'no-self-assign' && (message.ruleId !== 'no-unused-labels' || !message.message.includes("'$:'"))) {
-				if (instanceUnoffsets && message.line >= instanceUnoffsets.lines) {
-					messages.push(shiftByOffsets(undedentCode(unshiftByOffsets(message, instanceUnoffsets), instanceDedent), instanceOffsets));
-				} else if (moduleUnoffsets) {
-					messages.push(shiftByOffsets(undedentCode(unshiftByOffsets(message, moduleUnoffsets), moduleDedent), moduleOffsets));
+				if (instanceInfo && message.line >= instanceInfo.unoffsets.lines) {
+					messages.push(transformMessage(message, instanceInfo));
+				} else if (moduleInfo) {
+					messages.push(transformMessage(message, moduleInfo));
 				}
 			}
 		}
