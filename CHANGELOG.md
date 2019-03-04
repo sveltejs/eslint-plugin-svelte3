@@ -1,3 +1,7 @@
+# v0.4.1
+
+- Make sure fixes for issues at the beginning and end of the scripts do not change text outside of the scripts
+
 # v0.4.0
 
 - Reworked configuration to be more flexible:
