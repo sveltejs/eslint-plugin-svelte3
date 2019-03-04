@@ -1,3 +1,7 @@
+# v0.4.3
+
+- Better handling for files linted in Windows/CRLF `linebreak-style`
+
 # v0.4.2
 
 - Work around issues caused by ESLint issues with fixes that replace more of the file than necessary
