@@ -1,3 +1,7 @@
+# v0.4.2
+
+- Work around issues caused by ESLint issues with fixes that replace more of the file than necessary
+
 # v0.4.1
 
 - Make sure fixes for issues at the beginning and end of the scripts do not change text outside of the scripts
