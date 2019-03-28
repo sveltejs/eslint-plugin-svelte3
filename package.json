@@ -8,6 +8,9 @@
 		"svelte",
 		"sveltejs"
 	],
+	"files": [
+		"index.js"
+	],
 	"main": "index.js",
 	"repository": {
 		"type": "git",
