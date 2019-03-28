@@ -1,6 +1,10 @@
+# v0.4.5
+
+- Proper fix for not wiping tag names that begin with `<style`
+
 # v0.4.4
 
-- With `svelte3/ignore-warnings`, don't wipe elements whose tag names merely begin with `<svelte`
+- With `svelte3/ignore-warnings`, don't wipe elements whose tag names merely begin with `<style`
 - The plugin is now published to npm
 
 # v0.4.3
