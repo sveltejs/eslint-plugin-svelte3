@@ -12,9 +12,9 @@ An ESLint plugin for Svelte v3 components.
 
 ## Installation
 
-For now, this is not published to npm. You can still install it from Git tags. See the [`npm install` documentation](https://docs.npmjs.com/cli/install) for how to do this.
+`npm install eslint-plugin-svelte3`
 
-Untagged releases may depend on unreleased Svelte 3 features. Tagged releases should always work with the specified Svelte version. The latest tagged version requires at least Svelte `3.0.0-beta.4`.
+The code on `master` may depend on unreleased Svelte 3 features. Tagged releases should always work with the specified Svelte version. The latest tagged version requires at least Svelte `3.0.0-beta.4`.
 
 ## Usage
 
