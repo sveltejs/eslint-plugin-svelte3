@@ -260,7 +260,7 @@ Linter.prototype.verify = function(code, config, options) {
 			const ignore_styles = get_setting_function(config, 'svelte3/ignore-styles', false);
 			if (ignore_styles) {
 				// wipe the appropriate <style> tags in the file
-				code = code.replace(/<style\b([^]*?)>[^]*?<\/style>/gi, (match, attributes) => {
+				code = code.replace(/<style(\s[^]*?)?>[^]*?<\/style>/gi, (match, attributes = '') => {
 					const attrs = {};
 					attributes.split(/\s+/).filter(Boolean).forEach(attr => {
 						const [name, value] = attr.split('=');
