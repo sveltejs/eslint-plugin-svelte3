@@ -1,3 +1,8 @@
+# v0.4.4
+
+- With `svelte3/ignore-warnings`, don't wipe elements whose tag names merely begin with `<svelte`
+- The plugin is now published to npm
+
 # v0.4.3
 
 - Better handling for files linted in Windows/CRLF `linebreak-style`
