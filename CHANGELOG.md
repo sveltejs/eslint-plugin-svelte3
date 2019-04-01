@@ -1,3 +1,7 @@
+# v0.4.7
+
+- Fix regression with specifying an array of warnings to ignore
+
 # v0.4.6
 
 - Add `svelte3/compiler-options` setting to control how the compiler is called during linting
