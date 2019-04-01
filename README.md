@@ -40,6 +40,14 @@ This can be `true` or `false` or an array of Svelte compiler warning codes or a 
 
 The default is to not ignore any warnings.
 
+### `svelte3/compiler-options`
+
+Most compiler options do not affect the validity of compiled components, but a couple of them can. If you are compiling to custom elements, or otherwise need to control how the plugin compiles the components it's linting, you can use this setting.
+
+This can be an object of compiler options or a function that accepts a file path and returns an object of compiler options.
+
+The default is to compile with `{ generate: false }`.
+
 ### `svelte3/ignore-styles`
 
 If you're using some sort of preprocessor on the component styles, then it's likely that when this plugin calls the Svelte compiler on your component, it will throw an exception. In a perfect world, this plugin would be able to apply the preprocessor to the component and then use source maps to translate any warnings back to the original source. In the current reality, however, you can instead simply disregard styles written in anything other than standard CSS. You won't get warnings about the styles from the linter, but your application will still use them (of course) and compiler warnings will still appear in your build logs.

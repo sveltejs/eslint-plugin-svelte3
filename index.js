@@ -2,7 +2,7 @@
 
 const { compile } = require('svelte/compiler');
 
-let messages, transformed_code, ignore_warnings, module_info, instance_info;
+let compiler_options, messages, transformed_code, ignore_warnings, module_info, instance_info;
 
 // get the total length, number of lines, and length of the last line of a string
 const get_offsets = str => {
@@ -134,7 +134,7 @@ const preprocess = text => {
 	// get information about the component
 	let result;
 	try {
-		result = compile(text, { generate: false });
+		result = compile(text, compiler_options);
 	} catch ({ name, message, start, end }) {
 		// convert the error to a linting message, store it, and return
 		messages = [
@@ -241,7 +241,7 @@ const get_setting_function = (config, key, default_value) => {
 	}
 	const value = config.settings[key];
 	return typeof value === 'function' ? value :
-		typeof value === 'boolean' ? () => value :
+		typeof value === 'boolean' || typeof value === 'object' ? () => value :
 			Array.isArray(value) ? Array.prototype.includes.bind(value) :
 				v => v === value;
 };
@@ -269,6 +269,8 @@ Linter.prototype.verify = function(code, config, options) {
 					return ignore_styles(attrs) ? match.replace(/\S/g, ' ') : match;
 				});
 			}
+			const compiler_options_setting = get_setting_function(config, 'svelte3/compiler-options', false);
+			compiler_options = compiler_options_setting ? Object.assign({ generate: false }, compiler_options_setting(options.filename)) : { generate: false };
 		}
 	}
 
