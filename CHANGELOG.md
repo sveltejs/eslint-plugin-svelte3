@@ -1,3 +1,7 @@
+# v0.4.6
+
+- Add `svelte3/compiler-options` setting to control how the compiler is called during linting
+
 # v0.4.5
 
 - Proper fix for not wiping tag names that begin with `<style`
