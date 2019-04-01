@@ -240,10 +240,7 @@ const get_setting_function = (config, key, default_value) => {
 		return default_value;
 	}
 	const value = config.settings[key];
-	return typeof value === 'function' ? value :
-		typeof value === 'boolean' || typeof value === 'object' ? () => value :
-			Array.isArray(value) ? Array.prototype.includes.bind(value) :
-				v => v === value;
+	return typeof value === 'function' ? value : Array.isArray(value) ? Array.prototype.includes.bind(value) : () => value;
 };
 
 // patch Linter#verify
