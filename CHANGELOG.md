@@ -1,3 +1,7 @@
+# v1.0.0
+
+- Svelte v3 release party!
+
 # v0.4.7
 
 - Fix regression with specifying an array of warnings to ignore
