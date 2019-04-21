@@ -4,21 +4,22 @@ An ESLint plugin for Svelte v3 components.
 
 ## Features
 
-- Svelte compiler errors and warnings are exposed as ESLint errors and warnings
-- Variables referred to in your template won't be marked as unused in your scripts
-- References to store auto-subscriptions are considered references to the underlying variables
-- Messages about self-assignments are suppressed, as this is an official pattern for manually triggering reactive updates
-- Messages about unused labels called `$` are suppressed, as this is the syntax for reactive assignments
+- Svelte compiler errors and warnings are exposed as ESLint messages
+- Variable references in your template or in store auto-subscriptions are handled when linting for unused variables
+- Self-assignments are always allowed, as this is an official pattern for manually triggering reactive updates
+- Unused labels called `$` are always allowed, as this is the syntax for reactive assignments
 
 ## Installation
 
-`npm install eslint-plugin-svelte3`
+Install the plugin package:
 
-The code on `master` may depend on unreleased Svelte 3 features. Tagged releases should always work with the specified Svelte version. The latest tagged version requires at least Svelte `3.0.0-beta.4`.
+```
+npm install eslint-plugin-svelte3
+```
+
+Then add `svelte3` to the `plugins` array in your `.eslintrc.*`.
 
 ## Usage
-
-Just add `svelte3` to the array of plugins in your `.eslintrc.*`.
 
 This plugin needs to be able to `require('svelte/compiler')`. If ESLint, this plugin, and Svelte are all installed locally in your project, this should not be a problem.
 
@@ -26,7 +27,7 @@ This plugin needs to be able to `require('svelte/compiler')`. If ESLint, this pl
 
 ## Configuration
 
-Some settings work best with a function as their value, which is only possible using a CommonJS-formatted `.eslintrc.js` file, and not a JSON- or YAML-formatted configuration file. Using `overrides` in the configuration file for specific globs will also give you more control over the configuration.
+Some settings work best with a function as their value, which is only possible using a CommonJS `.eslintrc.js` file, and not a JSON or YAML configuration file. Using `overrides` in the configuration file for specific globs will also give you more control over the configuration.
 
 ### `svelte3/enabled`
 
@@ -42,7 +43,7 @@ The default is to not ignore any warnings.
 
 ### `svelte3/compiler-options`
 
-Most compiler options do not affect the validity of compiled components, but a couple of them can. If you are compiling to custom elements, or otherwise need to control how the plugin compiles the components it's linting, you can use this setting.
+Most compiler options do not affect the validity of compiled components, but a couple of them can. If you are compiling to custom elements, or for some other reason need to control how the plugin compiles the components it's linting, you can use this setting.
 
 This can be an object of compiler options or a function that accepts a file path and returns an object of compiler options.
 
@@ -78,7 +79,7 @@ Unless you're using `.html` for your Svelte components, you'll need to configure
 }
 ```
 
-Then, you'll need to tell the ESLint extension to also lint files with language `html` and to enable autofixing problems. If you haven't adjusted the `eslint.validate` setting, it defaults to `[ "javascript", "javascriptreact" ]`, so put this in your `settings.json`:
+Then, you'll need to tell the ESLint extension to also lint files with language `html` and to enable autofixing where possible. If you haven't adjusted the `eslint.validate` setting, it defaults to `[ "javascript", "javascriptreact" ]`, so put this in your `settings.json`:
 
 ```json
 {
@@ -99,7 +100,7 @@ Reload VS Code and give it a go!
 
 You'll need the [linter](https://atom.io/packages/linter) and [linter-eslint](https://atom.io/packages/linter-eslint) packages installed.
 
-Unless you're using `.html` for your Svelte components, you'll need to configure `*`.`core`.`customFileTypes` to associate the appropriate file extension with the `test.html.basic` language. For example, to associate `.svelte`, put this in your `config.cson`:
+Unless you're using `.html` for your Svelte components, you'll need to configure `*`.`core`.`customFileTypes` to associate the appropriate file extension with the `text.html.basic` language. For example, to associate `.svelte`, put this in your `config.cson`:
 
 ```cson
 "*":
