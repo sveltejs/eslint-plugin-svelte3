@@ -135,6 +135,32 @@ Then, you'll need to tell SublimeLinter-eslint to lint entire files with the `te
 
 Reload Sublime and give it a go!
 
+### Vim
+
+You'll need the [ALE (Asynchronous Lint Engine)](https://github.com/w0rp/ale) plugin installed.
+
+Unless you're using `.html` for your Svelte components, you'll need to configure Vim to associate the appropriate file extension with the `html` syntax. For example, to associate `.svelte`, put this in your `.vimrc`:
+
+```vim
+au BufNewFile,BufRead,BufReadPost *.svelte set syntax=html
+```
+
+Then you'll need to tell ALE to lint and fix `.svelte` files using ESLint, so put this in your `.vimrc`:
+
+```vim
+let g:ale_linter_aliases = {
+\   'svelte': ['javascript']
+\}
+let g:ale_linters = {
+\   'svelte': ['eslint']
+\}
+let g:ale_fixers = {
+\   'svelte': ['eslint']
+\}
+```
+
+Reload Vim and give it a go!
+
 ### Other integrations
 
 If you've gotten this plugin to work with other editors, please let us know!
