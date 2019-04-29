@@ -19,7 +19,29 @@ npm install eslint-plugin-svelte3
 
 Then add `svelte3` to the `plugins` array in your `.eslintrc.*`.
 
-## Usage
+For example:
+
+```json
+{
+  "parserOptions": {
+    "ecmaVersion": 2019,
+    "sourceType": "module"
+  },
+  "env": {
+    "es6": true,
+    "browser": true
+  },
+  "plugins": [
+    "svelte3"
+  ],
+  "rules": {
+
+  },
+  "settings": {
+
+  }
+}
+```
 
 This plugin needs to be able to `require('svelte/compiler')`. If ESLint, this plugin, and Svelte are all installed locally in your project, this should not be a problem.
 
