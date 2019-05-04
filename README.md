@@ -8,6 +8,7 @@ An ESLint plugin for Svelte v3 components.
 - Variable references in your template or in store auto-subscriptions are handled when linting for unused variables
 - Self-assignments are always allowed, as this is an official pattern for manually triggering reactive updates
 - Unused labels called `$` are always allowed, as this is the syntax for reactive assignments
+- Experimental opt-in linting of template expressions in addition to the script blocks
 
 ## Installation
 
@@ -78,6 +79,14 @@ If you're using some sort of preprocessor on the component styles, then it's lik
 This can be `true` or `false` or a function that accepts an object of attributes on a `<style>` tag (like that passed to a Svelte preprocessor) and returns whether to ignore the style block for the purposes of linting.
 
 The default is to not ignore any styles.
+
+### `svelte3/lint-template`
+
+**Experimental! Requires at least Svelte 3.2.0!**
+
+This can be `true` or `false` or a function that accepts a file path and returns whether this plugin should also lint its template expressions.
+
+The default is to not lint any expressions in the template.
 
 ## Using the CLI
 
