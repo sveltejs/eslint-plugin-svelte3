@@ -1,3 +1,7 @@
+# v1.1.0
+
+- Experimental support for linting expressions in the template, behind the `svelte3/lint-template` setting. This feature requires Svelte 3.2.0
+
 # v1.0.0
 
 - Svelte v3 release party!
