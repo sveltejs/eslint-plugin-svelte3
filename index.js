@@ -2,7 +2,7 @@
 
 const { compile } = require('svelte/compiler');
 
-let compiler_options, messages, transformed_code, ignore_warnings, module_info, instance_info;
+let compiler_options, messages, transformed_code, ignore_warnings, translations;
 
 // get the total length, number of lines, and length of the last line of a string
 const get_offsets = str => {
@@ -54,6 +54,9 @@ const dedent_code = str => {
 
 // transform a linting message according to the module/instance script info we've gathered
 const transform_message = (message, { unoffsets, dedent, offsets, range }) => {
+	if (message.line < unoffsets.lines) {
+		return false;
+	}
 	// strip out the start and end of the fix if they are not actually changes
 	if (message.fix) {
 		while (transformed_code[message.fix.range[0]] === message.fix.text[0]) {
@@ -124,7 +127,7 @@ const transform_message = (message, { unoffsets, dedent, offsets, range }) => {
 			message.fix.range[1] = range[1];
 		}
 	}
-	return message;
+	return true;
 };
 
 /// PRE- AND POSTPROCESSING FUNCTIONS FOR SVELTE COMPONENTS ///
@@ -166,29 +169,30 @@ const preprocess = text => {
 		endColumn: end && end.column + 1,
 	}));
 
-	if (!ast.module && !ast.instance) {
-		return [];
-	}
-
 	// build a string that we can send along to ESLint to get the remaining messages
 
 	// include declarations of all injected identifiers
 	transformed_code = injected_vars.length ? `/* eslint-disable */let ${injected_vars.map(v => v.name).join(',')};\n/* eslint-enable */` : '';
 
-	// get module_info/instance_info and include the processed scripts in transformed_code
-	const get_info = script => {
-		const info = { unoffsets: get_offsets(transformed_code) };
-		const { content } = script;
-		info.range = [content.start, content.end];
-		const { dedented, offsets } = dedent_code(text.slice(content.start, content.end));
+	// get translation info and include the processed scripts in transformed_code
+	const get_translation = node => {
+		const translation = { unoffsets: get_offsets(transformed_code) };
+		translation.range = [node.start, node.end];
+		const { dedented, offsets } = dedent_code(text.slice(node.start, node.end));
 		transformed_code += dedented;
-		info.offsets = get_offsets(text.slice(0, content.start));
-		info.dedent = offsets;
-		return info;
+		translation.offsets = get_offsets(text.slice(0, node.start));
+		translation.dedent = offsets;
+		translations.push(translation);
 	};
-	module_info = ast.module && get_info(ast.module);
+
+	translations = [];
+	if (ast.module) {
+		get_translation(ast.module.content);
+	}
 	transformed_code += '/* eslint-disable */\n/* eslint-enable */';
-	instance_info = ast.instance && get_info(ast.instance);
+	if (ast.instance) {
+		get_translation(ast.instance.content);
+	}
 	transformed_code += '/* eslint-disable */';
 
 	// no-unused-vars: create references to all identifiers referred to by the template
@@ -201,6 +205,9 @@ const preprocess = text => {
 		transformed_code += `\n{${reassigned_vars.map(v => v.name + '=0').join(';')}}`;
 	}
 
+	// reverse sort the translations
+	translations.sort((a, b) => b.unoffsets.length - a.unoffsets.length);
+
 	// return processed string
 	return [transformed_code];
 };
@@ -212,10 +219,11 @@ const postprocess = ([raw_messages]) => {
 		for (let i = 0; i < raw_messages.length; i++) {
 			const message = raw_messages[i];
 			if (message.ruleId !== 'no-self-assign' && (message.ruleId !== 'no-unused-labels' || !message.message.includes("'$:'"))) {
-				if (instance_info && message.line >= instance_info.unoffsets.lines) {
-					messages.push(transform_message(message, instance_info));
-				} else if (module_info) {
-					messages.push(transform_message(message, module_info));
+				for (let k = 0; k < translations.length; k++) {
+					if (transform_message(message, translations[k])) {
+						messages.push(message);
+						break;
+					}
 				}
 			}
 		}
