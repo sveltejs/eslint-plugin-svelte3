@@ -1,8 +1,8 @@
 'use strict';
 
-const { compile } = require('svelte/compiler');
+const { compile, walk } = require('svelte/compiler');
 
-let compiler_options, messages, transformed_code, ignore_warnings, translations;
+let compiler_options, messages, transformed_code, ignore_warnings, lint_template, translations;
 
 // get the total length, number of lines, and length of the last line of a string
 const get_offsets = str => {
@@ -205,6 +205,48 @@ const preprocess = text => {
 		transformed_code += `\n{${reassigned_vars.map(v => v.name + '=0').join(';')}}`;
 	}
 
+	// add expressions from template to the constructed string
+	if (lint_template && ast.html) {
+		transformed_code += '\n/* eslint-enable *//* eslint indent: 0, quotes: 0, semi: 0 */';
+		// find all expressions in the AST
+		walk(ast.html, {
+			enter(node) {
+				if (node.context && typeof node.context === 'object') {
+					// find all the variables declared in this context (potentially involving spreads)
+					const names = [];
+					walk(node.context, {
+						enter(node) {
+							if (node.name) {
+								names.push(node.name);
+							}
+							delete node.key;
+						},
+					});
+					transformed_code += `/* eslint-disable */{${names.map(name => `let ${name}=0;`).join('')}/* eslint-enable */\n`;
+				}
+				if (node.index && typeof node.index === 'string') {
+					// declare the index variable, if present
+					transformed_code += `/* eslint-disable */{let ${node.index}=0;/* eslint-enable */\n`;
+				}
+				if (node.expression && typeof node.expression === 'object') {
+					// add the expression in question to the constructed string
+					get_translation(node.expression);
+					transformed_code += ';\n';
+					delete node.expression;
+				}
+			},
+			leave(node) {
+				// close nested scopes created for context or index
+				if (node.context && typeof node.context === 'object') {
+					transformed_code += '/* eslint-disable */}/* eslint-enable */\n';
+				}
+				if (node.index && typeof node.index === 'string') {
+					transformed_code += '/* eslint-disable */}/* eslint-enable */\n';
+				}
+			},
+		});
+	}
+
 	// reverse sort the translations
 	translations.sort((a, b) => b.unoffsets.length - a.unoffsets.length);
 
@@ -262,6 +304,7 @@ Linter.prototype.verify = function(code, config, options) {
 			// lint this Svelte file
 			options = Object.assign({}, options, { preprocess, postprocess });
 			ignore_warnings = get_setting_function(config, 'svelte3/ignore-warnings', false);
+			lint_template = get_setting_function(config, 'svelte3/lint-template', () => false)(options.filename);
 			const ignore_styles = get_setting_function(config, 'svelte3/ignore-styles', false);
 			if (ignore_styles) {
 				// wipe the appropriate <style> tags in the file
