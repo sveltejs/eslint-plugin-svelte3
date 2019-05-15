@@ -254,13 +254,24 @@ const preprocess = text => {
 	return [transformed_code];
 };
 
+// determine whether this message from ESLint is something we care about
+const is_valid_message = message => {
+	switch (message.ruleId) {
+		case 'no-labels': return false;
+		case 'no-restricted-syntax': return message.nodeType !== 'LabeledStatement';
+		case 'no-self-assign': return false;
+		case 'no-unused-labels': return !message.message.includes("'$:'");
+	}
+	return true;
+};
+
 // transform linting messages and combine with compiler warnings
 const postprocess = ([raw_messages]) => {
 	// filter messages and fix their offsets
 	if (raw_messages) {
 		for (let i = 0; i < raw_messages.length; i++) {
 			const message = raw_messages[i];
-			if (message.ruleId !== 'no-self-assign' && (message.ruleId !== 'no-unused-labels' || !message.message.includes("'$:'"))) {
+			if (is_valid_message(message)) {
 				for (let k = 0; k < translations.length; k++) {
 					if (transform_message(message, translations[k])) {
 						messages.push(message);
