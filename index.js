@@ -159,7 +159,7 @@ const preprocess = text => {
 	const reassigned_vars = vars.filter(v => v.reassigned || v.export_name);
 
 	// convert warnings to linting messages
-	messages = (ignore_warnings ? warnings.filter(({ code }) => !ignore_warnings(code)) : warnings).map(({ code, message, start, end }) => ({
+	messages = (ignore_warnings ? warnings.filter(warning => !ignore_warnings(warning.code, warning)) : warnings).map(({ code, message, start, end }) => ({
 		ruleId: code,
 		severity: 1,
 		message,
