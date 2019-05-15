@@ -1,3 +1,8 @@
+# v1.2.0
+
+- Pass a second argument to the `svelte3/ignore-warnings` function that contains the entire warning object
+- Disregard `no-labels` rule and `no-restricted-syntax` rule in places where it disallows labels
+
 # v1.1.0
 
 - Experimental support for linting expressions in the template, behind the `svelte3/lint-template` setting. This feature requires Svelte 3.2.0
