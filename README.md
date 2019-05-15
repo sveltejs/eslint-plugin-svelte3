@@ -60,7 +60,7 @@ The default is to lint all files that end in `.svelte`. This can be changed by p
 
 ### `svelte3/ignore-warnings`
 
-This can be `true` or `false` or an array of Svelte compiler warning codes or a function that accepts a warning code and returns whether to ignore it in the linting.
+This can be `true` or `false` or an array of Svelte compiler warning codes or a function that indicates whether to ignore it in the linting. The function will be passed two arguments - the warning code and the full warning object - and should return a boolean.
 
 The default is to not ignore any warnings.
 
