@@ -1,3 +1,7 @@
+# v1.2.1
+
+- Avoid mutating the AST while linting, which can have adverse effects
+
 # v1.2.0
 
 - Pass a second argument to the `svelte3/ignore-warnings` function that contains the entire warning object
