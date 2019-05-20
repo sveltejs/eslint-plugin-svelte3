@@ -3,6 +3,7 @@
 const { compile, walk } = require('svelte/compiler');
 
 let compiler_options, messages, transformed_code, ignore_warnings, lint_template, translations;
+const skipping = new WeakSet();
 
 // get the total length, number of lines, and length of the last line of a string
 const get_offsets = str => {
@@ -211,15 +212,21 @@ const preprocess = text => {
 		// find all expressions in the AST
 		walk(ast.html, {
 			enter(node) {
+				if (skipping.has(node)) {
+					this.skip();
+				}
 				if (node.context && typeof node.context === 'object') {
-					// find all the variables declared in this context (potentially involving spreads)
+					// find all the variables declared in this context
 					const names = [];
-					walk(node.context, {
-						enter(node) {
-							if (node.name) {
+					// When traversing the context, we want to skip over all `key` children
+					// But if the context involves destructuring like { foo }, we have a node with `node.key === node.value`
+					// This prevents us from being able to tell whether we got here via the parent's `key` or `value`
+					// So we first detangle the shared references by stringifying and parsing
+					walk(JSON.parse(JSON.stringify(node.context)), {
+						enter(node, parent) {
+							if (node.name && !(parent && parent.key === node)) {
 								names.push(node.name);
 							}
-							delete node.key;
 						},
 					});
 					transformed_code += `/* eslint-disable */{${names.map(name => `let ${name}=0;`).join('')}/* eslint-enable */\n`;
@@ -232,7 +239,7 @@ const preprocess = text => {
 					// add the expression in question to the constructed string
 					get_translation(node.expression);
 					transformed_code += ';\n';
-					delete node.expression;
+					skipping.add(node.expression);
 				}
 			},
 			leave(node) {
