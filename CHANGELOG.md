@@ -1,3 +1,7 @@
+# v1.2.2
+
+- Internal improvements to AST walk
+
 # v1.2.1
 
 - Avoid mutating the AST while linting, which can have adverse effects
