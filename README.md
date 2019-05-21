@@ -36,13 +36,16 @@ For example:
     "svelte3"
   ],
   "rules": {
-
+    "import/first": 0,
+    "import/no-duplicates": 0,
   },
   "settings": {
 
   }
 }
 ```
+
+Also you'd probably want to add `/src/node_modules` to your `.eslintignore`
 
 This plugin needs to be able to `require('svelte/compiler')`. If ESLint, this plugin, and Svelte are all installed locally in your project, this should not be a problem.
 
