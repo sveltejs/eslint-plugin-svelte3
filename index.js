@@ -59,11 +59,11 @@ const transform_message = (message, { unoffsets, dedent, offsets, range }) => {
 	}
 	// strip out the start and end of the fix if they are not actually changes
 	if (message.fix) {
-		while (transformed_code[message.fix.range[0]] === message.fix.text[0]) {
+		while (message.fix.range[0] < message.fix.range[1] && transformed_code[message.fix.range[0]] === message.fix.text[0]) {
 			message.fix.range[0]++;
 			message.fix.text = message.fix.text.slice(1);
 		}
-		while (transformed_code[message.fix.range[1] - 1] === message.fix.text[message.fix.text.length - 1]) {
+		while (message.fix.range[0] < message.fix.range[1] && transformed_code[message.fix.range[1] - 1] === message.fix.text[message.fix.text.length - 1]) {
 			message.fix.range[1]--;
 			message.fix.text = message.fix.text.slice(0, -1);
 		}
