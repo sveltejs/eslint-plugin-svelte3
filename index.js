@@ -2,7 +2,7 @@
 
 const { compile, walk } = require('svelte/compiler');
 
-let compiler_options, messages, transformed_code, ignore_warnings, lint_template, translations;
+let compiler_options, messages, transformed_code, ignore_warnings, ignore_styles, translations;
 
 // get the total length, number of lines, and length of the last line of a string
 const get_offsets = str => {
@@ -134,6 +134,17 @@ const transform_message = (message, { unoffsets, dedent, offsets, range }) => {
 
 // extract scripts to lint from component definition
 const preprocess = text => {
+	if (ignore_styles) {
+		// wipe the appropriate <style> tags in the file
+		text = text.replace(/<style(\s[^]*?)?>[^]*?<\/style>/gi, (match, attributes = '') => {
+			const attrs = {};
+			attributes.split(/\s+/).filter(Boolean).forEach(attr => {
+				const [name, value] = attr.split('=');
+				attrs[name] = value ? /^['"]/.test(value) ? value.slice(1, -1) : value : true;
+			});
+			return ignore_styles(attrs) ? match.replace(/\S/g, ' ') : match;
+		});
+	}
 	// get information about the component
 	let result;
 	try {
@@ -159,7 +170,7 @@ const preprocess = text => {
 	const reassigned_vars = vars.filter(v => v.reassigned || v.export_name);
 
 	// convert warnings to linting messages
-	messages = (ignore_warnings ? warnings.filter(warning => !ignore_warnings(warning.code, warning)) : warnings).map(({ code, message, start, end }) => ({
+	messages = (ignore_warnings ? warnings.filter(warning => !ignore_warnings(warning)) : warnings).map(({ code, message, start, end }) => ({
 		ruleId: code,
 		severity: 1,
 		message,
@@ -206,7 +217,7 @@ const preprocess = text => {
 	}
 
 	// add expressions from template to the constructed string
-	if (lint_template && ast.html) {
+	if (ast.html) {
 		transformed_code += '\n/* eslint-enable *//* eslint indent: 0, quotes: 0, semi: 0 */';
 		// find all expressions in the AST
 		walk(ast.html, {
@@ -287,53 +298,27 @@ const postprocess = ([raw_messages]) => {
 	return messages.sort((a, b) => a.line - b.line || a.column - b.column);
 };
 
-/// PATCH THE LINTER - THE PLUGIN PART OF THE PLUGIN ///
+/// PATCH THE LINTER - HACK TO GET ACCESS TO SETTINGS ///
 
 // find Linter instance
-const linter_path = Object.keys(require.cache).find(path => path.endsWith('/eslint/lib/linter.js') || path.endsWith('\\eslint\\lib\\linter.js'));
+const linter_path = Object.keys(require.cache).find(path => path.endsWith('/eslint/lib/linter/linter.js') || path.endsWith('\\eslint\\lib\\linter\\linter.js'));
 if (!linter_path) {
 	throw new Error('Could not find ESLint Linter in require cache');
 }
-const Linter = require(linter_path);
-
-// get a setting from the ESLint config
-const get_setting_function = (config, key, default_value) => {
-	if (!config || !config.settings || !(key in config.settings)) {
-		return default_value;
-	}
-	const value = config.settings[key];
-	return typeof value === 'function' ? value : Array.isArray(value) ? Array.prototype.includes.bind(value) : () => value;
-};
+const { Linter } = require(linter_path);
 
 // patch Linter#verify
 const { verify } = Linter.prototype;
 Linter.prototype.verify = function(code, config, options) {
-	if (typeof options === 'string') {
-		options = { filename: options };
-	}
-	if (options && options.filename) {
-		if (get_setting_function(config, 'svelte3/enabled', n => n.endsWith('.svelte'))(options.filename)) {
-			// lint this Svelte file
-			options = Object.assign({}, options, { preprocess, postprocess });
-			ignore_warnings = get_setting_function(config, 'svelte3/ignore-warnings', false);
-			lint_template = get_setting_function(config, 'svelte3/lint-template', () => false)(options.filename);
-			const ignore_styles = get_setting_function(config, 'svelte3/ignore-styles', false);
-			if (ignore_styles) {
-				// wipe the appropriate <style> tags in the file
-				code = code.replace(/<style(\s[^]*?)?>[^]*?<\/style>/gi, (match, attributes = '') => {
-					const attrs = {};
-					attributes.split(/\s+/).filter(Boolean).forEach(attr => {
-						const [name, value] = attr.split('=');
-						attrs[name] = value ? /^['"]/.test(value) ? value.slice(1, -1) : value : true;
-					});
-					return ignore_styles(attrs) ? match.replace(/\S/g, ' ') : match;
-				});
-			}
-			const compiler_options_setting = get_setting_function(config, 'svelte3/compiler-options', false);
-			compiler_options = compiler_options_setting ? Object.assign({ generate: false }, compiler_options_setting(options.filename)) : { generate: false };
-		}
-	}
-
+	// fetch settings
+	const settings = config ? (typeof config.extractConfig === 'function' ? config.extractConfig(options.filename || options).settings : config.settings) || {} : {};
+	ignore_warnings = settings['svelte3/ignore-warnings'];
+	ignore_styles = settings['svelte3/ignore-styles'];
+	compiler_options = Object.assign({ generate: false }, settings['svelte3/compiler-options']);
 	// call original Linter#verify
 	return verify.call(this, code, config, options);
 };
+
+/// EXPORT THE PROCESSOR ///
+
+exports.processors = { svelte3: { preprocess, postprocess, supportsAutofix: true } };
