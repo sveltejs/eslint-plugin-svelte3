@@ -290,11 +290,17 @@ const postprocess = ([raw_messages]) => {
 /// PATCH THE LINTER - THE PLUGIN PART OF THE PLUGIN ///
 
 // find Linter instance
-const linter_path = Object.keys(require.cache).find(path => path.endsWith('/eslint/lib/linter.js') || path.endsWith('\\eslint\\lib\\linter.js'));
-if (!linter_path) {
-	throw new Error('Could not find ESLint Linter in require cache');
+let linter_path = Object.keys(require.cache).find(
+  path =>
+    path.endsWith("/eslint/lib/linter.js") ||
+    path.endsWith("\\eslint\\lib\\linter.js")
+);
+let Linter;
+if (linter_path) {
+  Linter = require(linter_path);
+} else {
+  Linter = require("eslint/lib/linter").Linter;
 }
-const Linter = require(linter_path);
 
 // get a setting from the ESLint config
 const get_setting_function = (config, key, default_value) => {
