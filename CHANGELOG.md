@@ -1,3 +1,13 @@
+# v2.0.0
+
+- Require Svelte v3.2+ and ESLint 6+
+- Reworked configuration:
+  - `svelte3/enabled` has been removed in favor of registering a `svelte3/svelte3` processor that you need to enable on files
+  - `svelte3/ignore-warnings` now only takes a callback which is passed the warning object
+  - `svelte3/compiler-options` now only takes a compiler options object
+  - `svelte3/ignore-styles` now only takes a preprocessor-style callback
+  - `svelte3/lint-template` has been removed, and template linting is now always enabled
+
 # v1.2.3
 
 - Fix a weird edge case where fixes to problems could be lost in certain cases
