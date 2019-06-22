@@ -2,6 +2,8 @@
 
 An ESLint plugin for Svelte v3 components.
 
+**NOTE:** This does not currently work with ESLint 6! This is being looked into. ESLint 6 changed a number of things with plugins and processors, and the hacks we use to get around limitations in the ESLint 5 plugin API no longer work.
+
 ## Features
 
 - Svelte compiler errors and warnings are exposed as ESLint messages
