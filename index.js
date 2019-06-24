@@ -311,7 +311,7 @@ const { Linter } = require(linter_path);
 const { verify } = Linter.prototype;
 Linter.prototype.verify = function(code, config, options) {
 	// fetch settings
-	const settings = config ? (typeof config.extractConfig === 'function' ? config.extractConfig(options.filename || options).settings : config.settings) || {} : {};
+	const settings = config && (typeof config.extractConfig === 'function' ? config.extractConfig(options.filename) : config).settings || {};
 	ignore_warnings = settings['svelte3/ignore-warnings'];
 	ignore_styles = settings['svelte3/ignore-styles'];
 	compiler_options = Object.assign({ generate: false }, settings['svelte3/compiler-options']);
