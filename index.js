@@ -218,7 +218,7 @@ const preprocess = text => {
 
 	// add expressions from template to the constructed string
 	if (ast.html) {
-		transformed_code += '\n/* eslint-enable *//* eslint indent: 0, quotes: 0, semi: 0 */';
+		transformed_code += '\n/* eslint-enable *//* eslint indent: 0, no-unused-expressions: 0, quotes: 0, semi: 0 */';
 		// find all expressions in the AST
 		walk(ast.html, {
 			enter(node, parent, prop) {
