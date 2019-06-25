@@ -269,6 +269,7 @@ const preprocess = text => {
 // determine whether this message from ESLint is something we care about
 const is_valid_message = message => {
 	switch (message.ruleId) {
+		case 'eol-last': return false;
 		case 'no-labels': return false;
 		case 'no-restricted-syntax': return message.nodeType !== 'LabeledStatement';
 		case 'no-self-assign': return false;
