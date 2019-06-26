@@ -218,7 +218,8 @@ const preprocess = text => {
 
 	// add expressions from template to the constructed string
 	if (ast.html) {
-		transformed_code += '\n/* eslint-enable *//* eslint-disable indent, no-unused-expressions, quotes, semi */';
+		const template_enable = '/* eslint-enable *//* eslint-disable indent, no-unused-expressions, quotes, semi */';
+		transformed_code += `\n${template_enable}`;
 		// find all expressions in the AST
 		walk(ast.html, {
 			enter(node, parent, prop) {
@@ -235,11 +236,11 @@ const preprocess = text => {
 							}
 						},
 					});
-					transformed_code += `/* eslint-disable */{${names.map(name => `let ${name}=0;`).join('')}/* eslint-enable */\n`;
+					transformed_code += `/* eslint-disable */{${names.map(name => `let ${name}=0;`).join('')}${template_enable}\n`;
 				}
 				if (node.index && typeof node.index === 'string') {
 					// declare the index variable, if present
-					transformed_code += `/* eslint-disable */{let ${node.index}=0;/* eslint-enable */\n`;
+					transformed_code += `/* eslint-disable */{let ${node.index}=0;${template_enable}\n`;
 				}
 				if (node.expression && typeof node.expression === 'object') {
 					// add the expression in question to the constructed string
@@ -250,10 +251,10 @@ const preprocess = text => {
 			leave(node) {
 				// close nested scopes created for context or index
 				if (node.context && typeof node.context === 'object') {
-					transformed_code += '/* eslint-disable */}/* eslint-enable */\n';
+					transformed_code += `/* eslint-disable */}${template_enable}\n`;
 				}
 				if (node.index && typeof node.index === 'string') {
-					transformed_code += '/* eslint-disable */}/* eslint-enable */\n';
+					transformed_code += `/* eslint-disable */}${template_enable}\n`;
 				}
 			},
 		});
