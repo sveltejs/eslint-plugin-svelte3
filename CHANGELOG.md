@@ -1,3 +1,9 @@
+# 2.0.1
+
+- Disregard `eol-last` rule
+- Disregard `no-unused-expressions` rule in the template
+- Fix bug where rules intended to only be ignored in the template were being ignored in the entire file
+
 # v2.0.0
 
 - Require Svelte v3.2+ and ESLint 6+
