@@ -1,3 +1,7 @@
+# 2.1.0
+
+- Preserve linting messages about labels other than `$`
+
 # 2.0.2
 
 - Actually fix ignoring of rules in the template
