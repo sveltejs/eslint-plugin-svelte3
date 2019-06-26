@@ -1,3 +1,7 @@
+# 2.0.2
+
+- Actually fix ignoring of rules in the template
+
 # 2.0.1
 
 - Disregard `eol-last` rule
