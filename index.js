@@ -2,7 +2,7 @@
 
 const { compile, walk } = require('svelte/compiler');
 
-let compiler_options, messages, transformed_code, ignore_warnings, ignore_styles, translations;
+let compiler_options, messages, transformed_code, line_offsets, ignore_warnings, ignore_styles, translations;
 
 // get the total length, number of lines, and length of the last line of a string
 const get_offsets = str => {
@@ -267,14 +267,32 @@ const preprocess = text => {
 	return [transformed_code];
 };
 
+// extract the string referenced by a message
+const get_referenced_string = message => {
+	if (message.line && message.column && message.endLine && message.endColumn) {
+		if (!line_offsets) {
+			line_offsets = [-1, -1];
+			for (let i = 0; i < transformed_code.length; i++) {
+				if (transformed_code[i] === '\n') {
+					line_offsets.push(i);
+				}
+			}
+		}
+		return transformed_code.slice(line_offsets[message.line] + message.column, line_offsets[message.endLine] + message.endColumn);
+	}
+};
+
+// extract something that looks like an identifier (minus insane unicode stuff) from the beginning of a string
+const get_identifier = str => (str && str.match(/^[a-zA-Z_$][0-9a-zA-Z_$]*/) || [])[0];
+
 // determine whether this message from ESLint is something we care about
 const is_valid_message = message => {
 	switch (message.ruleId) {
 		case 'eol-last': return false;
-		case 'no-labels': return false;
-		case 'no-restricted-syntax': return message.nodeType !== 'LabeledStatement';
+		case 'no-labels': return get_identifier(get_referenced_string(message)) !== '$';
+		case 'no-restricted-syntax': return message.nodeType !== 'LabeledStatement' || get_identifier(get_referenced_string(message)) !== '$';
 		case 'no-self-assign': return false;
-		case 'no-unused-labels': return !message.message.includes("'$:'");
+		case 'no-unused-labels': return get_referenced_string(message) !== '$';
 	}
 	return true;
 };
@@ -297,7 +315,9 @@ const postprocess = ([raw_messages]) => {
 	}
 
 	// sort messages and return
-	return messages.sort((a, b) => a.line - b.line || a.column - b.column);
+	const sorted_messages = messages.sort((a, b) => a.line - b.line || a.column - b.column);
+	compiler_options = messages = transformed_code = line_offsets = ignore_warnings = ignore_styles = translations = null;
+	return sorted_messages;
 };
 
 /// PATCH THE LINTER - HACK TO GET ACCESS TO SETTINGS ///
