@@ -1,3 +1,9 @@
+# 2.2.0
+
+- Enforce semicolon rules in template expressions
+- Fix parsing of template expressions that are object literals
+- Don't produce multiple messages for template expressions wrapped in parentheses
+
 # 2.1.0
 
 - Preserve linting messages about labels other than `$`
