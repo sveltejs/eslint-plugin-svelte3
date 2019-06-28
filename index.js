@@ -220,7 +220,7 @@ const preprocess = text => {
 	walk(ast.html, {
 		enter(node, parent, prop) {
 			if (prop === 'expression') {
-				this.skip();
+				return this.skip();
 			}
 			if (node.context && typeof node.context === 'object') {
 				// find all the variables declared in this context
