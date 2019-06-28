@@ -240,7 +240,7 @@ const preprocess = text => {
 			}
 			if (node.expression && typeof node.expression === 'object') {
 				// add the expression in question to the constructed string
-				transformed_code += '(/* eslint-enable *//* eslint-disable indent, no-unused-expressions, quotes, semi */';
+				transformed_code += '(/* eslint-enable *//* eslint-disable indent, no-unused-expressions, quotes */';
 				get_translation(node.expression);
 				transformed_code += '/* eslint-disable */);\n';
 			}
