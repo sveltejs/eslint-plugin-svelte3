@@ -1,3 +1,7 @@
+# 2.2.2
+
+- Stop using inline configuration comments internally, to avoid issues with `--no-inline-config` and `--report-unused-disable-directives`
+
 # 2.2.1
 
 - Handle `then` and `catch` scope in `{#await}`
