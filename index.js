@@ -130,7 +130,23 @@ const transform_message = (message, { unoffsets, dedent, offsets, range }) => {
 	return true;
 };
 
-/// PRE- AND POSTPROCESSING FUNCTIONS FOR SVELTE COMPONENTS ///
+// find the contextual name or names described by a particular node in the AST
+const contextual_names = [];
+const find_contextual_names = node => {
+	if (node) {
+		if (typeof node === 'string') {
+			contextual_names.push(node);
+		} else if (typeof node === 'object') {
+			walk(node, {
+				enter(node, parent, prop) {
+					if (node.name && prop !== 'key') {
+						contextual_names.push(node.name);
+					}
+				},
+			});
+		}
+	}
+};
 
 // extract scripts to lint from component definition
 const preprocess = text => {
@@ -217,26 +233,23 @@ const preprocess = text => {
 	}
 
 	// add expressions from template to the constructed string
+	const nodes_with_contextual_scope = new WeakSet();
 	walk(ast.html, {
 		enter(node, parent, prop) {
 			if (prop === 'expression') {
 				return this.skip();
 			}
-			if (node.context && typeof node.context === 'object') {
-				// find all the variables declared in this context
-				const names = [];
-				walk(node.context, {
-					enter(node, parent, prop) {
-						if (node.name && prop !== 'key') {
-							names.push(node.name);
-						}
-					},
-				});
-				transformed_code += `{${names.map(name => `let ${name}=0;`).join('')}\n`;
+			contextual_names.length = 0;
+			find_contextual_names(node.context);
+			if (node.type === 'EachBlock') {
+				find_contextual_names(node.index);
+			} else if (node.type === 'AwaitBlock') {
+				find_contextual_names(node.value);
+				find_contextual_names(node.error);
 			}
-			if (node.index && typeof node.index === 'string') {
-				// declare the index variable, if present
-				transformed_code += `{let ${node.index}=0;\n`;
+			if (contextual_names.length) {
+				nodes_with_contextual_scope.add(node);
+				transformed_code += `{let ${contextual_names.map(name => `${name}=0`).join(',')};\n`;
 			}
 			if (node.expression && typeof node.expression === 'object') {
 				// add the expression in question to the constructed string
@@ -246,11 +259,8 @@ const preprocess = text => {
 			}
 		},
 		leave(node) {
-			// close nested scopes created for context or index
-			if (node.context && typeof node.context === 'object') {
-				transformed_code += '}';
-			}
-			if (node.index && typeof node.index === 'string') {
+			// close contextual scope
+			if (nodes_with_contextual_scope.has(node)) {
 				transformed_code += '}';
 			}
 		},
