@@ -1,3 +1,7 @@
+# 2.2.1
+
+- Handle `then` and `catch` scope in `{#await}`
+
 # 2.2.0
 
 - Enforce semicolon rules in template expressions
