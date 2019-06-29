@@ -54,9 +54,6 @@ const dedent_code = str => {
 
 // transform a linting message according to the module/instance script info we've gathered
 const transform_message = (message, { unoffsets, dedent, offsets, range }) => {
-	if (message.line < unoffsets.lines) {
-		return false;
-	}
 	// strip out the start and end of the fix if they are not actually changes
 	if (message.fix) {
 		while (message.fix.range[0] < message.fix.range[1] && transformed_code[message.fix.range[0]] === message.fix.text[0]) {
@@ -127,7 +124,6 @@ const transform_message = (message, { unoffsets, dedent, offsets, range }) => {
 			message.fix.range[1] = range[1];
 		}
 	}
-	return true;
 };
 
 // find the contextual name or names described by a particular node in the AST
@@ -199,28 +195,31 @@ const preprocess = text => {
 	// build a string that we can send along to ESLint to get the remaining messages
 
 	// include declarations of all injected identifiers
-	transformed_code = injected_vars.length ? `/* eslint-disable */let ${injected_vars.map(v => v.name).join(',')};\n/* eslint-enable */` : '';
+	transformed_code = injected_vars.length ? `let ${injected_vars.map(v => v.name).join(',')};\n` : '';
 
 	// get translation info and include the processed scripts in transformed_code
-	const get_translation = node => {
-		const translation = { unoffsets: get_offsets(transformed_code) };
+	const get_translation = (node, type) => {
+		const translation = { type, unoffsets: get_offsets(transformed_code) };
 		translation.range = [node.start, node.end];
 		const { dedented, offsets } = dedent_code(text.slice(node.start, node.end));
 		transformed_code += dedented;
 		translation.offsets = get_offsets(text.slice(0, node.start));
 		translation.dedent = offsets;
-		translations.push(translation);
+		const end = get_offsets(transformed_code).lines;
+		for (let i = translation.unoffsets.lines; i <= end; i++) {
+			translations.set(i, translation);
+		}
 	};
 
-	translations = [];
+	translations = new Map();
 	if (ast.module) {
-		get_translation(ast.module.content);
+		get_translation(ast.module.content, 'module');
 	}
-	transformed_code += '/* eslint-disable */\n/* eslint-enable */';
+	transformed_code += '\n';
 	if (ast.instance) {
-		get_translation(ast.instance.content);
+		get_translation(ast.instance.content, 'instance');
 	}
-	transformed_code += '/* eslint-disable */\n';
+	transformed_code += '\n';
 
 	// no-unused-vars: create references to all identifiers referred to by the template
 	if (referenced_vars.length) {
@@ -249,13 +248,13 @@ const preprocess = text => {
 			}
 			if (contextual_names.length) {
 				nodes_with_contextual_scope.add(node);
-				transformed_code += `{let ${contextual_names.map(name => `${name}=0`).join(',')};\n`;
+				transformed_code += `{let ${contextual_names.map(name => `${name}=0`).join(',')};`;
 			}
 			if (node.expression && typeof node.expression === 'object') {
 				// add the expression in question to the constructed string
-				transformed_code += '(/* eslint-enable *//* eslint-disable indent, no-unused-expressions, quotes */';
-				get_translation(node.expression);
-				transformed_code += '/* eslint-disable */);\n';
+				transformed_code += '(\n';
+				get_translation(node.expression, 'template');
+				transformed_code += '\n);';
 			}
 		},
 		leave(node) {
@@ -265,9 +264,6 @@ const preprocess = text => {
 			}
 		},
 	});
-
-	// reverse sort the translations
-	translations.sort((a, b) => b.unoffsets.length - a.unoffsets.length);
 
 	// return processed string
 	return [transformed_code];
@@ -292,13 +288,16 @@ const get_referenced_string = message => {
 const get_identifier = str => (str && str.match(/^[a-zA-Z_$][0-9a-zA-Z_$]*/) || [])[0];
 
 // determine whether this message from ESLint is something we care about
-const is_valid_message = message => {
+const is_valid_message = (message, type) => {
 	switch (message.ruleId) {
+		case 'indent': return type !== 'template';
 		case 'eol-last': return false;
 		case 'no-labels': return get_identifier(get_referenced_string(message)) !== '$';
 		case 'no-restricted-syntax': return message.nodeType !== 'LabeledStatement' || get_identifier(get_referenced_string(message)) !== '$';
 		case 'no-self-assign': return false;
+		case 'no-unused-expressions': return type !== 'template';
 		case 'no-unused-labels': return get_referenced_string(message) !== '$';
+		case 'quotes': return type !== 'template';
 	}
 	return true;
 };
@@ -309,13 +308,10 @@ const postprocess = ([raw_messages]) => {
 	if (raw_messages) {
 		for (let i = 0; i < raw_messages.length; i++) {
 			const message = raw_messages[i];
-			if (is_valid_message(message)) {
-				for (let k = 0; k < translations.length; k++) {
-					if (transform_message(message, translations[k])) {
-						messages.push(message);
-						break;
-					}
-				}
+			const translation = translations.get(message.line);
+			if (translation && is_valid_message(message, translation.type)) {
+				transform_message(message, translation);
+				messages.push(message);
 			}
 		}
 	}
