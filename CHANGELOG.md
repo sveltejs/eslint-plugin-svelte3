@@ -1,3 +1,8 @@
+# 2.3.0
+
+- Respect `quotes` rule unless inside a template expression which is inside an attribute or directive enclosed in quotes
+- Respect `no-unused-expressions` rule again (which is now safe thanks to a previous refactor)
+
 # 2.2.2
 
 - Stop using inline configuration comments internally, to avoid issues with `--no-inline-config` and `--report-unused-disable-directives`
