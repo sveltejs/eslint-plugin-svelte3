@@ -1,3 +1,8 @@
+# 2.4.0
+
+- Respect `no-self-assign` rule unless self-assignment is to a top-level variable known to the compiler
+- Better handling of identifiers containing unicode characters
+
 # 2.3.0
 
 - Respect `quotes` rule unless inside a template expression which is inside an attribute or directive enclosed in quotes
