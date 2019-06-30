@@ -4,11 +4,10 @@ An ESLint plugin for Svelte v3 components.
 
 ## Features
 
-- Svelte compiler errors and warnings are exposed as ESLint messages
-- Variable references in your template or in store auto-subscriptions are handled when linting for unused variables
-- Self-assignments are always allowed, as this is an official pattern for manually triggering reactive updates
-- Unused labels called `$` are always allowed, as this is the syntax for reactive assignments
-- Linting of template expressions in addition to the script blocks
+- Compiler errors and warnings are displayed through ESLint
+- Script blocks and template expression tags are linted with existing ESLint rules
+- Svelte scope and stores are respected by unused variable and undefined variable rules
+- Idioms like self-assignment and `$:` labels are always allowed, regardless of configuration
 
 ## Requirements
 
@@ -20,7 +19,7 @@ An ESLint plugin for Svelte v3 components.
 Install the plugin package:
 
 ```
-npm install eslint-plugin-svelte3
+npm install --save-dev eslint-plugin-svelte3
 ```
 
 Then add `svelte3` to the `plugins` array in your `.eslintrc.*`, and set `svelte3/svelte3` as the `processor` for your Svelte components.
