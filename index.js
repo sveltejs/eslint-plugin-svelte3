@@ -2,7 +2,7 @@
 
 const { compile, walk } = require('svelte/compiler');
 const SCRIPT = 1, TEMPLATE_QUOTED = 2, TEMPLATE_UNQUOTED = 3;
-let compiler_options, messages, transformed_code, line_offsets, ignore_warnings, ignore_styles, translations;
+let compiler_options, messages, transformed_code, line_offsets, ignore_warnings, ignore_styles, translations, var_names;
 
 // get the total length, number of lines, and length of the last line of a string
 const get_offsets = str => {
@@ -177,6 +177,7 @@ const preprocess = text => {
 		return [];
 	}
 	const { ast, warnings, vars } = result;
+	var_names = new Set(vars.map(v => v.name));
 	const injected_vars = vars.filter(v => v.injected);
 	const referenced_vars = vars.filter(v => v.referenced);
 	const reassigned_vars = vars.filter(v => v.reassigned || v.export_name);
@@ -300,7 +301,7 @@ const is_valid_message = (message, type) => {
 		case 'indent': return type === SCRIPT;
 		case 'no-labels': return get_identifier(get_referenced_string(message)) !== '$';
 		case 'no-restricted-syntax': return message.nodeType !== 'LabeledStatement' || get_identifier(get_referenced_string(message)) !== '$';
-		case 'no-self-assign': return false;
+		case 'no-self-assign': return !var_names.has(get_identifier(get_referenced_string(message)));
 		case 'no-unused-labels': return get_referenced_string(message) !== '$';
 		case 'quotes': return type !== TEMPLATE_QUOTED;
 	}
