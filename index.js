@@ -1,7 +1,7 @@
 'use strict';
 
 const { compile, walk } = require('svelte/compiler');
-
+const SCRIPT = 1, TEMPLATE_QUOTED = 2, TEMPLATE_UNQUOTED = 3;
 let compiler_options, messages, transformed_code, line_offsets, ignore_warnings, ignore_styles, translations;
 
 // get the total length, number of lines, and length of the last line of a string
@@ -213,11 +213,11 @@ const preprocess = text => {
 
 	translations = new Map();
 	if (ast.module) {
-		get_translation(ast.module.content, 'module');
+		get_translation(ast.module.content, SCRIPT);
 	}
 	transformed_code += '\n';
 	if (ast.instance) {
-		get_translation(ast.instance.content, 'instance');
+		get_translation(ast.instance.content, SCRIPT);
 	}
 	transformed_code += '\n';
 
@@ -233,10 +233,13 @@ const preprocess = text => {
 
 	// add expressions from template to the constructed string
 	const nodes_with_contextual_scope = new WeakSet();
+	let in_quoted_attribute = false;
 	walk(ast.html, {
 		enter(node, parent, prop) {
 			if (prop === 'expression') {
 				return this.skip();
+			} else if (prop === 'attributes' && /['"]/.test(text[node.end - 1])) {
+				in_quoted_attribute = true;
 			}
 			contextual_names.length = 0;
 			find_contextual_names(node.context);
@@ -253,11 +256,14 @@ const preprocess = text => {
 			if (node.expression && typeof node.expression === 'object') {
 				// add the expression in question to the constructed string
 				transformed_code += '(\n';
-				get_translation(node.expression, 'template');
+				get_translation(node.expression, in_quoted_attribute ? TEMPLATE_QUOTED : TEMPLATE_UNQUOTED);
 				transformed_code += '\n);';
 			}
 		},
-		leave(node) {
+		leave(node, parent, prop) {
+			if (prop === 'attributes') {
+				in_quoted_attribute = false;
+			}
 			// close contextual scope
 			if (nodes_with_contextual_scope.has(node)) {
 				transformed_code += '}';
@@ -290,14 +296,13 @@ const get_identifier = str => (str && str.match(/^[a-zA-Z_$][0-9a-zA-Z_$]*/) || 
 // determine whether this message from ESLint is something we care about
 const is_valid_message = (message, type) => {
 	switch (message.ruleId) {
-		case 'indent': return type !== 'template';
 		case 'eol-last': return false;
+		case 'indent': return type === SCRIPT;
 		case 'no-labels': return get_identifier(get_referenced_string(message)) !== '$';
 		case 'no-restricted-syntax': return message.nodeType !== 'LabeledStatement' || get_identifier(get_referenced_string(message)) !== '$';
 		case 'no-self-assign': return false;
-		case 'no-unused-expressions': return type !== 'template';
 		case 'no-unused-labels': return get_referenced_string(message) !== '$';
-		case 'quotes': return type !== 'template';
+		case 'quotes': return type !== TEMPLATE_QUOTED;
 	}
 	return true;
 };
