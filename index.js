@@ -290,8 +290,8 @@ const get_referenced_string = message => {
 	}
 };
 
-// extract something that looks like an identifier (minus insane unicode stuff) from the beginning of a string
-const get_identifier = str => (str && str.match(/^[a-zA-Z_$][0-9a-zA-Z_$]*/) || [])[0];
+// extract something that looks like an identifier (minus unicode escape stuff) from the beginning of a string
+const get_identifier = str => (str && str.match(/^[^\s!"#%&\\'()*+,\-./:;<=>?@[\\\]^`{|}~]+/) || [])[0];
 
 // determine whether this message from ESLint is something we care about
 const is_valid_message = (message, type) => {
