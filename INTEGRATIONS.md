@@ -27,6 +27,8 @@ Then, you'll need to tell the ESLint extension to also lint files with language 
 }
 ```
 
+If you are using an extension that provides Svelte syntax highlighting, don't associate `*.svelte` files with the `html` language, and instead enable the ESLint extension on `"language": "svelte"`.
+
 Reload VS Code and give it a go!
 
 # Atom
