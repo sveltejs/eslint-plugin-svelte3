@@ -164,7 +164,7 @@ const preprocess = text => {
 	// get information about the component
 	let result;
 	try {
-		result = compile(text, compiler_options);
+		result = compile(text, { generate: false, ...compiler_options });
 	} catch ({ name, message, start, end }) {
 		// convert the error to a linting message, store it, and return
 		messages = [
@@ -243,7 +243,7 @@ const preprocess = text => {
 		enter(node, parent, prop) {
 			if (prop === 'expression') {
 				return this.skip();
-			} else if (prop === 'attributes' && /['"]/.test(text[node.end - 1])) {
+			} else if (prop === 'attributes' && '\'"'.includes(text[node.end - 1])) {
 				in_quoted_attribute = true;
 			}
 			contextual_names.length = 0;
@@ -299,7 +299,7 @@ const get_referenced_string = message => {
 const get_identifier = str => (str && str.match(/^[^\s!"#%&\\'()*+,\-./:;<=>?@[\\\]^`{|}~]+/) || [])[0];
 
 // determine whether this message from ESLint is something we care about
-const is_valid_message = (message, type) => {
+const is_valid_message = (message, { type }) => {
 	switch (message.ruleId) {
 		case 'eol-last': return false;
 		case 'indent': return type === SCRIPT;
@@ -319,7 +319,7 @@ const postprocess = ([raw_messages]) => {
 		for (let i = 0; i < raw_messages.length; i++) {
 			const message = raw_messages[i];
 			const translation = translations.get(message.line);
-			if (translation && is_valid_message(message, translation.type)) {
+			if (translation && is_valid_message(message, translation)) {
 				transform_message(message, translation);
 				messages.push(message);
 			}
@@ -328,7 +328,7 @@ const postprocess = ([raw_messages]) => {
 
 	// sort messages and return
 	const sorted_messages = messages.sort((a, b) => a.line - b.line || a.column - b.column);
-	compiler_options = messages = transformed_code = line_offsets = ignore_warnings = ignore_styles = translations = null;
+	compiler_options = messages = transformed_code = line_offsets = ignore_warnings = ignore_styles = translations = var_names = null;
 	return sorted_messages;
 };
 
@@ -348,7 +348,7 @@ Linter.prototype.verify = function(code, config, options) {
 	const settings = config && (typeof config.extractConfig === 'function' ? config.extractConfig(options.filename) : config).settings || {};
 	ignore_warnings = settings['svelte3/ignore-warnings'];
 	ignore_styles = settings['svelte3/ignore-styles'];
-	compiler_options = Object.assign({ generate: false }, settings['svelte3/compiler-options']);
+	compiler_options = settings['svelte3/compiler-options'];
 	// call original Linter#verify
 	return verify.call(this, code, config, options);
 };
