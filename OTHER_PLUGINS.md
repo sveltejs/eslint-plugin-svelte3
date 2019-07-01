@@ -16,7 +16,7 @@ These rules are known to not work correctly together with this plugin:
 - `import/no-duplicates`
 - `import/no-mutable-exports`
 
-If you're using them on other linted files, consider adding `overrides` for them for Svelte components (https://eslint.org/docs/user-guide/configuring#disabling-rules-only-for-a-group-of-files).
+If you're using them on other linted files, consider [adding `overrides` for them for Svelte components](https://eslint.org/docs/user-guide/configuring#disabling-rules-only-for-a-group-of-files).
 
 ## Others?
 
