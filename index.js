@@ -151,8 +151,12 @@ const preprocess = text => {
 		text = text.replace(/<style(\s[^]*?)?>[^]*?<\/style>/gi, (match, attributes = '') => {
 			const attrs = {};
 			attributes.split(/\s+/).filter(Boolean).forEach(attr => {
-				const [name, value] = attr.split('=');
-				attrs[name] = value ? /^['"]/.test(value) ? value.slice(1, -1) : value : true;
+				const p = attr.indexOf('=');
+				if (p === -1) {
+					attrs[attr] = true;
+				} else {
+					attrs[attr.slice(0, p)] = '\'"'.includes(attr[p + 1]) ? attr.slice(p + 2, -1) : attr.slice(p + 1);
+				}
 			});
 			return ignore_styles(attrs) ? match.replace(/\S/g, ' ') : match;
 		});
