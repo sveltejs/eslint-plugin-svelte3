@@ -13,6 +13,7 @@ const cli = new CLIEngine();
 for (const name of fs.readdirSync('samples')) {
 	if (name[0] !== '.') {
 		console.log(name);
+		process.platform === 'win32' && fs.writeFileSync(`samples/${name}/Input.svelte`, fs.readFileSync(`samples/${name}/Input.svelte`).toString().replace(/\r/g, ''));
 		const actual_messages = cli.executeOnFiles([`samples/${name}/Input.svelte`]).results[0].messages;
 		fs.writeFileSync(`samples/${name}/actual.json`, JSON.stringify(actual_messages, null, '\t'));
 		const expected_messages = JSON.parse(fs.readFileSync(`samples/${name}/expected.json`).toString());
