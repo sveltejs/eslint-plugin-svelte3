@@ -1,0 +1,9 @@
+[
+	{
+		"ruleId": "no-self-assign",
+		"line": 6,
+		"column": 9,
+		"endLine": 6,
+		"endColumn": 12
+	}
+]

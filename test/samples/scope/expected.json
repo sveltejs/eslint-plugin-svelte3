@@ -1,0 +1,44 @@
+[
+	{
+		"ruleId": "no-undef",
+		"line": 9,
+		"column": 2,
+		"endLine": 9,
+		"endColumn": 5
+	},
+	{
+		"ruleId": "no-undef",
+		"line": 14,
+		"column": 3,
+		"endLine": 14,
+		"endColumn": 7
+	},
+	{
+		"ruleId": "no-undef",
+		"line": 24,
+		"column": 3,
+		"endLine": 24,
+		"endColumn": 7
+	},
+	{
+		"ruleId": "no-undef",
+		"line": 29,
+		"column": 4,
+		"endLine": 29,
+		"endColumn": 9
+	},
+	{
+		"ruleId": "no-undef",
+		"line": 38,
+		"column": 3,
+		"endLine": 38,
+		"endColumn": 8
+	},
+	{
+		"ruleId": "no-undef",
+		"line": 40,
+		"column": 3,
+		"endLine": 40,
+		"endColumn": 8
+	}
+]

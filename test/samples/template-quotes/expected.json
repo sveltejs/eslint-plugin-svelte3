@@ -1,0 +1,24 @@
+[
+	{
+		"ruleId": "quotes",
+		"line": 2,
+		"column": 2,
+		"endLine": 2,
+		"endColumn": 7,
+		"fix": {
+			"range": [9, 14],
+			"text": "'bar'"
+		}
+	},
+	{
+		"ruleId": "quotes",
+		"line": 3,
+		"column": 13,
+		"endLine": 3,
+		"endColumn": 19,
+		"fix": {
+			"range": [28, 34],
+			"text": "'baz1'"
+		}
+	}
+]

@@ -1,0 +1,52 @@
+[
+	{
+		"ruleId": "no-restricted-syntax",
+		"line": 2,
+		"column": 2,
+		"endLine": 2,
+		"endColumn": 11
+	},
+	{
+		"ruleId": "no-labels",
+		"line": 2,
+		"column": 2,
+		"endLine": 2,
+		"endColumn": 11
+	},
+	{
+		"ruleId": "no-unused-labels",
+		"line": 2,
+		"column": 2,
+		"endLine": 2,
+		"endColumn": 5,
+		"fix": {
+			"range": [10, 15],
+			"text": ""
+		}
+	},
+	{
+		"ruleId": "no-restricted-syntax",
+		"line": 4,
+		"column": 2,
+		"endLine": 4,
+		"endColumn": 13
+	},
+	{
+		"ruleId": "no-labels",
+		"line": 4,
+		"column": 2,
+		"endLine": 4,
+		"endColumn": 13
+	},
+	{
+		"ruleId": "no-unused-labels",
+		"line": 4,
+		"column": 2,
+		"endLine": 4,
+		"endColumn": 6,
+		"fix": {
+			"range": [30, 36],
+			"text": ""
+		}
+	}
+]

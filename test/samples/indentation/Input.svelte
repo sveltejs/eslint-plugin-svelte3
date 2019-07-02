@@ -1,0 +1,4 @@
+<script>
+	foo
+		bar
+</script>

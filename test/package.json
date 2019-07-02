@@ -1,0 +1,6 @@
+{
+	"devDependencies": {
+		"eslint": "6",
+		"svelte": "3"
+	}
+}

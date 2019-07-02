@@ -1,0 +1,13 @@
+[
+	{
+		"ruleId": "indent",
+		"line": 3,
+		"column": 2,
+		"endLine": 3,
+		"endColumn": 3,
+		"fix": {
+			"range": [15, 16],
+			"text": ""
+		}
+	}
+]
