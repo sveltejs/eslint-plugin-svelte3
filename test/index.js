@@ -6,7 +6,7 @@ const { CLIEngine } = require('eslint');
 const assert = require('assert');
 const fs = require('fs');
 
-fs.copyFileSync('../index.js', 'node_modules/eslint-plugin-svelte3.js');
+fs.copyFileSync('../index.js', '../node_modules/eslint-plugin-svelte3.js');
 
 const cli = new CLIEngine();
 
