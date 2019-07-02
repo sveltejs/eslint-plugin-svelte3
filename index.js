@@ -250,9 +250,10 @@ const preprocess = text => {
 			find_contextual_names(node.context);
 			if (node.type === 'EachBlock') {
 				find_contextual_names(node.index);
-			} else if (node.type === 'AwaitBlock') {
-				find_contextual_names(node.value);
-				find_contextual_names(node.error);
+			} else if (node.type === 'ThenBlock') {
+				find_contextual_names(parent.value);
+			} else if (node.type === 'CatchBlock') {
+				find_contextual_names(parent.error);
 			} else if (node.type === 'Element' || node.type === 'InlineComponent') {
 				node.attributes.forEach(node => node.type === 'Let' && find_contextual_names(node.expression || node.name));
 			}
