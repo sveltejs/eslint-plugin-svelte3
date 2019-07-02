@@ -1,3 +1,8 @@
+# 2.5.0
+
+- Fix `let:` handling on regular elements as well
+- Separate `then` and `catch` scopes in `{#await}`
+
 # 2.4.2
 
 - Fix handling of the scope created by `let:` directives
