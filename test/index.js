@@ -10,9 +10,8 @@ fs.copyFileSync('../index.js', '../node_modules/eslint-plugin-svelte3.js');
 
 const cli = new CLIEngine();
 
-for (const dirent of fs.readdirSync('samples', { withFileTypes: true })) {
-	if (dirent.isDirectory()) {
-		const { name } = dirent;
+for (const name of fs.readdirSync('samples')) {
+	if (name[0] !== '.') {
 		console.log(name);
 		const actual_messages = cli.executeOnFiles([`samples/${name}/Input.svelte`]).results[0].messages;
 		fs.writeFileSync(`samples/${name}/actual.json`, JSON.stringify(actual_messages, null, '\t'));
