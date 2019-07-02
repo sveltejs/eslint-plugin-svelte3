@@ -1,3 +1,7 @@
+# 2.4.2
+
+- Fix handling of the scope created by `let:` directives
+
 # 2.4.1
 
 - Fix attribute parsing edge case in `svelte3/ignore-styles` callback
