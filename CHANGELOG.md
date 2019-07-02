@@ -1,3 +1,7 @@
+# 2.4.1
+
+- Fix attribute parsing edge case in `svelte3/ignore-styles` callback
+
 # 2.4.0
 
 - Respect `no-self-assign` rule unless self-assignment is to a top-level variable known to the compiler
