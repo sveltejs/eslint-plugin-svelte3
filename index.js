@@ -253,6 +253,8 @@ const preprocess = text => {
 			} else if (node.type === 'AwaitBlock') {
 				find_contextual_names(node.value);
 				find_contextual_names(node.error);
+			} else if (node.type === 'InlineComponent') {
+				node.attributes.forEach(node => node.type === 'Let' && find_contextual_names(node.expression || node.name));
 			}
 			if (contextual_names.length) {
 				nodes_with_contextual_scope.add(node);
