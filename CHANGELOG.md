@@ -1,3 +1,7 @@
+# 2.6.0
+
+- Add `svelte3/compiler` setting to allow overriding which instance of the Svelte compiler is used
+
 # 2.5.0
 
 - Fix `let:` handling on regular elements as well
