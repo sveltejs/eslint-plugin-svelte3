@@ -1,8 +1,8 @@
 'use strict';
 
-const { compile, walk } = require('svelte/compiler');
 const SCRIPT = 1, TEMPLATE_QUOTED = 2, TEMPLATE_UNQUOTED = 3;
-let compiler_options, messages, transformed_code, line_offsets, ignore_warnings, ignore_styles, translations, var_names;
+let compiler, default_compiler, compiler_options, messages, transformed_code, line_offsets, ignore_warnings, ignore_styles, translations, var_names;
+const get_compiler = () => compiler || default_compiler || (default_compiler = require('svelte/compiler'));
 
 // get the total length, number of lines, and length of the last line of a string
 const get_offsets = str => {
@@ -133,7 +133,7 @@ const find_contextual_names = node => {
 		if (typeof node === 'string') {
 			contextual_names.push(node);
 		} else if (typeof node === 'object') {
-			walk(node, {
+			get_compiler().walk(node, {
 				enter(node, parent, prop) {
 					if (node.name && prop !== 'key') {
 						contextual_names.push(node.name);
@@ -164,7 +164,7 @@ const preprocess = text => {
 	// get information about the component
 	let result;
 	try {
-		result = compile(text, { generate: false, ...compiler_options });
+		result = get_compiler().compile(text, { generate: false, ...compiler_options });
 	} catch ({ name, message, start, end }) {
 		// convert the error to a linting message, store it, and return
 		messages = [
@@ -239,7 +239,7 @@ const preprocess = text => {
 	// add expressions from template to the constructed string
 	const nodes_with_contextual_scope = new WeakSet();
 	let in_quoted_attribute = false;
-	walk(ast.html, {
+	get_compiler().walk(ast.html, {
 		enter(node, parent, prop) {
 			if (prop === 'expression') {
 				return this.skip();
@@ -349,6 +349,7 @@ const { verify } = Linter.prototype;
 Linter.prototype.verify = function(code, config, options) {
 	// fetch settings
 	const settings = config && (typeof config.extractConfig === 'function' ? config.extractConfig(options.filename) : config).settings || {};
+	compiler = settings['svelte3/compiler'];
 	ignore_warnings = settings['svelte3/ignore-warnings'];
 	ignore_styles = settings['svelte3/ignore-styles'];
 	compiler_options = settings['svelte3/compiler-options'];
