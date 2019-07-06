@@ -41,7 +41,7 @@ module.exports = {
   ],
   overrides: [
     {
-      files: '*.svelte',
+      files: ['*.svelte'],
       processor: 'svelte3/svelte3'
     }
   ],
@@ -54,7 +54,7 @@ module.exports = {
 };
 ```
 
-This plugin needs to be able to `require('svelte/compiler')`. If ESLint, this plugin, and Svelte are all installed locally in your project, this should not be a problem.
+By default, this plugin needs to be able to `require('svelte/compiler')`. If ESLint, this plugin, and Svelte are all installed locally in your project, this should not be a problem.
 
 ## Interactions with other plugins
 
@@ -68,7 +68,7 @@ Passing a function as a value for a setting (which some of the settings below re
 
 ### `svelte3/ignore-warnings`
 
-This can be a function that indicates whether to ignore a warning in the linting. The function will be passed a warning object and should return a boolean.
+This setting can be given a function that indicates whether to ignore a warning in the linting. The function will be passed a warning object and should return a boolean.
 
 The default is to not ignore any warnings.
 
@@ -76,7 +76,7 @@ The default is to not ignore any warnings.
 
 Most compiler options do not affect the validity of compiled components, but a couple of them can. If you are compiling to custom elements, or for some other reason need to control how the plugin compiles the components it's linting, you can use this setting.
 
-This can be an object of compiler options.
+This setting can be given an object of compiler options.
 
 The default is to compile with `{ generate: false }`.
 
@@ -84,9 +84,17 @@ The default is to compile with `{ generate: false }`.
 
 If you're using some sort of preprocessor on the component styles, then it's likely that when this plugin calls the Svelte compiler on your component, it will throw an exception. In a perfect world, this plugin would be able to apply the preprocessor to the component and then use source maps to translate any warnings back to the original source. In the current reality, however, you can instead simply disregard styles written in anything other than standard CSS. You won't get warnings about the styles from the linter, but your application will still use them (of course) and compiler warnings will still appear in your build logs.
 
-This can be a function that accepts an object of attributes on a `<style>` tag (like that passed to a Svelte preprocessor) and returns whether to ignore the style block for the purposes of linting.
+This setting can be given a function that accepts an object of attributes on a `<style>` tag (like that passed to a Svelte preprocessor) and returns whether to ignore the style block for the purposes of linting.
 
 The default is to not ignore any styles.
+
+### `svelte3/compiler`
+
+In some esoteric setups, this plugin might not be able to find the correct instance of the Svelte compiler to use.
+
+This setting can be given the result of `require('.../path/to/svelte/compiler')` to indicate which instance should be used in linting the components.
+
+The default is `require('svelte/compiler')` from wherever the plugin is installed to.
 
 ## Using the CLI
 
