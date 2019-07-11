@@ -9,5 +9,10 @@ module.exports = {
 		browser: true,
 	},
 	plugins: ['svelte3'],
-	processor: 'svelte3/svelte3',
+	overrides: [
+		{
+			files: ['*.svelte'],
+			processor: 'svelte3/svelte3',
+		},
+	],
 };
