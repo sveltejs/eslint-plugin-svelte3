@@ -41,7 +41,7 @@ module.exports = {
   ],
   overrides: [
     {
-      files: ['*.svelte'],
+      files: ['**/*.svelte'],
       processor: 'svelte3/svelte3'
     }
   ],
@@ -95,6 +95,10 @@ In some esoteric setups, this plugin might not be able to find the correct insta
 This setting can be given the result of `require('.../path/to/svelte/compiler')` to indicate which instance should be used in linting the components.
 
 The default is `require('svelte/compiler')` from wherever the plugin is installed to.
+
+## Named code blocks
+
+When an [ESLint processor](https://eslint.org/docs/user-guide/configuring#specifying-processor) processes a file, it is able to output named code blocks, which can each have their own linting configuration. In this plugin, the code extracted from `<script context='module>` tag, the `<script>` tag, and the template are respectively given the block names `module.js`, `instance.js`, and `template.js`. This means that you can define an override targeting `**/*.svelte/*_template.js` for example, and that configuration will only apply to linting done on the templates in Svelte components.
 
 ## Using the CLI
 
