@@ -1,3 +1,7 @@
+# 2.7.0
+
+- Expose the parts of each linted component as separate named code blocks `module.js`, `instance.js`, and `template.js`
+
 # 2.6.0
 
 - Add `svelte3/compiler` setting to allow overriding which instance of the Svelte compiler is used
