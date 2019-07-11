@@ -1,8 +1,8 @@
 'use strict';
 
-const SCRIPT = 1, TEMPLATE_QUOTED = 2, TEMPLATE_UNQUOTED = 3;
-let compiler, default_compiler, compiler_options, messages, transformed_code, line_offsets, ignore_warnings, ignore_styles, translations, var_names;
-const get_compiler = () => compiler || default_compiler || (default_compiler = require('svelte/compiler'));
+const blocks = new Map();
+const new_block = () => ({ transformed_code: '', line_offsets: null, translations: new Map() });
+let custom_compiler, default_compiler, compiler_options, messages, ignore_warnings, ignore_styles, var_names;
 
 // get the total length, number of lines, and length of the last line of a string
 const get_offsets = str => {
@@ -53,7 +53,7 @@ const dedent_code = str => {
 };
 
 // transform a linting message according to the module/instance script info we've gathered
-const transform_message = (message, { unoffsets, dedent, offsets, range }) => {
+const transform_message = ({ transformed_code }, { unoffsets, dedent, offsets, range }, message) => {
 	// strip out the start and end of the fix if they are not actually changes
 	if (message.fix) {
 		while (message.fix.range[0] < message.fix.range[1] && transformed_code[message.fix.range[0]] === message.fix.text[0]) {
@@ -126,14 +126,30 @@ const transform_message = (message, { unoffsets, dedent, offsets, range }) => {
 	}
 };
 
+// get translation info and include the processed scripts in this block's transformed_code
+const get_translation = (text, block, node, options = {}) => {
+	block.transformed_code += '\n';
+	const translation = { options, unoffsets: get_offsets(block.transformed_code) };
+	translation.range = [node.start, node.end];
+	const { dedented, offsets } = dedent_code(text.slice(node.start, node.end));
+	block.transformed_code += dedented;
+	translation.offsets = get_offsets(text.slice(0, node.start));
+	translation.dedent = offsets;
+	const end = get_offsets(block.transformed_code).lines;
+	for (let i = translation.unoffsets.lines; i <= end; i++) {
+		block.translations.set(i, translation);
+	}
+	block.transformed_code += '\n';
+};
+
 // find the contextual name or names described by a particular node in the AST
 const contextual_names = [];
-const find_contextual_names = node => {
+const find_contextual_names = (compiler, node) => {
 	if (node) {
 		if (typeof node === 'string') {
 			contextual_names.push(node);
 		} else if (typeof node === 'object') {
-			get_compiler().walk(node, {
+			compiler.walk(node, {
 				enter(node, parent, prop) {
 					if (node.name && prop !== 'key') {
 						contextual_names.push(node.name);
@@ -146,6 +162,7 @@ const find_contextual_names = node => {
 
 // extract scripts to lint from component definition
 const preprocess = text => {
+	const compiler = custom_compiler || default_compiler || (default_compiler = require('svelte/compiler'));
 	if (ignore_styles) {
 		// wipe the appropriate <style> tags in the file
 		text = text.replace(/<style(\s[^]*?)?>[^]*?<\/style>/gi, (match, attributes = '') => {
@@ -164,7 +181,7 @@ const preprocess = text => {
 	// get information about the component
 	let result;
 	try {
-		result = get_compiler().compile(text, { generate: false, ...compiler_options });
+		result = compiler.compile(text, { generate: false, ...compiler_options });
 	} catch ({ name, message, start, end }) {
 		// convert the error to a linting message, store it, and return
 		messages = [
@@ -181,10 +198,8 @@ const preprocess = text => {
 		return [];
 	}
 	const { ast, warnings, vars } = result;
+	const references_and_reassignments = `{${vars.filter(v => v.referenced).map(v => v.name)};${vars.filter(v => v.reassigned || v.export_name).map(v => v.name + '=0')}}`;
 	var_names = new Set(vars.map(v => v.name));
-	const injected_vars = vars.filter(v => v.injected);
-	const referenced_vars = vars.filter(v => v.referenced);
-	const reassigned_vars = vars.filter(v => v.reassigned || v.export_name);
 
 	// convert warnings to linting messages
 	messages = (ignore_warnings ? warnings.filter(warning => !ignore_warnings(warning)) : warnings).map(({ code, message, start, end }) => ({
@@ -197,133 +212,131 @@ const preprocess = text => {
 		endColumn: end && end.column + 1,
 	}));
 
-	// build a string that we can send along to ESLint to get the remaining messages
+	// build strings that we can send along to ESLint to get the remaining messages
 
-	// include declarations of all injected identifiers
-	transformed_code = injected_vars.length ? `let ${injected_vars.map(v => v.name).join(',')};\n` : '';
-
-	// get translation info and include the processed scripts in transformed_code
-	const get_translation = (node, type) => {
-		const translation = { type, unoffsets: get_offsets(transformed_code) };
-		translation.range = [node.start, node.end];
-		const { dedented, offsets } = dedent_code(text.slice(node.start, node.end));
-		transformed_code += dedented;
-		translation.offsets = get_offsets(text.slice(0, node.start));
-		translation.dedent = offsets;
-		const end = get_offsets(transformed_code).lines;
-		for (let i = translation.unoffsets.lines; i <= end; i++) {
-			translations.set(i, translation);
-		}
-	};
-
-	translations = new Map();
 	if (ast.module) {
-		get_translation(ast.module.content, SCRIPT);
+		// block for <script context='module'>
+		const block = new_block();
+		blocks.set('module.js', block);
+
+		get_translation(text, block, ast.module.content);
+
+		if (ast.instance) {
+			block.transformed_code += text.slice(ast.instance.content.start, ast.instance.content.end);
+		}
+
+		block.transformed_code += references_and_reassignments;
 	}
-	transformed_code += '\n';
+
 	if (ast.instance) {
-		get_translation(ast.instance.content, SCRIPT);
-	}
-	transformed_code += '\n';
+		// block for <script context='instance'>
+		const block = new_block();
+		blocks.set('instance.js', block);
 
-	// no-unused-vars: create references to all identifiers referred to by the template
-	if (referenced_vars.length) {
-		transformed_code += `{${referenced_vars.map(v => v.name).join(';')}}\n`;
-	}
+		block.transformed_code = vars.filter(v => v.injected || v.module).map(v => `let ${v.name};`).join('');
 
-	// prefer-const: create reassignments for all vars reassigned in component and for all exports
-	if (reassigned_vars.length) {
-		transformed_code += `{${reassigned_vars.map(v => v.name + '=0').join(';')}}\n`;
+		get_translation(text, block, ast.instance.content);
+
+		block.transformed_code += references_and_reassignments;
 	}
 
-	// add expressions from template to the constructed string
-	const nodes_with_contextual_scope = new WeakSet();
-	let in_quoted_attribute = false;
-	get_compiler().walk(ast.html, {
-		enter(node, parent, prop) {
-			if (prop === 'expression') {
-				return this.skip();
-			} else if (prop === 'attributes' && '\'"'.includes(text[node.end - 1])) {
-				in_quoted_attribute = true;
-			}
-			contextual_names.length = 0;
-			find_contextual_names(node.context);
-			if (node.type === 'EachBlock') {
-				find_contextual_names(node.index);
-			} else if (node.type === 'ThenBlock') {
-				find_contextual_names(parent.value);
-			} else if (node.type === 'CatchBlock') {
-				find_contextual_names(parent.error);
-			} else if (node.type === 'Element' || node.type === 'InlineComponent') {
-				node.attributes.forEach(node => node.type === 'Let' && find_contextual_names(node.expression || node.name));
-			}
-			if (contextual_names.length) {
-				nodes_with_contextual_scope.add(node);
-				transformed_code += `{let ${contextual_names.map(name => `${name}=0`).join(',')};`;
-			}
-			if (node.expression && typeof node.expression === 'object') {
-				// add the expression in question to the constructed string
-				transformed_code += '(\n';
-				get_translation(node.expression, in_quoted_attribute ? TEMPLATE_QUOTED : TEMPLATE_UNQUOTED);
-				transformed_code += '\n);';
-			}
-		},
-		leave(node, parent, prop) {
-			if (prop === 'attributes') {
-				in_quoted_attribute = false;
-			}
-			// close contextual scope
-			if (nodes_with_contextual_scope.has(node)) {
-				transformed_code += '}';
-			}
-		},
-	});
+	if (ast.html) {
+		// block for template
+		const block = new_block();
+		blocks.set('template.js', block);
+
+		block.transformed_code = vars.map(v => `let ${v.name};`).join('');
+
+		const nodes_with_contextual_scope = new WeakSet();
+		let in_quoted_attribute = false;
+		compiler.walk(ast.html, {
+			enter(node, parent, prop) {
+				if (prop === 'expression') {
+					return this.skip();
+				} else if (prop === 'attributes' && '\'"'.includes(text[node.end - 1])) {
+					in_quoted_attribute = true;
+				}
+				contextual_names.length = 0;
+				find_contextual_names(compiler, node.context);
+				if (node.type === 'EachBlock') {
+					find_contextual_names(compiler, node.index);
+				} else if (node.type === 'ThenBlock') {
+					find_contextual_names(compiler, parent.value);
+				} else if (node.type === 'CatchBlock') {
+					find_contextual_names(compiler, parent.error);
+				} else if (node.type === 'Element' || node.type === 'InlineComponent') {
+					node.attributes.forEach(node => node.type === 'Let' && find_contextual_names(compiler, node.expression || node.name));
+				}
+				if (contextual_names.length) {
+					nodes_with_contextual_scope.add(node);
+					block.transformed_code += `{let ${contextual_names.map(name => `${name}=0`).join(',')};`;
+				}
+				if (node.expression && typeof node.expression === 'object') {
+					// add the expression in question to the constructed string
+					block.transformed_code += '(';
+					get_translation(text, block, node.expression, { template: true, in_quoted_attribute });
+					block.transformed_code += ');';
+				}
+			},
+			leave(node, parent, prop) {
+				if (prop === 'attributes') {
+					in_quoted_attribute = false;
+				}
+				// close contextual scope
+				if (nodes_with_contextual_scope.has(node)) {
+					block.transformed_code += '}';
+				}
+			},
+		});
+	}
 
 	// return processed string
-	return [transformed_code];
+	return [...blocks].map(([filename, { transformed_code: text }]) => ({ text, filename }));
 };
 
 // extract the string referenced by a message
-const get_referenced_string = message => {
+const get_referenced_string = (block, message) => {
 	if (message.line && message.column && message.endLine && message.endColumn) {
-		if (!line_offsets) {
-			line_offsets = [-1, -1];
-			for (let i = 0; i < transformed_code.length; i++) {
-				if (transformed_code[i] === '\n') {
-					line_offsets.push(i);
+		if (!block.line_offsets) {
+			block.line_offsets = [-1, -1];
+			for (let i = 0; i < block.transformed_code.length; i++) {
+				if (block.transformed_code[i] === '\n') {
+					block.line_offsets.push(i);
 				}
 			}
 		}
-		return transformed_code.slice(line_offsets[message.line] + message.column, line_offsets[message.endLine] + message.endColumn);
+		return block.transformed_code.slice(block.line_offsets[message.line] + message.column, block.line_offsets[message.endLine] + message.endColumn);
 	}
 };
 
-// extract something that looks like an identifier (minus unicode escape stuff) from the beginning of a string
+// extract something that looks like an identifier (not supporting unicode escape stuff) from the beginning of a string
 const get_identifier = str => (str && str.match(/^[^\s!"#%&\\'()*+,\-./:;<=>?@[\\\]^`{|}~]+/) || [])[0];
 
 // determine whether this message from ESLint is something we care about
-const is_valid_message = (message, { type }) => {
+const is_valid_message = (block, message, { options }) => {
 	switch (message.ruleId) {
 		case 'eol-last': return false;
-		case 'indent': return type === SCRIPT;
-		case 'no-labels': return get_identifier(get_referenced_string(message)) !== '$';
-		case 'no-restricted-syntax': return message.nodeType !== 'LabeledStatement' || get_identifier(get_referenced_string(message)) !== '$';
-		case 'no-self-assign': return !var_names.has(get_identifier(get_referenced_string(message)));
-		case 'no-unused-labels': return get_referenced_string(message) !== '$';
-		case 'quotes': return type !== TEMPLATE_QUOTED;
+		case 'indent': return !options.template;
+		case 'no-labels': return get_identifier(get_referenced_string(block, message)) !== '$';
+		case 'no-restricted-syntax': return message.nodeType !== 'LabeledStatement' || get_identifier(get_referenced_string(block, message)) !== '$';
+		case 'no-self-assign': return !var_names.has(get_identifier(get_referenced_string(block, message)));
+		case 'no-unused-labels': return get_referenced_string(block, message) !== '$';
+		case 'quotes': return !options.in_quoted_attribute;
 	}
 	return true;
 };
 
 // transform linting messages and combine with compiler warnings
-const postprocess = ([raw_messages]) => {
+const postprocess = blocks_messages => {
 	// filter messages and fix their offsets
-	if (raw_messages) {
-		for (let i = 0; i < raw_messages.length; i++) {
-			const message = raw_messages[i];
-			const translation = translations.get(message.line);
-			if (translation && is_valid_message(message, translation)) {
-				transform_message(message, translation);
+	const blocks_array = [...blocks.values()];
+	for (let i = 0; i < blocks_messages.length; i++) {
+		const block = blocks_array[i];
+		for (let j = 0; j < blocks_messages[i].length; j++) {
+			const message = blocks_messages[i][j];
+			const translation = block.translations.get(message.line);
+			if (translation && is_valid_message(block, message, translation)) {
+				transform_message(block, translation, message);
 				messages.push(message);
 			}
 		}
@@ -331,7 +344,8 @@ const postprocess = ([raw_messages]) => {
 
 	// sort messages and return
 	const sorted_messages = messages.sort((a, b) => a.line - b.line || a.column - b.column);
-	compiler_options = messages = transformed_code = line_offsets = ignore_warnings = ignore_styles = translations = var_names = null;
+	blocks.clear();
+	custom_compiler = ignore_warnings = ignore_styles = compiler_options = messages = var_names = null;
 	return sorted_messages;
 };
 
@@ -349,7 +363,7 @@ const { verify } = Linter.prototype;
 Linter.prototype.verify = function(code, config, options) {
 	// fetch settings
 	const settings = config && (typeof config.extractConfig === 'function' ? config.extractConfig(options.filename) : config).settings || {};
-	compiler = settings['svelte3/compiler'];
+	custom_compiler = settings['svelte3/compiler'];
 	ignore_warnings = settings['svelte3/ignore-warnings'];
 	ignore_styles = settings['svelte3/ignore-styles'];
 	compiler_options = settings['svelte3/compiler-options'];
