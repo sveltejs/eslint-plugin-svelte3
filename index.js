@@ -2,7 +2,7 @@
 
 const blocks = new Map();
 const new_block = () => ({ transformed_code: '', line_offsets: null, translations: new Map() });
-let custom_compiler, default_compiler, compiler_options, messages, ignore_warnings, ignore_styles, var_names;
+let custom_compiler, default_compiler, compiler_options, messages, ignore_warnings, ignore_styles, named_blocks, var_names;
 
 // get the total length, number of lines, and length of the last line of a string
 const get_offsets = str => {
@@ -291,7 +291,7 @@ const preprocess = text => {
 	}
 
 	// return processed string
-	return [...blocks].map(([filename, { transformed_code: text }]) => ({ text, filename }));
+	return [...blocks].map(([filename, { transformed_code: text }]) => named_blocks ? { text, filename } : text);
 };
 
 // extract the string referenced by a message
@@ -367,6 +367,7 @@ Linter.prototype.verify = function(code, config, options) {
 	ignore_warnings = settings['svelte3/ignore-warnings'];
 	ignore_styles = settings['svelte3/ignore-styles'];
 	compiler_options = settings['svelte3/compiler-options'];
+	named_blocks = settings['svelte3/named-blocks'];
 	// call original Linter#verify
 	return verify.call(this, code, config, options);
 };
