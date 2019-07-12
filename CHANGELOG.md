@@ -1,3 +1,7 @@
+# 2.7.2
+
+- Fix regression when using `linebreak-style` with Windows line endings
+
 # 2.7.1
 
 - Named code blocks were in fact a breaking change, sorry!
