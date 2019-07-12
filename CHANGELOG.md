@@ -1,3 +1,8 @@
+# 2.7.1
+
+- Named code blocks were in fact a breaking change, sorry!
+- They're now disabled by default, but can be enabled with `svelte3/named-blocks`
+
 # 2.7.0
 
 - Expose the parts of each linted component as separate named code blocks `module.js`, `instance.js`, and `template.js`
