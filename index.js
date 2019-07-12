@@ -135,8 +135,8 @@ const get_translation = (text, block, node, options = {}) => {
 	block.transformed_code += dedented;
 	translation.offsets = get_offsets(text.slice(0, node.start));
 	translation.dedent = offsets;
-	const end = get_offsets(block.transformed_code).lines;
-	for (let i = translation.unoffsets.lines; i <= end; i++) {
+	translation.end = get_offsets(block.transformed_code).lines;
+	for (let i = translation.unoffsets.lines; i <= translation.end; i++) {
 		block.translations.set(i, translation);
 	}
 	block.transformed_code += '\n';
@@ -313,15 +313,16 @@ const get_referenced_string = (block, message) => {
 const get_identifier = str => (str && str.match(/^[^\s!"#%&\\'()*+,\-./:;<=>?@[\\\]^`{|}~]+/) || [])[0];
 
 // determine whether this message from ESLint is something we care about
-const is_valid_message = (block, message, { options }) => {
+const is_valid_message = (block, message, translation) => {
 	switch (message.ruleId) {
 		case 'eol-last': return false;
-		case 'indent': return !options.template;
+		case 'indent': return !translation.options.template;
+		case 'linebreak-style': return message.line !== translation.end;
 		case 'no-labels': return get_identifier(get_referenced_string(block, message)) !== '$';
 		case 'no-restricted-syntax': return message.nodeType !== 'LabeledStatement' || get_identifier(get_referenced_string(block, message)) !== '$';
 		case 'no-self-assign': return !var_names.has(get_identifier(get_referenced_string(block, message)));
 		case 'no-unused-labels': return get_referenced_string(block, message) !== '$';
-		case 'quotes': return !options.in_quoted_attribute;
+		case 'quotes': return !translation.options.in_quoted_attribute;
 	}
 	return true;
 };
