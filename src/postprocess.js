@@ -1,4 +1,5 @@
 import { state, reset } from './state.js';
+import { get_line_offsets } from './utils.js';
 
 // transform a linting message according to the module/instance script info we've gathered
 const transform_message = ({ transformed_code }, { unoffsets, dedent, offsets, range }, message) => {
@@ -78,14 +79,9 @@ const transform_message = ({ transformed_code }, { unoffsets, dedent, offsets, r
 const get_referenced_string = (block, message) => {
 	if (message.line && message.column && message.endLine && message.endColumn) {
 		if (!block.line_offsets) {
-			block.line_offsets = [-1, -1];
-			for (let i = 0; i < block.transformed_code.length; i++) {
-				if (block.transformed_code[i] === '\n') {
-					block.line_offsets.push(i);
-				}
-			}
+			block.line_offsets = get_line_offsets(block.transformed_code);
 		}
-		return block.transformed_code.slice(block.line_offsets[message.line] + message.column, block.line_offsets[message.endLine] + message.endColumn);
+		return block.transformed_code.slice(block.line_offsets[message.line - 1] + message.column, block.line_offsets[message.endLine - 1] + message.endColumn);
 	}
 };
 
