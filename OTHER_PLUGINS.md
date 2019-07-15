@@ -15,6 +15,7 @@ These rules are known to not work correctly together with this plugin:
 - `import/first`
 - `import/no-duplicates`
 - `import/no-mutable-exports`
+- `import/no-unresolved` when using `svelte3/named-blocks`, pending [this issue](https://github.com/benmosher/eslint-plugin-import/issues/1415)
 
 If you're using them on other linted files, consider [adding `overrides` for them for Svelte components](https://eslint.org/docs/user-guide/configuring#disabling-rules-only-for-a-group-of-files).
 
