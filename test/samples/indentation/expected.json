@@ -1,5 +1,14 @@
 [
 	{
+		"ruleId": "semi",
+		"line": 2,
+		"column": 5,
+		"fix": {
+			"range": [13, 13],
+			"text": ";"
+		}
+	},
+	{
 		"ruleId": "indent",
 		"line": 3,
 		"column": 2,
@@ -8,6 +17,15 @@
 		"fix": {
 			"range": [15, 16],
 			"text": ""
+		}
+	},
+	{
+		"ruleId": "semi",
+		"line": 3,
+		"column": 6,
+		"fix": {
+			"range": [19, 19],
+			"text": ";"
 		}
 	}
 ]

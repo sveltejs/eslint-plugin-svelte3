@@ -40,6 +40,9 @@ export const dedent_code = str => {
 				offsets.push(0);
 			}
 			total_offsets.push(total_offsets[total_offsets.length - 1] + offsets[offsets.length - 1]);
+			if (i >= str.length) {
+				break;
+			}
 		}
 		dedented += str[i];
 	}

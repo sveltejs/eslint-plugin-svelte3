@@ -1,4 +1,4 @@
 <script>
 	foo
 		bar
-</script>
+	</script>
