@@ -1,3 +1,7 @@
+# 2.7.3
+
+- Fix mishandling of blocks whose last line consists of only the expected indentation
+
 # 2.7.2
 
 - Fix regression when using `linebreak-style` with Windows line endings
