@@ -19,6 +19,10 @@ These rules are known to not work correctly together with this plugin:
 
 If you're using them on other linted files, consider [adding `overrides` for them for Svelte components](https://eslint.org/docs/user-guide/configuring#disabling-rules-only-for-a-group-of-files).
 
+## `eslint-config-standard`
+
+This uses `eslint-plugin-import` by default, so the above applies.
+
 ## Others?
 
 If you've found another mainstream ESLint plugin that doesn't play nicely with this one, or has certain rules that don't work properly, please let us know!
