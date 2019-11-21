@@ -56,18 +56,6 @@ You'll need the [SublimeLinter](https://github.com/SublimeLinter/SublimeLinter) 
 
 Unless you're using `.html` for your Svelte components, you'll need to configure Sublime to associate the appropriate file extension with the `text.html` syntax. Open any Svelte component, and go to **View > Syntax > Open all with current extension as... > HTML**.
 
-Then, you'll need to tell SublimeLinter-eslint to lint entire files with the `text.html` syntax, and not just the contents of their `<script>` tags (which is the default). In your SublimeLinter configuration, you'll need to add `text.html` to `linters`.`eslint`.`selector`. If you're starting with the default values, this would mean:
-
-```json
-{
-  "linters": {
-    "eslint": {
-      "selector": "source.js - meta.attribute-with-value, text.html"
-    }
-  }
-}
-```
-
 Reload Sublime and give it a go!
 
 # Vim
