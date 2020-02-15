@@ -12,22 +12,19 @@ Unless you're using `.html` for your Svelte components, you'll need to configure
 }
 ```
 
-Then, you'll need to tell the ESLint extension to also lint files with language `html` and to enable autofixing where possible. If you haven't adjusted the `eslint.validate` setting, it defaults to `[ "javascript", "javascriptreact" ]`, so put this in your `settings.json`:
+Then, you'll need to tell the ESLint extension to also lint files with language `html`. If you haven't adjusted the `eslint.validate` setting, it defaults to `[ "javascript", "javascriptreact" ]`, so put this in your `settings.json`:
 
 ```json
 {
   "eslint.validate": [
     "javascript",
     "javascriptreact",
-    {
-      "language": "html",
-      "autoFix": true
-    }
+    "html"
   ]
 }
 ```
 
-If you are using an extension that provides Svelte syntax highlighting, don't associate `*.svelte` files with the `html` language, and instead enable the ESLint extension on `"language": "svelte"`.
+If you are using an extension that provides Svelte syntax highlighting, don't associate `*.svelte` files with the `html` language, and instead enable the ESLint extension on `"svelte"`.
 
 Reload VS Code and give it a go!
 
