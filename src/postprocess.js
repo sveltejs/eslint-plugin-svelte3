@@ -1,5 +1,31 @@
 import { state, reset } from './state.js';
 import { get_line_offsets } from './utils.js';
+import { find_last_index, find_last } from './block.js'
+
+export const unmap = message => {
+	for (let j = 0; j < 2; j++) {
+		if (message[j ? 'endLine' : 'line']) {
+			const mapping = find_last(state.mappings[message[j ? 'endLine' : 'line'] - 1], ([column]) => column < message[j ? 'endColumn' : 'column']);
+			if (!mapping || mapping[1] !== 0) {
+				return false;
+			}
+			message[j ? 'endLine' : 'line'] = mapping[2] + 1;
+			message[j ? 'endColumn' : 'column'] += mapping[3] - mapping[0];
+		}
+	}
+	if (message.fix) {
+		for (let j = 0; j < 2; j++) {
+			const line = find_last_index(state.post_line_offsets, offset => offset < message.fix.range[j]);
+			const line_offset = state.post_line_offsets[line];
+			const mapping = find_last(state.mappings[line], ([column]) => column < message.fix.range[j] - line_offset);
+			if (!mapping || mapping[1] !== 0) {
+				return false;
+			}
+			message.fix.range[j] += mapping[3] - mapping[0] + state.pre_line_offsets[mapping[2]] - line_offset;
+		}
+	}
+	return true;
+};
 
 // transform a linting message according to the module/instance script info we've gathered
 const transform_message = ({ transformed_code }, { unoffsets, dedent, offsets, range }, message) => {
@@ -117,6 +143,9 @@ export const postprocess = blocks_messages => {
 				state.messages.push(message);
 			}
 		}
+	}
+	if (state.mappings) {
+		state.messages = state.messages.filter(unmap);
 	}
 
 	// sort messages and return

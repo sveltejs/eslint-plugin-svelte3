@@ -104,6 +104,13 @@ This setting can be given the result of `require('.../path/to/svelte/compiler')`
 
 The default is `require('svelte/compiler')` from wherever the plugin is installed to.
 
+### `svelte3/preprocess`
+
+You can use a preprocessor function to return custom AST info according to the original code.
+
+For now this only supports `module` and `instance` scripts.
+
+
 ## Using the CLI
 
 It's probably a good idea to make sure you can lint from the command line before proceeding with configuring your editor.
