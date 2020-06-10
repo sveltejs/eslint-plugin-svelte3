@@ -1,5 +1,14 @@
 import { get_offsets, dedent_code } from './utils.js';
 
+// find the index of the last element of an array matching a condition
+export const find_last_index = (array, cond) => {
+	const idx = array.findIndex(item => !cond(item));
+	return idx === -1 ? array.length - 1 : idx - 1;
+};
+
+// find the last element of an array matching a condition
+export const find_last = (array, cond) => array[find_last_index(array, cond)];
+
 // return a new block
 export const new_block = () => ({ transformed_code: '', line_offsets: null, translations: new Map() });
 
