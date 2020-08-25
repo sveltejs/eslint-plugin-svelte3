@@ -174,7 +174,7 @@ export const preprocess = (text, filename) => {
 				if (module.start > html.start) {
 					modulePreOffset += markupDiff;
 				}
-				if (module.start > css.start) {
+				if (css && module.start > css.start) {
 					modulePreOffset += styleDiff;
 				}
 				if (instance && module.start > instance.start) {
@@ -190,7 +190,7 @@ export const preprocess = (text, filename) => {
 				if (instance.start > html.start) {
 					instancePreOffset += markupDiff;
 				}
-				if (instance.start > css.start) {
+				if (css && instance.start > css.start) {
 					instancePreOffset += styleDiff;
 				}
 				if (module && instance.start > module.start) {
