@@ -200,7 +200,7 @@ export const preprocess = (text, filename) => {
 				instancePostOffset = instancePreOffset + instanceDiff;
 			}
 
-			if (module) {
+			if (module && processedModule) {
 				module.content.body = processedModule.ast.body;
 
 				module.start += modulePreOffset;
@@ -210,7 +210,7 @@ export const preprocess = (text, filename) => {
 				module.content.end += modulePostOffset;
 			}
 
-			if (instance) {
+			if (instance && processedInstance) {
 				instance.content.body = processedInstance.ast.body;
 
 				instance.start += instancePreOffset;
