@@ -34,8 +34,8 @@
 		"test": "npm run build && node test"
 	},
 	"devDependencies": {
-		"eslint": ">=6.0.0",
+		"eslint": "^7.7.0",
 		"rollup": "^2",
-		"svelte": "^3.2.0"
+		"svelte": "^3.24.1"
 	}
 }
