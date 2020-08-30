@@ -130,6 +130,10 @@ export const preprocess = (text, filename) => {
 	let processedMarkup;
 	let moduleExt = 'js';
 	let instanceExt = 'js';
+	let moduleEndLine;
+	let processedModuleLineOffset;
+	let instanceEndLine;
+	let processedInstanceLineOffset;
 	try {
 		// run preprocessor if present
 		if (processor_options.svelte_preprocess) {
@@ -142,8 +146,6 @@ export const preprocess = (text, filename) => {
 					state.mappings = decode(result.mappings);
 				}
 
-				processedMarkup = result.markup;
-
 				if (result.module) {
 					processedModule = result.module;
 					moduleExt = result.module.ext;
@@ -155,6 +157,8 @@ export const preprocess = (text, filename) => {
 
 				processedStyle = result.style;
 
+				processedMarkup = result.markup;
+
 				processor_options.named_blocks = true;
 			}
 		}
@@ -163,10 +167,10 @@ export const preprocess = (text, filename) => {
 		if (processedResult) {
 			const { html, css, instance, module } = result.ast;
 
-			let styleDiff = processedStyle ? processedStyle.diff : 0;
-			let markupDiff = processedMarkup ? processedMarkup.diff : 0;
 			let moduleDiff = processedModule ? processedModule.diff : 0;
 			let instanceDiff = processedInstance ? processedInstance.diff : 0;
+			let styleDiff = processedStyle ? processedStyle.diff : 0;
+			let markupDiff = processedMarkup ? processedMarkup.diff : 0;
 			
 			let modulePreOffset = 0;
 			let modulePostOffset = 0;
@@ -201,6 +205,8 @@ export const preprocess = (text, filename) => {
 			}
 
 			if (module && processedModule) {
+				moduleEndLine = module.content.loc.end.line;
+				processedModuleLineOffset = processedModule.ast.loc.end.line - moduleEndLine;
 				module.content.body = processedModule.ast.body;
 
 				module.start += modulePreOffset;
@@ -211,6 +217,8 @@ export const preprocess = (text, filename) => {
 			}
 
 			if (instance && processedInstance) {
+				instanceEndLine = instance.content.loc.end.line;
+				processedInstanceLineOffset = processedInstance.ast.loc.end.line - instanceEndLine;
 				instance.content.body = processedInstance.ast.body;
 
 				instance.start += instancePreOffset;
@@ -240,15 +248,26 @@ export const preprocess = (text, filename) => {
 	state.var_names = new Set(vars.map(v => v.name));
 
 	// convert warnings to linting messages
-	state.messages = (processor_options.ignore_warnings ? warnings.filter(warning => !processor_options.ignore_warnings(warning)) : warnings).map(({ code, message, start, end }) => ({
-		ruleId: code,
-		severity: 1,
-		message,
-		line: start && start.line,
-		column: start && start.column + 1,
-		endLine: end && end.line,
-		endColumn: end && end.column + 1,
-	}));
+	state.messages = (processor_options.ignore_warnings ? warnings.filter(warning => !processor_options.ignore_warnings(warning)) : warnings).map(({ code, message, start, end }) => {
+		let fixLine = 0;
+
+		if (processedInstanceLineOffset && start && start.line > instanceEndLine ) {
+			fixLine += processedInstanceLineOffset;
+		}
+
+		if (processedModuleLineOffset && start && start.line > moduleEndLine ) {
+			fixLine += processedModuleLineOffset;
+		}
+		return {
+			ruleId: code,
+			severity: 1,
+			message,
+			line: start && start.line + fixLine,
+			column: start && start.column + 1,
+			endLine: end && end.line + fixLine,
+			endColumn: end && end.column + 1,
+		}
+	});
 
 	// build strings that we can send along to ESLint to get the remaining messages
 
