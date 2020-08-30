@@ -110,6 +110,7 @@ You can use a preprocessor function to return custom AST info according to the o
 
 For now this only supports `module` and `instance` scripts.
 
+NOTE: The preprocess function MUST be a synchronous function because ESLint works doesn't work with async functions. See issue [#10 (comment)](https://github.com/sveltejs/eslint-plugin-svelte3/issues/10#issuecomment-490634346)
 
 ## Using the CLI
 
