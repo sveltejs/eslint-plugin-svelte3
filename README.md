@@ -56,6 +56,8 @@ module.exports = {
 
 By default, this plugin needs to be able to `require('svelte/compiler')`. If ESLint, this plugin, and Svelte are all installed locally in your project, this should not be a problem.
 
+If using VSCode, add `"eslint.validate": ["javascript", "svelte"]` to your `settings.json`.
+
 ## Interactions with other plugins
 
 Care needs to be taken when using this plugin alongside others. Take a look at [this list of things you need to watch out for](OTHER_PLUGINS.md).
