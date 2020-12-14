@@ -104,6 +104,14 @@ This setting can be given the result of `require('.../path/to/svelte/compiler')`
 
 The default is `require('svelte/compiler')` from wherever the plugin is installed to.
 
+### `svelte3/preprocess`
+
+You can use a preprocessor function to return custom AST info according to the original code.
+
+For now this only supports `module` and `instance` scripts.
+
+NOTE: The preprocess function MUST be a synchronous function because ESLint works doesn't work with async functions. See issue [#10 (comment)](https://github.com/sveltejs/eslint-plugin-svelte3/issues/10#issuecomment-490634346)
+
 ## Using the CLI
 
 It's probably a good idea to make sure you can lint from the command line before proceeding with configuring your editor.

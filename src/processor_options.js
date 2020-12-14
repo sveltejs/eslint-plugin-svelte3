@@ -17,6 +17,7 @@ Linter.prototype.verify = function(code, config, options) {
 	processor_options.ignore_styles = settings['svelte3/ignore-styles'];
 	processor_options.compiler_options = settings['svelte3/compiler-options'];
 	processor_options.named_blocks = settings['svelte3/named-blocks'];
+	processor_options.svelte_preprocess = settings['svelte3/preprocess'];
 	// call original Linter#verify
 	return verify.call(this, code, config, options);
 };
