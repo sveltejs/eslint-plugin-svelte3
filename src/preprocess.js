@@ -150,6 +150,8 @@ export const preprocess = text => {
 				}
 			},
 		});
+
+		block.transformed_code += `{${vars.filter(v => v.referenced_from_script).map(v => v.name)}}`;
 	}
 
 	// return processed string
