@@ -1,3 +1,9 @@
+# 3.0.0
+
+- Breaking change: Node 10+ is now required
+  - There are no specific changes yet that will not work on Node 8, but tests will no longer be run on Node 8, and there are no guarantees about it
+- Fix erroneous `no-unused-vars` for variables that are assigned to in the template, but are only used in the script
+
 # 2.7.3
 
 - Fix mishandling of blocks whose last line consists of only the expected indentation
