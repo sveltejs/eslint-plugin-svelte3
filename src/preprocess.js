@@ -45,7 +45,7 @@ export const preprocess = text => {
 	// get information about the component
 	let result;
 	try {
-		result = compileCode(text, compiler, processor_options);
+		result = compile_code(text, compiler, processor_options);
 	} catch ({ name, message, start, end }) {
 		// convert the error to a linting message, store it, and return
 		state.messages = [
@@ -69,20 +69,20 @@ export const preprocess = text => {
 	// convert warnings to linting messages
 	const filteredWarnings = processor_options.ignore_warnings ? warnings.filter(warning => !processor_options.ignore_warnings(warning)) : warnings;
 	state.messages = filteredWarnings.map(({ code, message, start, end }) => {
-		const startPos = processor_options.typescript && start ?
-			mapper.getOriginalPosition(start) :
+		const start_pos = processor_options.typescript && start ?
+			mapper.get_original_position(start) :
 			start && { line: start.line, column: start.column + 1 };
-		const endPos = processor_options.typescript && end ?
-			mapper.getOriginalPosition(end) :
+		const end_pos = processor_options.typescript && end ?
+			mapper.get_original_position(end) :
 			end && { line: end.line, column: end.column + 1 };
 		return {
 			ruleId: code,
 			severity: 1,
 			message,
-			line: startPos && startPos.line,
-			column: startPos && startPos.column,
-			endLine: endPos && endPos.line,
-			endColumn: endPos && endPos.column,
+			line: start_pos && start_pos.line,
+			column: start_pos && start_pos.column,
+			endLine: end_pos && end_pos.line,
+			endColumn: end_pos && end_pos.column,
 		};
 	});
 
@@ -90,12 +90,12 @@ export const preprocess = text => {
 	
 	// Things to think about:
 	// - not all Svelte files may be typescript -> do we need a distinction on a file basis by analyzing the attribute + a config option to tell "treat all as TS"?
-	const withFileEnding = (fileName) => `${fileName}${processor_options.typescript ? '.ts' : '.js'}`;
+	const with_file_ending = (filename) => `${filename}${processor_options.typescript ? '.ts' : '.js'}`;
 
 	if (ast.module) {
 		// block for <script context='module'>
 		const block = new_block();
-		state.blocks.set(withFileEnding('module'), block);
+		state.blocks.set(with_file_ending('module'), block);
 
 		get_translation(text, block, ast.module.content);
 
@@ -109,7 +109,7 @@ export const preprocess = text => {
 	if (ast.instance) {
 		// block for <script context='instance'>
 		const block = new_block();
-		state.blocks.set(withFileEnding('instance'), block);
+		state.blocks.set(with_file_ending('instance'), block);
 
 		block.transformed_code = vars.filter(v => v.injected || v.module).map(v => `let ${v.name};`).join('');
 
@@ -121,7 +121,7 @@ export const preprocess = text => {
 	if (ast.html) {
 		// block for template
 		const block = new_block();
-		state.blocks.set(withFileEnding('template'), block);
+		state.blocks.set(with_file_ending('template'), block);
 
 		block.transformed_code = vars.map(v => `let ${v.name};`).join('');
 
@@ -174,7 +174,17 @@ export const preprocess = text => {
 	return [...state.blocks].map(([filename, { transformed_code: text }]) => processor_options.named_blocks ? { text, filename } : text);
 };
 
-function compileCode(text, compiler, processor_options) {
+// How it works for JS:
+// 1. compile code
+// 2. return ast/vars/warnings
+// How it works for TS:
+// 1. transpile script contents from TS to JS
+// 2. compile result to get Svelte compiler warnings
+// 3. provide a mapper to map those warnings back to its original positions
+// 4. blank script contents
+// 5. compile again to get the AST with original positions in the markdown part
+// 6. use AST and warnings of step 5, vars of step 2
+function compile_code(text, compiler, processor_options) {
 	let ast;
 	let warnings;
 	let vars;
@@ -188,18 +198,18 @@ function compileCode(text, compiler, processor_options) {
 				content,
 				{ reportDiagnostics: false, compilerOptions: { target: processor_options.typescript.ScriptTarget.ESNext, sourceMap: true } }
 			);
-			const prevDiff = diffs.length ? diffs[diffs.length - 1].accumulatedDiff : 0;
-			const originalStart = text.indexOf(content);
-			const generatedStart = prevDiff + originalStart;
+			const prev_diff = diffs.length ? diffs[diffs.length - 1].accumulated_diff : 0;
+			const original_start = text.indexOf(content);
+			const generated_start = prev_diff + original_start;
 			diffs.push({
-				originalStart: originalStart,
-				originalEnd: originalStart + content.length,
-				generatedStart: generatedStart,
-				generatedEnd: generatedStart + output.outputText.length,
+				original_start: original_start,
+				original_end: original_start + content.length,
+				generated_start: generated_start,
+				generated_end: generated_start + output.outputText.length,
 				diff: output.outputText.length - content.length,
-				accumulatedDiff: prevDiff + output.outputText.length - content.length,
-				originalContent: content,
-				generatedContent: output.outputText,
+				accumulated_diff: prev_diff + output.outputText.length - content.length,
+				original_content: content,
+				generated_content: output.outputText,
 				map: output.sourceMapText
 			});
 			return `<script${attributes}>${output.outputText}</script>`;
