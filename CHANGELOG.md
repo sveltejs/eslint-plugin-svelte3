@@ -1,3 +1,7 @@
+# 3.1.0 (Unreleased)
+
+- Add TypeScript support
+
 # 3.0.0
 
 - Breaking change: Node 10+ is now required
