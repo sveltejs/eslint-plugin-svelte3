@@ -61,13 +61,29 @@ If you want to use TypeScript, you need to adjust your ESLint configuration. In 
 ```javascript
 module.exports = {
   parser: '@typescript-eslint/parser', // add the TypeScript parser
-  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'], // optional - a standard rule set
+  extends: [
+    // optional - a standard rule set
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    // optional - if you want type-aware rules (also see `parserOptions` below).
+    // Note that this results in slower checks
+    // because the whole program needs to be compiled and type checked
+    'plugin:@typescript-eslint/recommended-requiring-type-checking'
+  ],
   plugins: ['svelte3', '@typescript-eslint'], // add the TypeScript plugin
   overrides: [{ files: ['*.svelte'], processor: 'svelte3/svelte3' }], // this stays the same
   settings: {
     'svelte3/typescript': require('typescript'), // pass the TypeScript package to the Svelte plugin
     // ...
-  }
+  },
+  // The following is only needed if you want to use type-aware rules
+  // It assumes that your eslint config is at the root next to your tsconfig.json
+  // More info: https://github.com/typescript-eslint/typescript-eslint/blob/master/docs/getting-started/linting/TYPED_LINTING.md
+  parserOptions: {
+    tsconfigRootDir: __dirname,
+    project: ['./tsconfig.json'],
+    extraFileExtensions: ['.svelte'],
+  },
 }
 ```
 

@@ -1,0 +1,66 @@
+[
+	{
+		"ruleId": "@typescript-eslint/no-for-in-array",
+		"severity": 2,
+		"line": 2,
+		"column": 2,
+		"endLine": 4,
+		"endColumn": 3
+	},
+	{
+		"ruleId": "@typescript-eslint/no-unsafe-return",
+		"severity": 2,
+		"line": 7,
+		"column": 3,
+		"endLine": 7,
+		"endColumn": 19
+	},
+	{
+		"ruleId": "@typescript-eslint/no-explicit-any",
+		"severity": 1,
+		"line": 7,
+		"column": 15,
+		"endLine": 7,
+		"endColumn": 18,
+		"suggestions": [
+			{
+				"messageId": "suggestUnknown",
+				"fix": {
+					"range": [
+						61,
+						64
+					],
+					"text": "unknown"
+				},
+				"desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+			},
+			{
+				"messageId": "suggestNever",
+				"fix": {
+					"range": [
+						61,
+						64
+					],
+					"text": "never"
+				},
+				"desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+			}
+		]
+	},
+	{
+		"ruleId": "@typescript-eslint/no-unsafe-member-access",
+		"severity": 2,
+		"line": 10,
+		"column": 2,
+		"endLine": 10,
+		"endColumn": 13
+	},
+	{
+		"ruleId": "@typescript-eslint/no-unsafe-call",
+		"severity": 2,
+		"line": 10,
+		"column": 2,
+		"endLine": 10,
+		"endColumn": 13
+	}
+]
