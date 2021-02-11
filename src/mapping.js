@@ -10,8 +10,8 @@ class GeneratedFragmentMapper {
 	}
 
 	get_position_relative_to_fragment(positionRelativeToFile) {
-        const fragment_offset = this.offset_in_fragment(offset_at(positionRelativeToFile, this.generated_code));
-        return position_at(fragment_offset, this.tag_info.generated_content);
+		const fragment_offset = this.offset_in_fragment(offset_at(positionRelativeToFile, this.generated_code));
+		return position_at(fragment_offset, this.tag_info.generated_content);
 	}
 
 	offset_in_fragment(offset) {
@@ -72,7 +72,7 @@ class SourceMapper {
 			return { line: -1, column: -1 };
 		}
 
-		const column_match = line_match.find((col, idx) => 
+		const column_match = line_match.find((col, idx) =>
 			idx + 1 === line_match.length ||
 			(col[0] <= column && line_match[idx + 1][0] > column)
 		);
@@ -101,33 +101,33 @@ export class DocumentMapper {
 		});
 	}
 
-    get_original_position(generated_position) {
+	get_original_position(generated_position) {
 		generated_position = { line: generated_position.line - 1, column: generated_position.column };
-        const offset = offset_at(generated_position, this.generated_code);
-        let original_offset = offset;
-        for (const mapper of this.mappers) {
+		const offset = offset_at(generated_position, this.generated_code);
+		let original_offset = offset;
+		for (const mapper of this.mappers) {
 			if (offset >= mapper.start && offset <= mapper.end) {
 				return this.map(mapper, generated_position);
 			}
-            if (offset > mapper.end) {
-                original_offset -= mapper.diff;
-            }
-        }
-        const original_position = position_at(original_offset, this.original_code);
+			if (offset > mapper.end) {
+				original_offset -= mapper.diff;
+			}
+		}
+		const original_position = position_at(original_offset, this.original_code);
 		return this.to_ESLint_position(original_position);
-    }
+	}
 
 	map(mapper, generatedPosition) {
-        // Map the position to be relative to the transpiled fragment
-        const position_in_transpiled_fragment = mapper.generated_fragment_mapper.get_position_relative_to_fragment(
-            generatedPosition
-        );
-        // Map the position, using the sourcemap, to the original position in the source fragment
-        const position_in_original_fragment = mapper.source_mapper.getOriginalPosition(
-            position_in_transpiled_fragment
-        );
-        // Map the position to be in the original fragment's parent
-        const original_position =  mapper.original_fragment_mapper.get_position_relative_to_file(position_in_original_fragment);
+		// Map the position to be relative to the transpiled fragment
+		const position_in_transpiled_fragment = mapper.generated_fragment_mapper.get_position_relative_to_fragment(
+			generatedPosition
+		);
+		// Map the position, using the sourcemap, to the original position in the source fragment
+		const position_in_original_fragment = mapper.source_mapper.getOriginalPosition(
+			position_in_transpiled_fragment
+		);
+		// Map the position to be in the original fragment's parent
+		const original_position = mapper.original_fragment_mapper.get_position_relative_to_file(position_in_original_fragment);
 		return this.to_ESLint_position(original_position);
 	}
 
@@ -144,69 +144,69 @@ export class DocumentMapper {
  * @param text The text for which the offset should be retrived
  */
 function offset_at(position, text) {
-    const line_offsets = get_line_offsets(text);
+	const line_offsets = get_line_offsets(text);
 
-    if (position.line >= line_offsets.length) {
-        return text.length;
-    } else if (position.line < 0) {
-        return 0;
-    }
+	if (position.line >= line_offsets.length) {
+		return text.length;
+	} else if (position.line < 0) {
+		return 0;
+	}
 
-    const line_offset = line_offsets[position.line];
-    const next_line_offset =
-        position.line + 1 < line_offsets.length ? line_offsets[position.line + 1] : text.length;
+	const line_offset = line_offsets[position.line];
+	const next_line_offset =
+		position.line + 1 < line_offsets.length ? line_offsets[position.line + 1] : text.length;
 
-    return clamp(next_line_offset, line_offset, line_offset + position.column);
+	return clamp(next_line_offset, line_offset, line_offset + position.column);
 }
 
 function position_at(offset, text) {
-    offset = clamp(offset, 0, text.length);
+	offset = clamp(offset, 0, text.length);
 
-    const line_offsets = get_line_offsets(text);
-    let low = 0;
-    let high = line_offsets.length;
-    if (high === 0) {
-        return { line: 0, column: offset };
-    }
+	const line_offsets = get_line_offsets(text);
+	let low = 0;
+	let high = line_offsets.length;
+	if (high === 0) {
+		return { line: 0, column: offset };
+	}
 
-    while (low < high) {
-        const mid = Math.floor((low + high) / 2);
-        if (line_offsets[mid] > offset) {
-            high = mid;
-        } else {
-            low = mid + 1;
-        }
-    }
+	while (low < high) {
+		const mid = Math.floor((low + high) / 2);
+		if (line_offsets[mid] > offset) {
+			high = mid;
+		} else {
+			low = mid + 1;
+		}
+	}
 
-    // low is the least x for which the line offset is larger than the current offset
-    // or array.length if no line offset is larger than the current offset
-    const line = low - 1;
-    return { line, column: offset - line_offsets[line] };
+	// low is the least x for which the line offset is larger than the current offset
+	// or array.length if no line offset is larger than the current offset
+	const line = low - 1;
+	return { line, column: offset - line_offsets[line] };
 }
 
 function get_line_offsets(text) {
-    const line_offsets = [];
-    let is_line_start = true;
+	const line_offsets = [];
+	let is_line_start = true;
 
-    for (let i = 0; i < text.length; i++) {
-        if (is_line_start) {
-            line_offsets.push(i);
-            is_line_start = false;
-        }
-        const ch = text.charAt(i);
-        is_line_start = ch === '\r' || ch === '\n';
-        if (ch === '\r' && i + 1 < text.length && text.charAt(i + 1) === '\n') {
-            i++;
-        }
-    }
+	for (let i = 0; i < text.length; i++) {
+		if (is_line_start) {
+			line_offsets.push(i);
+			is_line_start = false;
+		}
+		const ch = text.charAt(i);
+		is_line_start = ch === '\r' || ch === '\n';
+		if (ch === '\r' && i + 1 < text.length && text.charAt(i + 1) === '\n') {
+			i++;
+		}
+	}
 
-    if (is_line_start && text.length > 0) {
-        line_offsets.push(text.length);
-    }
+	if (is_line_start && text.length > 0) {
+		line_offsets.push(text.length);
+	}
 
-    return line_offsets;
+	return line_offsets;
 }
 
 function clamp(num, min, max) {
-    return Math.max(min, Math.min(max, num));
+	return Math.max(min, Math.min(max, num));
 }
