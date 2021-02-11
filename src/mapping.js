@@ -9,8 +9,8 @@ class GeneratedFragmentMapper {
 		this.tag_info = tag_info;
 	}
 
-	get_position_relative_to_fragment(positionRelativeToFile) {
-		const fragment_offset = this.offset_in_fragment(offset_at(positionRelativeToFile, this.generated_code));
+	get_position_relative_to_fragment(position_relative_to_file) {
+		const fragment_offset = this.offset_in_fragment(offset_at(position_relative_to_file, this.generated_code));
 		return position_at(fragment_offset, this.tag_info.generated_content);
 	}
 
@@ -28,8 +28,8 @@ class OriginalFragmentMapper {
 		this.tag_info = tag_info;
 	}
 
-	get_position_relative_to_file(positionRelativeToFragment) {
-		const parent_offset = this.offset_in_parent(offset_at(positionRelativeToFragment, this.tag_info.original_content));
+	get_position_relative_to_file(position_relative_to_fragment) {
+		const parent_offset = this.offset_in_parent(offset_at(position_relative_to_fragment, this.tag_info.original_content));
 		return position_at(parent_offset, this.original_code);
 	}
 
@@ -43,7 +43,7 @@ class SourceMapper {
 		this.raw_source_map = raw_source_map;
 	}
 
-	getOriginalPosition(generated_position) {
+	get_original_position(generated_position) {
 		if (generated_position.line < 0) {
 			return { line: -1, column: -1 };
 		}
@@ -117,13 +117,13 @@ export class DocumentMapper {
 		return this.to_ESLint_position(original_position);
 	}
 
-	map(mapper, generatedPosition) {
+	map(mapper, generated_position) {
 		// Map the position to be relative to the transpiled fragment
 		const position_in_transpiled_fragment = mapper.generated_fragment_mapper.get_position_relative_to_fragment(
-			generatedPosition
+			generated_position
 		);
 		// Map the position, using the sourcemap, to the original position in the source fragment
-		const position_in_original_fragment = mapper.source_mapper.getOriginalPosition(
+		const position_in_original_fragment = mapper.source_mapper.get_original_position(
 			position_in_transpiled_fragment
 		);
 		// Map the position to be in the original fragment's parent

@@ -67,8 +67,8 @@ export const preprocess = text => {
 	state.var_names = new Set(vars.map(v => v.name));
 
 	// convert warnings to linting messages
-	const filteredWarnings = processor_options.ignore_warnings ? warnings.filter(warning => !processor_options.ignore_warnings(warning)) : warnings;
-	state.messages = filteredWarnings.map(({ code, message, start, end }) => {
+	const filtered_warnings = processor_options.ignore_warnings ? warnings.filter(warning => !processor_options.ignore_warnings(warning)) : warnings;
+	state.messages = filtered_warnings.map(({ code, message, start, end }) => {
 		const start_pos = processor_options.typescript && start ?
 			mapper.get_original_position(start) :
 			start && { line: start.line, column: start.column + 1 };
@@ -87,7 +87,7 @@ export const preprocess = text => {
 	});
 
 	// build strings that we can send along to ESLint to get the remaining messages
-	
+
 	// Things to think about:
 	// - not all Svelte files may be typescript -> do we need a distinction on a file basis by analyzing the attribute + a config option to tell "treat all as TS"?
 	const with_file_ending = (filename) => `${filename}${processor_options.typescript ? '.ts' : '.js'}`;
