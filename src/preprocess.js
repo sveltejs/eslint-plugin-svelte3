@@ -193,21 +193,20 @@ function compile_code(text, compiler, processor_options) {
 	let ts_result;
 	if (processor_options.typescript) {
 		const diffs = [];
+		let accumulated_diff = 0;
 		const transpiled = text.replace(/<script(\s[^]*?)?>([^]*?)<\/script>/gi, (match, attributes = '', content) => {
 			const output = processor_options.typescript.transpileModule(
 				content,
 				{ reportDiagnostics: false, compilerOptions: { target: processor_options.typescript.ScriptTarget.ESNext, sourceMap: true } }
 			);
-			const prev_diff = diffs.length ? diffs[diffs.length - 1].accumulated_diff : 0;
 			const original_start = text.indexOf(content);
-			const generated_start = prev_diff + original_start;
+			const generated_start = accumulated_diff + original_start;
+			accumulated_diff += output.outputText.length - content.length;
 			diffs.push({
 				original_start: original_start,
-				original_end: original_start + content.length,
 				generated_start: generated_start,
 				generated_end: generated_start + output.outputText.length,
 				diff: output.outputText.length - content.length,
-				accumulated_diff: prev_diff + output.outputText.length - content.length,
 				original_content: content,
 				generated_content: output.outputText,
 				map: output.sourceMapText
