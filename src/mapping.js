@@ -1,40 +1,34 @@
 import { decode } from 'sourcemap-codec';
 
 class GeneratedFragmentMapper {
-	constructor(
-		generated_code,
-		tag_info,
-	) {
+	constructor(generated_code, diff) {
 		this.generated_code = generated_code;
-		this.tag_info = tag_info;
+		this.diff = diff;
 	}
 
 	get_position_relative_to_fragment(position_relative_to_file) {
 		const fragment_offset = this.offset_in_fragment(offset_at(position_relative_to_file, this.generated_code));
-		return position_at(fragment_offset, this.tag_info.generated_content);
+		return position_at(fragment_offset, this.diff.generated_content);
 	}
 
 	offset_in_fragment(offset) {
-		return offset - this.tag_info.generated_start
+		return offset - this.diff.generated_start
 	}
 }
 
 class OriginalFragmentMapper {
-	constructor(
-		original_code,
-		tag_info,
-	) {
+	constructor(original_code, diff) {
 		this.original_code = original_code;
-		this.tag_info = tag_info;
+		this.diff = diff;
 	}
 
 	get_position_relative_to_file(position_relative_to_fragment) {
-		const parent_offset = this.offset_in_parent(offset_at(position_relative_to_fragment, this.tag_info.original_content));
+		const parent_offset = this.offset_in_parent(offset_at(position_relative_to_fragment, this.diff.original_content));
 		return position_at(parent_offset, this.original_code);
 	}
 
 	offset_in_parent(offset) {
-		return this.tag_info.original_start + offset;
+		return this.diff.original_start + offset;
 	}
 }
 
