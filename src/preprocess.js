@@ -1,6 +1,7 @@
 import { new_block, get_translation } from './block.js';
 import { processor_options } from './processor_options.js';
 import { state } from './state.js';
+import { DocumentMapper } from './mapping.js';
 
 let default_compiler;
 
@@ -40,10 +41,11 @@ export const preprocess = text => {
 			return processor_options.ignore_styles(attrs) ? match.replace(/\S/g, ' ') : match;
 		});
 	}
+
 	// get information about the component
 	let result;
 	try {
-		result = compiler.compile(text, { generate: false, ...processor_options.compiler_options });
+		result = compile_code(text, compiler, processor_options);
 	} catch ({ name, message, start, end }) {
 		// convert the error to a linting message, store it, and return
 		state.messages = [
@@ -59,27 +61,41 @@ export const preprocess = text => {
 		];
 		return [];
 	}
-	const { ast, warnings, vars } = result;
+	const { ast, warnings, vars, mapper } = result;
+
 	const references_and_reassignments = `{${vars.filter(v => v.referenced).map(v => v.name)};${vars.filter(v => v.reassigned || v.export_name).map(v => v.name + '=0')}}`;
 	state.var_names = new Set(vars.map(v => v.name));
 
 	// convert warnings to linting messages
-	state.messages = (processor_options.ignore_warnings ? warnings.filter(warning => !processor_options.ignore_warnings(warning)) : warnings).map(({ code, message, start, end }) => ({
-		ruleId: code,
-		severity: 1,
-		message,
-		line: start && start.line,
-		column: start && start.column + 1,
-		endLine: end && end.line,
-		endColumn: end && end.column + 1,
-	}));
+	const filtered_warnings = processor_options.ignore_warnings ? warnings.filter(warning => !processor_options.ignore_warnings(warning)) : warnings;
+	state.messages = filtered_warnings.map(({ code, message, start, end }) => {
+		const start_pos = processor_options.typescript && start ?
+			mapper.get_original_position(start) :
+			start && { line: start.line, column: start.column + 1 };
+		const end_pos = processor_options.typescript && end ?
+			mapper.get_original_position(end) :
+			end && { line: end.line, column: end.column + 1 };
+		return {
+			ruleId: code,
+			severity: 1,
+			message,
+			line: start_pos && start_pos.line,
+			column: start_pos && start_pos.column,
+			endLine: end_pos && end_pos.line,
+			endColumn: end_pos && end_pos.column,
+		};
+	});
 
 	// build strings that we can send along to ESLint to get the remaining messages
+
+	// Things to think about:
+	// - not all Svelte files may be typescript -> do we need a distinction on a file basis by analyzing the attribute + a config option to tell "treat all as TS"?
+	const with_file_ending = (filename) => `${filename}${processor_options.typescript ? '.ts' : '.js'}`;
 
 	if (ast.module) {
 		// block for <script context='module'>
 		const block = new_block();
-		state.blocks.set('module.js', block);
+		state.blocks.set(with_file_ending('module'), block);
 
 		get_translation(text, block, ast.module.content);
 
@@ -93,7 +109,7 @@ export const preprocess = text => {
 	if (ast.instance) {
 		// block for <script context='instance'>
 		const block = new_block();
-		state.blocks.set('instance.js', block);
+		state.blocks.set(with_file_ending('instance'), block);
 
 		block.transformed_code = vars.filter(v => v.injected || v.module).map(v => `let ${v.name};`).join('');
 
@@ -105,7 +121,7 @@ export const preprocess = text => {
 	if (ast.html) {
 		// block for template
 		const block = new_block();
-		state.blocks.set('template.js', block);
+		state.blocks.set(with_file_ending('template'), block);
 
 		block.transformed_code = vars.map(v => `let ${v.name};`).join('');
 
@@ -157,3 +173,67 @@ export const preprocess = text => {
 	// return processed string
 	return [...state.blocks].map(([filename, { transformed_code: text }]) => processor_options.named_blocks ? { text, filename } : text);
 };
+
+// How it works for JS:
+// 1. compile code
+// 2. return ast/vars/warnings
+// How it works for TS:
+// 1. transpile script contents from TS to JS
+// 2. compile result to get Svelte compiler warnings
+// 3. provide a mapper to map those warnings back to its original positions
+// 4. blank script contents
+// 5. compile again to get the AST with original positions in the markdown part
+// 6. use AST and warnings of step 5, vars of step 2
+function compile_code(text, compiler, processor_options) {
+	let ast;
+	let warnings;
+	let vars;
+
+	let mapper;
+	let ts_result;
+	if (processor_options.typescript) {
+		const diffs = [];
+		let accumulated_diff = 0;
+		const transpiled = text.replace(/<script(\s[^]*?)?>([^]*?)<\/script>/gi, (match, attributes = '', content) => {
+			const output = processor_options.typescript.transpileModule(
+				content,
+				{ reportDiagnostics: false, compilerOptions: { target: processor_options.typescript.ScriptTarget.ESNext, sourceMap: true } }
+			);
+			const original_start = text.indexOf(content);
+			const generated_start = accumulated_diff + original_start;
+			accumulated_diff += output.outputText.length - content.length;
+			diffs.push({
+				original_start: original_start,
+				generated_start: generated_start,
+				generated_end: generated_start + output.outputText.length,
+				diff: output.outputText.length - content.length,
+				original_content: content,
+				generated_content: output.outputText,
+				map: output.sourceMapText
+			});
+			return `<script${attributes}>${output.outputText}</script>`;
+		});
+		mapper = new DocumentMapper(text, transpiled, diffs);
+		ts_result = compiler.compile(transpiled, { generate: false, ...processor_options.compiler_options });
+
+		text = text.replace(/<script(\s[^]*?)?>([^]*?)<\/script>/gi, (match, attributes = '', content) => {
+			return `<script${attributes}>${content
+				// blank out the content
+				.replace(/[^\n]/g, ' ')
+				// excess blank space can make the svelte parser very slow (sec->min). break it up with comments (works in style/script)
+				.replace(/[^\n][^\n][^\n][^\n]\n/g, '/**/\n')
+			}</script>`;
+		});
+	}
+
+	const result = compiler.compile(text, { generate: false, ...processor_options.compiler_options });
+
+	if (!processor_options.typescript) {
+		({ ast, warnings, vars } = result);
+	} else {
+		ast = result.ast;
+		({ warnings, vars } = ts_result);
+	}
+
+	return { ast, warnings, vars, mapper };
+}

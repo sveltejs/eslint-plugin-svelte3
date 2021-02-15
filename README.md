@@ -56,6 +56,52 @@ module.exports = {
 
 By default, this plugin needs to be able to `require('svelte/compiler')`. If ESLint, this plugin, and Svelte are all installed locally in your project, this should not be a problem.
 
+### Installation with TypeScript
+
+If you want to use TypeScript, you'll need a different ESLint configuration. In addition to the Svelte plugin, you also need the ESLint TypeScript parser and plugin. Install `typescript`, `@typescript-eslint/parser` and `@typescript-eslint/eslint-plugin` from npm and then adjust your config like this:
+
+```javascript
+module.exports = {
+  parser: '@typescript-eslint/parser', // add the TypeScript parser
+  plugins: [
+    'svelte3',
+    '@typescript-eslint' // add the TypeScript plugin
+  ],
+  overrides: [ // this stays the same
+    {
+      files: ['*.svelte'],
+      processor: 'svelte3/svelte3'
+    }
+  ],
+  rules: {
+    // ...
+  },
+  settings: {
+    'svelte3/typescript': require('typescript'), // pass the TypeScript package to the Svelte plugin
+    // ...
+  }
+};
+```
+
+If you also want to be able to use type-aware linting rules (which will result in slower linting, because the whole program needs to be compiled and type-checked), then you also need to add some `parserOptions` configuration. The values below assume that your ESLint config is at the root of your project next to your `tsconfig.json`. For more information, see [here](https://github.com/typescript-eslint/typescript-eslint/blob/master/docs/getting-started/linting/TYPED_LINTING.md).
+
+```javascript
+module.exports = {
+  // ...
+  parserOptions: { // add these parser options
+    tsconfigRootDir: __dirname,
+    project: ['./tsconfig.json'],
+    extraFileExtensions: ['.svelte'],
+  },
+  extends: [ // then, enable whichever type-aware rules you want to use
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended-requiring-type-checking'
+  ],
+  // ...
+};
+```
+
 ## Interactions with other plugins
 
 Care needs to be taken when using this plugin alongside others. Take a look at [this list of things you need to watch out for](OTHER_PLUGINS.md).
@@ -90,11 +136,17 @@ The default is to not ignore any styles.
 
 ### `svelte3/named-blocks`
 
-When an [ESLint processor](https://eslint.org/docs/user-guide/configuring#specifying-processor) processes a file, it is able to output named code blocks, which can each have their own linting configuration. When this setting is enabled, the code extracted from `<script context='module'>` tag, the `<script>` tag, and the template are respectively given the block names `module.js`, `instance.js`, and `template.js`.
+When an [ESLint processor](https://eslint.org/docs/user-guide/configuring/plugins#specifying-processor) processes a file, it is able to output named code blocks, which can each have their own linting configuration. When this setting is enabled, the code extracted from `<script context='module'>` tag, the `<script>` tag, and the template are respectively given the block names `module.js`, `instance.js`, and `template.js`.
 
 This means that to override linting rules in Svelte components, you'd instead have to target `**/*.svelte/*.js`. But it also means that you can define an override targeting `**/*.svelte/*_template.js` for example, and that configuration will only apply to linting done on the templates in Svelte components.
 
 The default is to not use named code blocks.
+
+### `svelte3/typescript`
+
+If you use TypeScript inside your Svelte components and want ESLint support, you need to set this option. It expects an instance of the TypeScript package. This probably means doing `'svelte3/typescript': require('typescript')`.
+
+The default is to not enable TypeScript support.
 
 ### `svelte3/compiler`
 
