@@ -1,7 +1,7 @@
 import { new_block, get_translation } from './block.js';
 import { processor_options } from './processor_options.js';
 import { state } from './state.js';
-import { DocumentMapper } from './mapping';
+import { DocumentMapper } from './mapping.js';
 
 let default_compiler;
 

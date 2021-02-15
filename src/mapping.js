@@ -135,7 +135,7 @@ export class DocumentMapper {
 /**
  * Get the offset of the line and character position
  * @param position Line and character position
- * @param text The text for which the offset should be retrived
+ * @param text The text for which the offset should be retrieved
  */
 function offset_at(position, text) {
 	const line_offsets = get_line_offsets(text);
