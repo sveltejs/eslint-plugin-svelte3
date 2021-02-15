@@ -50,10 +50,10 @@ class SourceMapper {
 		let line = generated_position.line;
 		let column = generated_position.column;
 
-		let line_match = this.decoded[generated_position.line];
+		let line_match = this.decoded[line];
 		while (line >= 0 && (!line_match || !line_match.length)) {
 			line -= 1;
-			line_match = this.decoded[generated_position];
+			line_match = this.decoded[line];
 			if (line_match && line_match.length) {
 				return {
 					line: line_match[line_match.length - 1][2],
