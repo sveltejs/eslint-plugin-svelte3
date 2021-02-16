@@ -174,6 +174,30 @@ export const preprocess = text => {
 	return [...state.blocks].map(([filename, { transformed_code: text }]) => processor_options.named_blocks ? { text, filename } : text);
 };
 
+// https://github.com/sveltejs/svelte-preprocess/blob/main/src/transformers/typescript.ts
+// TypeScript transformer for preserving imports correctly when preprocessing TypeScript files
+const ts_import_transformer = (context) => {
+	const ts = processor_options.typescript;
+	const visit = (node) => {
+		if (ts.isImportDeclaration(node)) {
+			if (node.importClause?.isTypeOnly) {
+				return ts.createEmptyStatement();
+			}
+
+			return ts.createImportDeclaration(
+				node.decorators,
+				node.modifiers,
+				node.importClause,
+				node.moduleSpecifier,
+			);
+		}
+
+		return ts.visitEachChild(node, (child) => visit(child), context);
+	};
+
+	return (node) => ts.visitNode(node, visit);
+};
+
 // How it works for JS:
 // 1. compile code
 // 2. return ast/vars/warnings
@@ -189,16 +213,24 @@ function compile_code(text, compiler, processor_options) {
 	let warnings;
 	let vars;
 
+	const ts = processor_options.typescript;
 	let mapper;
 	let ts_result;
-	if (processor_options.typescript) {
+	if (ts) {
 		const diffs = [];
 		let accumulated_diff = 0;
 		const transpiled = text.replace(/<script(\s[^]*?)?>([^]*?)<\/script>/gi, (match, attributes = '', content) => {
-			const output = processor_options.typescript.transpileModule(
-				content,
-				{ reportDiagnostics: false, compilerOptions: { target: processor_options.typescript.ScriptTarget.ESNext, sourceMap: true } }
-			);
+			const output = ts.transpileModule(content, {
+				reportDiagnostics: false,
+				compilerOptions: {
+					target: ts.ScriptTarget.ESNext,
+					importsNotUsedAsValues: ts.ImportsNotUsedAsValues.Preserve,
+					sourceMap: true
+				},
+				transformers: {
+					before: [ts_import_transformer]
+				}
+			});
 			const original_start = text.indexOf(content);
 			const generated_start = accumulated_diff + original_start;
 			accumulated_diff += output.outputText.length - content.length;
@@ -214,7 +246,14 @@ function compile_code(text, compiler, processor_options) {
 			return `<script${attributes}>${output.outputText}</script>`;
 		});
 		mapper = new DocumentMapper(text, transpiled, diffs);
-		ts_result = compiler.compile(transpiled, { generate: false, ...processor_options.compiler_options });
+		try {
+			ts_result = compiler.compile(transpiled, { generate: false, ...processor_options.compiler_options });
+		} catch (err) {
+			// remap the error to be in the correct spot and rethrow it
+			err.start = mapper.get_original_position(err.start);
+			err.end = mapper.get_original_position(err.end);
+			throw err;
+		}
 
 		text = text.replace(/<script(\s[^]*?)?>([^]*?)<\/script>/gi, (match, attributes = '', content) => {
 			return `<script${attributes}>${content
@@ -226,12 +265,10 @@ function compile_code(text, compiler, processor_options) {
 		});
 	}
 
-	const result = compiler.compile(text, { generate: false, ...processor_options.compiler_options });
-
-	if (!processor_options.typescript) {
-		({ ast, warnings, vars } = result);
+	if (!ts) {
+		({ ast, warnings, vars } = compiler.compile(text, { generate: false, ...processor_options.compiler_options }));
 	} else {
-		ast = result.ast;
+		ast = compiler.parse(text, { ...processor_options.compiler_options });
 		({ warnings, vars } = ts_result);
 	}
 
