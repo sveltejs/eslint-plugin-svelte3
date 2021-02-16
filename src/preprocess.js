@@ -203,11 +203,11 @@ const ts_import_transformer = (context) => {
 // 2. return ast/vars/warnings
 // How it works for TS:
 // 1. transpile script contents from TS to JS
-// 2. compile result to get Svelte compiler warnings
+// 2. compile result to get Svelte compiler warnings and variables
 // 3. provide a mapper to map those warnings back to its original positions
 // 4. blank script contents
-// 5. compile again to get the AST with original positions in the markdown part
-// 6. use AST and warnings of step 5, vars of step 2
+// 5. parse the source to get the AST
+// 6. return AST of step 5, warnings and vars of step 2
 function compile_code(text, compiler, processor_options) {
 	let ast;
 	let warnings;
@@ -268,6 +268,8 @@ function compile_code(text, compiler, processor_options) {
 	if (!ts) {
 		({ ast, warnings, vars } = compiler.compile(text, { generate: false, ...processor_options.compiler_options }));
 	} else {
+		// if we do a full recompile Svelte can fail due to the blank script tag not declaring anything
+		// so instead we just parse for the AST (which is likely faster, anyways)
 		ast = compiler.parse(text, { ...processor_options.compiler_options });
 		({ warnings, vars } = ts_result);
 	}
