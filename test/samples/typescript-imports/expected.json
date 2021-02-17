@@ -1,0 +1,26 @@
+[
+	{
+		"ruleId": "no-unused-vars",
+		"severity": 2,
+		"line": 2,
+		"column": 22,
+		"endLine": 2,
+		"endColumn": 32
+	},
+	{
+		"ruleId": "no-unused-vars",
+		"severity": 2,
+		"line": 4,
+		"column": 9,
+		"endLine": 4,
+		"endColumn": 24
+	},
+	{
+		"ruleId": "no-unused-vars",
+		"severity": 2,
+		"line": 5,
+		"column": 27,
+		"endLine": 5,
+		"endColumn": 38
+	}
+]
