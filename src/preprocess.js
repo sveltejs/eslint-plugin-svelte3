@@ -180,7 +180,7 @@ const ts_import_transformer = (context) => {
 	const ts = processor_options.typescript;
 	const visit = (node) => {
 		if (ts.isImportDeclaration(node)) {
-			if (node.importClause?.isTypeOnly) {
+			if (node.importClause && node.importClause.isTypeOnly) {
 				return ts.createEmptyStatement();
 			}
 
