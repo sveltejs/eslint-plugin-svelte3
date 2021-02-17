@@ -1,3 +1,8 @@
+# 3.1.1
+
+- Fix erroneous errors from two-way binding in TypeScript components
+- Fix erroneous warnings from the removal of `import`s in TypeScript components
+
 # 3.1.0
 
 - Add TypeScript support
