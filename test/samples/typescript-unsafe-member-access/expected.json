@@ -3,9 +3,9 @@
 		"ruleId": "@typescript-eslint/no-unsafe-member-access",
 		"severity": 2,
 		"line": 6,
-		"column": 17,
+		"column": 14,
 		"endLine": 6,
-		"endColumn": 38
+		"endColumn": 35
 	},
 	{
 		"ruleId": "@typescript-eslint/no-unsafe-member-access",
@@ -27,25 +27,25 @@
 		"ruleId": "@typescript-eslint/no-unsafe-member-access",
 		"severity": 2,
 		"line": 24,
-		"column": 17,
+		"column": 14,
 		"endLine": 24,
-		"endColumn": 39
+		"endColumn": 36
 	},
 	{
 		"ruleId": "@typescript-eslint/no-unsafe-member-access",
 		"severity": 2,
 		"line": 26,
-		"column": 17,
+		"column": 14,
 		"endLine": 26,
-		"endColumn": 39
+		"endColumn": 36
 	},
 	{
 		"ruleId": "@typescript-eslint/no-unsafe-member-access",
 		"severity": 2,
 		"line": 28,
-		"column": 17,
+		"column": 14,
 		"endLine": 28,
-		"endColumn": 40
+		"endColumn": 37
 	},
 	{
 		"ruleId": "@typescript-eslint/no-unsafe-member-access",
