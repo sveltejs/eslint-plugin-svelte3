@@ -102,7 +102,7 @@ module.exports = {
 };
 ```
 
-Note that there are some limitations to these type-aware rules currently. Specifically, checks for `no-unsafe-member-access` / `no-unsafe-call` will report false positives for reactive assignments and store subscriptions:
+Note that there are some limitations to these type-aware rules currently. Specifically, checks in the context of reactive assignments and store subscriptions will report false positives or false negatives, depending on the rule. For reactive assignments, you can work around this by explicitely typing the reactive assignment. An example with the `no-unsafe-member-access` rule:
 
 ```svelte
 <script lang="ts">
