@@ -102,17 +102,17 @@ module.exports = {
 };
 ```
 
-Note that there are some limitations to these type-aware rules currently. Specifically, checks in the context of reactive assignments and store subscriptions will report false positives or false negatives, depending on the rule. For reactive assignments, you can work around this by explicitely typing the reactive assignment. An example with the `no-unsafe-member-access` rule:
+There are some limitations to these type-aware rules currently. Specifically, checks in the context of reactive assignments and store subscriptions will report false positives or false negatives, depending on the rule. In the case of reactive assignments, you can work around this by explicitly typing the reactive variable. An example with the `no-unsafe-member-access` rule:
 
 ```svelte
 <script lang="ts">
   import { writable } from 'svelte/store';
 
   const store = writable([]);
-  $store.length; // wrong no-unsafe-member-access error
+  $store.length; // incorrect no-unsafe-member-access error
 
   $: assignment = [];
-  assignment.length; // wrong no-unsafe-member-access error
+  assignment.length; // incorrect no-unsafe-member-access error
   // You can work around this by doing
   let another_assignment: string[];
   $: another_assignment = [];
