@@ -111,7 +111,12 @@ export const preprocess = text => {
 		const block = new_block();
 		state.blocks.set(with_file_ending('instance'), block);
 
-		block.transformed_code = vars.filter(v => v.injected || v.module).map(v => `let ${v.name};`).join('');
+		if (ast.module && processor_options.typescript) {
+			block.transformed_code = vars.filter(v => v.injected).map(v => `let ${v.name};`).join('');
+			block.transformed_code += text.slice(ast.module.content.start, ast.module.content.end);
+		} else {
+			block.transformed_code = vars.filter(v => v.injected || v.module).map(v => `let ${v.name};`).join('');
+		}
 
 		get_translation(text, block, ast.instance.content);
 
@@ -123,7 +128,19 @@ export const preprocess = text => {
 		const block = new_block();
 		state.blocks.set(with_file_ending('template'), block);
 
-		block.transformed_code = vars.map(v => `let ${v.name};`).join('');
+		if (processor_options.typescript) {
+			block.transformed_code = '';
+			if (ast.module) {
+				block.transformed_code += text.slice(ast.module.content.start, ast.module.content.end);
+			}
+			if (ast.instance) {
+				block.transformed_code += '\n';
+				block.transformed_code += vars.filter(v => v.injected).map(v => `let ${v.name};`).join('');
+				block.transformed_code += text.slice(ast.instance.content.start, ast.instance.content.end);
+			}
+		} else {
+			block.transformed_code = vars.map(v => `let ${v.name};`).join('');
+		}
 
 		const nodes_with_contextual_scope = new WeakSet();
 		let in_quoted_attribute = false;
@@ -209,14 +226,10 @@ const ts_import_transformer = (context) => {
 // 5. parse the source to get the AST
 // 6. return AST of step 5, warnings and vars of step 2
 function compile_code(text, compiler, processor_options) {
-	let ast;
-	let warnings;
-	let vars;
-
 	const ts = processor_options.typescript;
-	let mapper;
-	let ts_result;
-	if (ts) {
+	if (!ts) {
+		return compiler.compile(text, { generate: false, ...processor_options.compiler_options });
+	} else {
 		const diffs = [];
 		let accumulated_diff = 0;
 		const transpiled = text.replace(/<script(\s[^]*?)?>([^]*?)<\/script>/gi, (match, attributes = '', content) => {
@@ -245,7 +258,9 @@ function compile_code(text, compiler, processor_options) {
 			});
 			return `<script${attributes}>${output.outputText}</script>`;
 		});
-		mapper = new DocumentMapper(text, transpiled, diffs);
+		const mapper = new DocumentMapper(text, transpiled, diffs);
+
+		let ts_result;
 		try {
 			ts_result = compiler.compile(transpiled, { generate: false, ...processor_options.compiler_options });
 		} catch (err) {
@@ -263,16 +278,10 @@ function compile_code(text, compiler, processor_options) {
 				.replace(/[^\n][^\n][^\n][^\n]\n/g, '/**/\n')
 			}</script>`;
 		});
-	}
-
-	if (!ts) {
-		({ ast, warnings, vars } = compiler.compile(text, { generate: false, ...processor_options.compiler_options }));
-	} else {
 		// if we do a full recompile Svelte can fail due to the blank script tag not declaring anything
 		// so instead we just parse for the AST (which is likely faster, anyways)
-		ast = compiler.parse(text, { ...processor_options.compiler_options });
-		({ warnings, vars } = ts_result);
+		const ast = compiler.parse(text, { ...processor_options.compiler_options });
+		const{ warnings, vars } = ts_result;
+		return { ast, warnings, vars, mapper };
 	}
-
-	return { ast, warnings, vars, mapper };
 }

@@ -35,8 +35,8 @@
 				"messageId": "suggestUnknown",
 				"fix": {
 					"range": [
-						29,
-						32
+						58,
+						61
 					],
 					"text": "unknown"
 				},
@@ -46,8 +46,8 @@
 				"messageId": "suggestNever",
 				"fix": {
 					"range": [
-						29,
-						32
+						58,
+						61
 					],
 					"text": "never"
 				},
@@ -82,8 +82,8 @@
 				"messageId": "suggestUnknown",
 				"fix": {
 					"range": [
-						50,
-						53
+						79,
+						82
 					],
 					"text": "unknown"
 				},
@@ -93,8 +93,8 @@
 				"messageId": "suggestNever",
 				"fix": {
 					"range": [
-						50,
-						53
+						79,
+						82
 					],
 					"text": "never"
 				},

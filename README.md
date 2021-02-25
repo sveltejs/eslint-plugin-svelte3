@@ -102,6 +102,24 @@ module.exports = {
 };
 ```
 
+There are some limitations to these type-aware rules currently. Specifically, checks in the context of reactive assignments and store subscriptions will report false positives or false negatives, depending on the rule. In the case of reactive assignments, you can work around this by explicitly typing the reactive variable. An example with the `no-unsafe-member-access` rule:
+
+```svelte
+<script lang="ts">
+  import { writable } from 'svelte/store';
+
+  const store = writable([]);
+  $store.length; // incorrect no-unsafe-member-access error
+
+  $: assignment = [];
+  assignment.length; // incorrect no-unsafe-member-access error
+  // You can work around this by doing
+  let another_assignment: string[];
+  $: another_assignment = [];
+  another_assignment.length; // OK
+</script>
+```
+
 ## Interactions with other plugins
 
 Care needs to be taken when using this plugin alongside others. Take a look at [this list of things you need to watch out for](OTHER_PLUGINS.md).
