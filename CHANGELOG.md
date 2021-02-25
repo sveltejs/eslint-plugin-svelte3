@@ -1,3 +1,7 @@
+# 3.1.2
+
+- Silence some incorrect `unsafe-member-access` errors - see README for current limitations
+
 # 3.1.1
 
 - Fix erroneous errors from two-way binding in TypeScript components
