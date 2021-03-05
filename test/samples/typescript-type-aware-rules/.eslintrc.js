@@ -12,6 +12,6 @@ module.exports = {
 	},
 	ignorePatterns: ['.eslintrc.js'],
 	settings: {
-		'svelte3/typescript': require('typescript'),
+		'svelte3/typescript': true,
 	}
 };

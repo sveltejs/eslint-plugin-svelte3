@@ -9,7 +9,7 @@ module.exports = {
 	  extraFileExtensions: [".svelte"],
 	},
 	settings: {
-	  "svelte3/typescript": require("typescript"),
+	  "svelte3/typescript": true,
 	},
 	rules: {
 	  "@typescript-eslint/no-unsafe-member-access": "error",
