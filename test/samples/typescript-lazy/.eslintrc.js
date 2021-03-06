@@ -3,7 +3,7 @@ module.exports = {
 	extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
 	plugins: ['@typescript-eslint'],
 	settings: {
-		'svelte3/typescript': require('typescript'),
+		'svelte3/typescript': () => require('typescript'),
 	},
 	rules: {
 		indent: ['error', 'tab'],
