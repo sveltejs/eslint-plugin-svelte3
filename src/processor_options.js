@@ -8,7 +8,17 @@ if (!linter_path) {
 const { Linter } = require(linter_path);
 
 // Lazily-loaded Typescript.
-let typescript;
+let typescript
+const getTypescript = settings => {
+	// Typescript is expensive to load, so only load it if needed.
+	if (!typescript) {
+		typescript = typeof settings['svelte3/typescript'] === 'function'
+			? settings['svelte3/typescript']()
+			: settings['svelte3/typescript'];
+	}
+
+	return typescript;
+}
 
 // patch Linter#verify
 const { verify } = Linter.prototype;
@@ -20,14 +30,8 @@ Linter.prototype.verify = function(code, config, options) {
 	processor_options.ignore_styles = settings['svelte3/ignore-styles'];
 	processor_options.compiler_options = settings['svelte3/compiler-options'];
 	processor_options.named_blocks = settings['svelte3/named-blocks'];
+	processor_options.typescript = getTypescript(settings);
 
-	if (settings['svelte3/typescript']) {
-		// Typescript is expensive to load, so only load it if needed.
-		if (!typescript) {
-			typescript = require('typescript');
-		}
-		processor_options.typescript = typescript;
-	}
 	// call original Linter#verify
 	return verify.call(this, code, config, options);
 };

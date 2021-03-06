@@ -3,6 +3,6 @@ module.exports = {
 	extends: ['plugin:@typescript-eslint/recommended'],
 	plugins: ['@typescript-eslint'],
 	settings: {
-		'svelte3/typescript': true,
+		'svelte3/typescript': () => require('typescript'),
 	},
 };
