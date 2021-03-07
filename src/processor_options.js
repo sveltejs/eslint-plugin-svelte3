@@ -1,10 +1,14 @@
 export const processor_options = {};
 
 // find Linter instance
-const linter_path = Object.keys(require.cache).find(path => path.endsWith('/eslint/lib/linter/linter.js') || path.endsWith('\\eslint\\lib\\linter\\linter.js'));
-if (!linter_path) {
+const linter_paths = Object.keys(require.cache).filter(path => path.endsWith('/eslint/lib/linter/linter.js') || path.endsWith('\\eslint\\lib\\linter\\linter.js'));
+if (!linter_paths.length) {
 	throw new Error('Could not find ESLint Linter in require cache');
 }
+// there may be more than one instance in case of multiple folders in the workspace
+// try to find the one that's inside the same node_modules directory as this plugin
+// if not found for some reason, assume it's the last one in the array
+const linter_path = linter_paths.find(path => path.startsWith(__dirname.replace(/(?<=[/\\]node_modules[/\\]).*$/, ''))) || linter_paths.pop();
 const { Linter } = require(linter_path);
 
 // patch Linter#verify
