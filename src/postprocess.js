@@ -92,6 +92,7 @@ const get_identifier = str => (str && str.match(/^[^\s!"#%&\\'()*+,\-./:;<=>?@[\
 const is_valid_message = (block, message, translation) => {
 	switch (message.ruleId) {
 		case 'eol-last': return false;
+		case '@typescript-eslint/indent':
 		case 'indent': return !translation.options.template;
 		case 'linebreak-style': return message.line !== translation.end;
 		case 'no-labels': return get_identifier(get_referenced_string(block, message)) !== '$';
