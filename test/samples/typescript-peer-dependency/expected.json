@@ -1,0 +1,184 @@
+[
+	{
+		"ruleId": "module-script-reactive-declaration",
+		"severity": 1,
+		"line": 3,
+		"column": 2,
+		"endLine": 3,
+		"endColumn": 12
+	},
+	{
+		"ruleId": "no-undef",
+		"severity": 2,
+		"line": 3,
+		"column": 5,
+		"endLine": 3,
+		"endColumn": 7
+	},
+	{
+		"ruleId": "unused-export-let",
+		"severity": 1,
+		"line": 7,
+		"column": 13,
+		"endLine": 7,
+		"endColumn": 19
+	},
+	{
+		"ruleId": "@typescript-eslint/no-explicit-any",
+		"severity": 1,
+		"line": 7,
+		"column": 16,
+		"endLine": 7,
+		"endColumn": 19,
+		"suggestions": [
+			{
+				"messageId": "suggestUnknown",
+				"fix": {
+					"range": [
+						58,
+						61
+					],
+					"text": "unknown"
+				},
+				"desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+			},
+			{
+				"messageId": "suggestNever",
+				"fix": {
+					"range": [
+						58,
+						61
+					],
+					"text": "never"
+				},
+				"desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+			}
+		]
+	},
+	{
+		"ruleId": "indent",
+		"severity": 2,
+		"line": 9,
+		"column": 2,
+		"endLine": 9,
+		"endColumn": 3,
+		"fix": {
+			"range": [
+				112,
+				113
+			],
+			"text": ""
+		}
+	},
+	{
+		"ruleId": "@typescript-eslint/no-explicit-any",
+		"severity": 1,
+		"line": 9,
+		"column": 17,
+		"endLine": 9,
+		"endColumn": 20,
+		"suggestions": [
+			{
+				"messageId": "suggestUnknown",
+				"fix": {
+					"range": [
+						79,
+						82
+					],
+					"text": "unknown"
+				},
+				"desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+			},
+			{
+				"messageId": "suggestNever",
+				"fix": {
+					"range": [
+						79,
+						82
+					],
+					"text": "never"
+				},
+				"desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+			}
+		]
+	},
+	{
+		"ruleId": "semi",
+		"severity": 2,
+		"line": 9,
+		"column": 20,
+		"endLine": 10,
+		"endColumn": 2,
+		"fix": {
+			"range": [
+				130,
+				130
+			],
+			"text": ";"
+		}
+	},
+	{
+		"ruleId": "@typescript-eslint/no-unused-vars",
+		"severity": 1,
+		"line": 12,
+		"column": 8,
+		"endLine": 12,
+		"endColumn": 11
+	},
+	{
+		"ruleId": "@typescript-eslint/no-empty-interface",
+		"severity": 2,
+		"line": 14,
+		"column": 12,
+		"endLine": 14,
+		"endColumn": 13
+	},
+	{
+		"ruleId": "@typescript-eslint/no-unused-vars",
+		"severity": 1,
+		"line": 14,
+		"column": 12,
+		"endLine": 14,
+		"endColumn": 13
+	},
+	{
+		"ruleId": "@typescript-eslint/no-unused-vars",
+		"severity": 1,
+		"line": 16,
+		"column": 13,
+		"endLine": 16,
+		"endColumn": 14
+	},
+	{
+		"ruleId": "@typescript-eslint/no-empty-function",
+		"severity": 2,
+		"line": 16,
+		"column": 16,
+		"endLine": 16,
+		"endColumn": 18
+	},
+	{
+		"ruleId": "module-script-reactive-declaration",
+		"severity": 1,
+		"line": 19,
+		"column": 10,
+		"endLine": 19,
+		"endColumn": 11
+	},
+	{
+		"ruleId": "missing-declaration",
+		"severity": 1,
+		"line": 23,
+		"column": 5,
+		"endLine": 23,
+		"endColumn": 6
+	},
+	{
+		"ruleId": "no-undef",
+		"severity": 2,
+		"line": 23,
+		"column": 5,
+		"endLine": 23,
+		"endColumn": 6
+	}
+]

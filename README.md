@@ -78,6 +78,8 @@ module.exports = {
   },
   settings: {
     'svelte3/typescript': () => require('typescript'), // pass the TypeScript package to the Svelte plugin
+    // OR
+    'svelte3/typescript': true, // use TypeScript as peer dependency in the Svelte plugin
     // ...
   }
 };

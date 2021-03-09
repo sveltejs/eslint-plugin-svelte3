@@ -12,9 +12,15 @@ let typescript
 const getTypescript = settings => {
 	// Typescript is expensive to load, so only load it if needed.
 	if (!typescript) {
-		typescript = typeof settings['svelte3/typescript'] === 'function'
-			? settings['svelte3/typescript']()
-			: settings['svelte3/typescript'];
+		const settingsType = typeof settings['svelte3/typescript'];
+		if (settingsType === true) {
+			// Typescript is expensive to load, so only load it if needed.
+			typescript = require('typescript');
+		} else if (settingsType === 'function') {
+			typescript = settings['svelte3/typescript']();
+		} else {
+			typescript =  settings['svelte3/typescript'];
+		}
 	}
 
 	return typescript;
