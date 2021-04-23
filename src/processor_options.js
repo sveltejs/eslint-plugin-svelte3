@@ -5,9 +5,9 @@ const linter_paths = Object.keys(require.cache).filter(path => path.endsWith('/e
 if (!linter_paths.length) {
 	throw new Error('Could not find ESLint Linter in require cache');
 }
-// there may be more than one instance in case of multiple folders in the workspace
-// try to find the one that's inside the same node_modules directory as this plugin
-// if not found for some reason, assume it's the last one in the array
+// There may be more than one instance of the linter when we're in a workspace with multiple directories.
+// We first try to find the one that's inside the same node_modules directory as this plugin.
+// If that can't be found for some reason, we assume the one we want is the last one in the array.
 const current_node_modules_path = __dirname.replace(/(?<=[/\\]node_modules[/\\]).*$/, '')
 const linter_path = linter_paths.find(path => path.startsWith(current_node_modules_path)) || linter_paths.pop();
 const { Linter } = require(linter_path);
