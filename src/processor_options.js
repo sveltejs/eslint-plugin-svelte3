@@ -17,13 +17,12 @@ Linter.prototype.verify = function(code, config, options) {
 	processor_options.ignore_styles = settings['svelte3/ignore-styles'];
 	processor_options.compiler_options = settings['svelte3/compiler-options'];
 	processor_options.named_blocks = settings['svelte3/named-blocks'];
-	if (settings['svelte3/typescript'] === true) {
-		processor_options.typescript = require('typescript');
-	} else if (typeof settings['svelte3/typescript'] === 'function') {
-		processor_options.typescript = settings['svelte3/typescript']();
-	} else {
-		processor_options.typescript = settings['svelte3/typescript'];
-	}
+	processor_options.typescript =
+		settings['svelte3/typescript'] === true
+			? require('typescript')
+			: typeof settings['svelte3/typescript'] === 'function'
+				? settings['svelte3/typescript']()
+				: settings['svelte3/typescript'];
 	// call original Linter#verify
 	return verify.call(this, code, config, options);
 };
