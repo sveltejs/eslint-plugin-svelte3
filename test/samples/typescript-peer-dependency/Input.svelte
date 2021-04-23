@@ -6,7 +6,7 @@
 <script lang="ts">
 	export let a: any;
 
-	export let b: any
+		export let b: any
 	export let d: number;
 
 	const asd = d.asd();
