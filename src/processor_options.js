@@ -24,7 +24,6 @@ Linter.prototype.verify = function(code, config, options) {
 	} else {
 		processor_options.typescript = settings['svelte3/typescript'];
 	}
-
 	// call original Linter#verify
 	return verify.call(this, code, config, options);
 };
