@@ -1,4 +1,3 @@
-
 <script>
 	import { imported, createStore } from './store.js';
 
