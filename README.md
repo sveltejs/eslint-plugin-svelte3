@@ -79,7 +79,7 @@ module.exports = {
   settings: {
     'svelte3/typescript': () => require('typescript'), // pass the TypeScript package to the Svelte plugin
     // OR
-    'svelte3/typescript': true, // use TypeScript as peer dependency in the Svelte plugin
+    'svelte3/typescript': true, // load TypeScript as peer dependency
     // ...
   }
 };
@@ -164,7 +164,11 @@ The default is to not use named code blocks.
 
 ### `svelte3/typescript`
 
-If you use TypeScript inside your Svelte components and want ESLint support, you need to set this option. It expects an instance of the TypeScript package. This probably means doing `'svelte3/typescript': require('typescript')`.
+If you use TypeScript inside your Svelte components and want ESLint support, you need to set this option. It expects a function returning an instance of the TypeScript package. This probably means doing `'svelte3/typescript': () => require('typescript')`.
+
+To support ESLint configuration files that are not written in CommonJS, this can also be set to `true`, which behaves the same as `() => require('typescript')`.
+
+For backwards compatibility, it also supports being passed the TypeScript package directly, but this is not generally recommended as it unnecessarily loads the package in some situations.
 
 The default is to not enable TypeScript support.
 
