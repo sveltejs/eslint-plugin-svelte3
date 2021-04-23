@@ -1,3 +1,11 @@
+# 3.2.0
+
+- Support lazy-loading TypeScript compiler
+- Support non-CommonJS format of ESLint configuration file when using TypeScript by specifying `true` in configuration
+- Improve logic for finding the correct `Linter` instance in a workspace with multiple directories
+- Improve filtering of `@typescript-eslint/indent` and `@typescript-eslint/quotes` messages like what already happens with `indent` and `quotes`
+- Fix erroneous messages when a component only writes to a store
+
 # 3.1.2
 
 - Silence some incorrect `unsafe-member-access` errors - see README for current limitations
