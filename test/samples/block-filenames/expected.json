@@ -1,11 +1,15 @@
 [
 	{
 		"ruleId": "curly",
+		"severity": 2,
+		"message": "Expected { after 'if' condition.",
 		"line": 2,
 		"column": 12
 	},
 	{
 		"ruleId": "curly",
+		"severity": 2,
+		"message": "Expected { after 'if' condition.",
 		"line": 7,
 		"column": 11
 	}

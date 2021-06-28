@@ -1,30 +1,55 @@
 [
 	{
 		"ruleId": "semi",
+		"severity": 2,
+		"message": "Missing semicolon.",
 		"line": 2,
 		"column": 5,
+		"nodeType": "ExpressionStatement",
+		"messageId": "missingSemi",
+		"endLine": 3,
+		"endColumn": 2,
 		"fix": {
-			"range": [13, 13],
+			"range": [
+				13,
+				13
+			],
 			"text": ";"
 		}
 	},
 	{
 		"ruleId": "indent",
+		"severity": 2,
+		"message": "Expected indentation of 0 tabs but found 1.",
 		"line": 3,
 		"column": 2,
+		"nodeType": "Identifier",
+		"messageId": "wrongIndentation",
 		"endLine": 3,
 		"endColumn": 3,
 		"fix": {
-			"range": [15, 16],
+			"range": [
+				15,
+				16
+			],
 			"text": ""
 		}
 	},
 	{
 		"ruleId": "semi",
+		"severity": 2,
+		"message": "Missing semicolon.",
 		"line": 3,
 		"column": 6,
+		"nodeType": "ExpressionStatement",
+		"messageId": "missingSemi",
+		"endLine": 4,
+		"endColumn": 2,
 		"fix": {
-			"range": [19, 19],
+			"range": [
+				19,
+				19
+			],
 			"text": ";"
 		}
 	}

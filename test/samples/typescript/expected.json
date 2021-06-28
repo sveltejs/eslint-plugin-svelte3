@@ -2,6 +2,7 @@
 	{
 		"ruleId": "module-script-reactive-declaration",
 		"severity": 1,
+		"message": "$: has no effect in a module script",
 		"line": 3,
 		"column": 2,
 		"endLine": 3,
@@ -10,14 +11,18 @@
 	{
 		"ruleId": "no-undef",
 		"severity": 2,
+		"message": "'z2' is not defined.",
 		"line": 3,
 		"column": 5,
+		"nodeType": "Identifier",
+		"messageId": "undef",
 		"endLine": 3,
 		"endColumn": 7
 	},
 	{
 		"ruleId": "unused-export-let",
 		"severity": 1,
+		"message": "Component has unused export property 'a'. If it is for external reference only, please consider using `export const a`",
 		"line": 7,
 		"column": 13,
 		"endLine": 7,
@@ -26,8 +31,11 @@
 	{
 		"ruleId": "@typescript-eslint/no-explicit-any",
 		"severity": 1,
+		"message": "Unexpected any. Specify a different type.",
 		"line": 7,
 		"column": 16,
+		"nodeType": "TSAnyKeyword",
+		"messageId": "unexpectedAny",
 		"endLine": 7,
 		"endColumn": 19,
 		"suggestions": [
@@ -58,8 +66,11 @@
 	{
 		"ruleId": "indent",
 		"severity": 2,
+		"message": "Expected indentation of 0 tabs but found 1.",
 		"line": 9,
 		"column": 2,
+		"nodeType": "Keyword",
+		"messageId": "wrongIndentation",
 		"endLine": 9,
 		"endColumn": 3,
 		"fix": {
@@ -73,8 +84,11 @@
 	{
 		"ruleId": "@typescript-eslint/no-explicit-any",
 		"severity": 1,
+		"message": "Unexpected any. Specify a different type.",
 		"line": 9,
 		"column": 17,
+		"nodeType": "TSAnyKeyword",
+		"messageId": "unexpectedAny",
 		"endLine": 9,
 		"endColumn": 20,
 		"suggestions": [
@@ -105,8 +119,11 @@
 	{
 		"ruleId": "semi",
 		"severity": 2,
+		"message": "Missing semicolon.",
 		"line": 9,
 		"column": 20,
+		"nodeType": "VariableDeclaration",
+		"messageId": "missingSemi",
 		"endLine": 10,
 		"endColumn": 2,
 		"fix": {
@@ -120,46 +137,62 @@
 	{
 		"ruleId": "@typescript-eslint/no-unused-vars",
 		"severity": 1,
+		"message": "'asd' is assigned a value but never used.",
 		"line": 12,
 		"column": 8,
+		"nodeType": "Identifier",
+		"messageId": "unusedVar",
 		"endLine": 12,
 		"endColumn": 11
 	},
 	{
 		"ruleId": "@typescript-eslint/no-empty-interface",
 		"severity": 2,
+		"message": "An empty interface is equivalent to `{}`.",
 		"line": 14,
 		"column": 12,
+		"nodeType": "Identifier",
+		"messageId": "noEmpty",
 		"endLine": 14,
 		"endColumn": 13
 	},
 	{
 		"ruleId": "@typescript-eslint/no-unused-vars",
 		"severity": 1,
+		"message": "'A' is defined but never used.",
 		"line": 14,
 		"column": 12,
+		"nodeType": "Identifier",
+		"messageId": "unusedVar",
 		"endLine": 14,
 		"endColumn": 13
 	},
 	{
 		"ruleId": "@typescript-eslint/no-unused-vars",
 		"severity": 1,
+		"message": "'x' is defined but never used.",
 		"line": 16,
 		"column": 13,
+		"nodeType": "Identifier",
+		"messageId": "unusedVar",
 		"endLine": 16,
 		"endColumn": 14
 	},
 	{
 		"ruleId": "@typescript-eslint/no-empty-function",
 		"severity": 2,
+		"message": "Unexpected empty function 'c'.",
 		"line": 16,
 		"column": 16,
+		"nodeType": "FunctionDeclaration",
+		"messageId": "unexpected",
 		"endLine": 16,
 		"endColumn": 18
 	},
 	{
 		"ruleId": "missing-declaration",
 		"severity": 1,
+		"message": "'x' is not defined",
 		"line": 23,
 		"column": 5,
 		"endLine": 23,
@@ -168,8 +201,11 @@
 	{
 		"ruleId": "no-undef",
 		"severity": 2,
+		"message": "'x' is not defined.",
 		"line": 23,
 		"column": 5,
+		"nodeType": "Identifier",
+		"messageId": "undef",
 		"endLine": 23,
 		"endColumn": 6
 	}

@@ -1,20 +1,30 @@
 [
 	{
 		"ruleId": "no-unused-vars",
+		"severity": 2,
+		"message": "'bar' is assigned a value but never used.",
 		"line": 2,
 		"column": 18,
+		"nodeType": "Identifier",
+		"messageId": "unusedVar",
 		"endLine": 2,
 		"endColumn": 21
 	},
 	{
 		"ruleId": "prefer-const",
+		"severity": 2,
+		"message": "'baz1' is never reassigned. Use 'const' instead.",
 		"line": 3,
 		"column": 6,
+		"nodeType": "Identifier",
+		"messageId": "useConst",
 		"endLine": 3,
 		"endColumn": 10
 	},
 	{
 		"ruleId": "missing-declaration",
+		"severity": 1,
+		"message": "'blah' is not defined",
 		"line": 9,
 		"column": 14,
 		"endLine": 9,

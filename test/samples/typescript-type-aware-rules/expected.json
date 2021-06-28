@@ -2,24 +2,33 @@
 	{
 		"ruleId": "@typescript-eslint/no-for-in-array",
 		"severity": 2,
+		"message": "For-in loops over arrays are forbidden. Use for-of or array.forEach instead.",
 		"line": 2,
 		"column": 2,
+		"nodeType": "ForInStatement",
+		"messageId": "forInViolation",
 		"endLine": 4,
 		"endColumn": 3
 	},
 	{
 		"ruleId": "@typescript-eslint/no-unsafe-return",
 		"severity": 2,
+		"message": "Unsafe return of an `any` typed value.",
 		"line": 7,
 		"column": 3,
+		"nodeType": "ReturnStatement",
+		"messageId": "unsafeReturn",
 		"endLine": 7,
 		"endColumn": 19
 	},
 	{
 		"ruleId": "@typescript-eslint/no-explicit-any",
 		"severity": 1,
+		"message": "Unexpected any. Specify a different type.",
 		"line": 7,
 		"column": 15,
+		"nodeType": "TSAnyKeyword",
+		"messageId": "unexpectedAny",
 		"endLine": 7,
 		"endColumn": 18,
 		"suggestions": [
@@ -50,16 +59,22 @@
 	{
 		"ruleId": "@typescript-eslint/no-unsafe-member-access",
 		"severity": 2,
+		"message": "Unsafe member access .hello on an `any` value.",
 		"line": 10,
 		"column": 2,
+		"nodeType": "MemberExpression",
+		"messageId": "unsafeMemberExpression",
 		"endLine": 10,
 		"endColumn": 13
 	},
 	{
 		"ruleId": "@typescript-eslint/no-unsafe-call",
 		"severity": 2,
+		"message": "Unsafe call of an `any` typed value.",
 		"line": 10,
 		"column": 2,
+		"nodeType": "MemberExpression",
+		"messageId": "unsafeCall",
 		"endLine": 10,
 		"endColumn": 13
 	}

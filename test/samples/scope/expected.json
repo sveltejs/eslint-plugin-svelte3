@@ -1,43 +1,67 @@
 [
 	{
 		"ruleId": "no-undef",
+		"severity": 2,
+		"message": "'bar' is not defined.",
 		"line": 9,
 		"column": 2,
+		"nodeType": "Identifier",
+		"messageId": "undef",
 		"endLine": 9,
 		"endColumn": 5
 	},
 	{
 		"ruleId": "no-undef",
+		"severity": 2,
+		"message": "'bar3' is not defined.",
 		"line": 14,
 		"column": 3,
+		"nodeType": "Identifier",
+		"messageId": "undef",
 		"endLine": 14,
 		"endColumn": 7
 	},
 	{
 		"ruleId": "no-undef",
+		"severity": 2,
+		"message": "'baz3' is not defined.",
 		"line": 24,
 		"column": 3,
+		"nodeType": "Identifier",
+		"messageId": "undef",
 		"endLine": 24,
 		"endColumn": 7
 	},
 	{
 		"ruleId": "no-undef",
+		"severity": 2,
+		"message": "'blah1' is not defined.",
 		"line": 29,
 		"column": 4,
+		"nodeType": "Identifier",
+		"messageId": "undef",
 		"endLine": 29,
 		"endColumn": 9
 	},
 	{
 		"ruleId": "no-undef",
+		"severity": 2,
+		"message": "'blah2' is not defined.",
 		"line": 38,
 		"column": 3,
+		"nodeType": "Identifier",
+		"messageId": "undef",
 		"endLine": 38,
 		"endColumn": 8
 	},
 	{
 		"ruleId": "no-undef",
+		"severity": 2,
+		"message": "'blah1' is not defined.",
 		"line": 40,
 		"column": 3,
+		"nodeType": "Identifier",
+		"messageId": "undef",
 		"endLine": 40,
 		"endColumn": 8
 	}

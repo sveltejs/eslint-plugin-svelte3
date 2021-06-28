@@ -1,1 +1,10 @@
-[]
+[
+	{
+		"ruleId": null,
+		"fatal": true,
+		"severity": 2,
+		"message": "Parsing error: Unexpected token :",
+		"line": 3,
+		"column": 22
+	}
+]
