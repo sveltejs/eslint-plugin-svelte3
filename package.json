@@ -34,6 +34,7 @@
 		"test": "npm run build && node test"
 	},
 	"devDependencies": {
+		"eslint-plugin-custom-rules": "file://./test/samples/html",
 		"@rollup/plugin-node-resolve": "^11.2.0",
 		"@typescript-eslint/eslint-plugin": "^4.14.2",
 		"@typescript-eslint/parser": "^4.14.2",
