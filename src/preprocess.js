@@ -1,8 +1,15 @@
-import { new_block, get_translation } from "./block.js";
+import {
+  new_block,
+  get_translation,
+  get_template_translation,
+} from "./block.js";
 import { processor_options } from "./processor_options.js";
 import { state } from "./state.js";
 import { DocumentMapper } from "./mapping.js";
-import { capitalize, get_offsets, pad } from "./utils";
+import {
+  closingTagLength,
+  padCodeWithMissingNodesLines,
+} from "./utils";
 
 let default_compiler;
 
@@ -164,10 +171,9 @@ export const preprocess = (text) => {
     state.blocks.set(with_file_ending("template"), block);
 
     const htmlBlock = new_block();
-    state.blocks.set(
-      `svelte${processor_options.typescript ? ".t" : ".j"}sx`,
-      htmlBlock
-    );
+
+    padCodeWithMissingNodesLines(ast, text);
+
     htmlBlock.transformed_code += "(<>";
 
     if (processor_options.typescript) {
@@ -247,13 +253,7 @@ export const preprocess = (text) => {
                 .map((attr) => {
                   switch (attr.type) {
                     case "EventHandler": {
-                      if (!attr.expression) {
-                        return `on${capitalize(attr.name)}`;
-                      }
-                      return `on${capitalize(attr.name)}={${text.slice(
-                        attr.expression.start,
-                        attr.expression.end
-                      )}}`;
+                      return `on${attr.name}`;
                     }
                     case "Let":
                     case "Transition": {
@@ -270,9 +270,16 @@ export const preprocess = (text) => {
                       );
                       return `data-${attr.type.toLowerCase()}-${
                         attr.name
-                      }={${varName}='',${varName}}`;
+                      }="${varName}"`;
                     }
                     default: {
+                      if (
+                        attr.value &&
+                        attr.value.length &&
+                        attr.value[0].type !== "Text"
+                      ) {
+                        return attr.name;
+                      }
                       return `${text.slice(attr.start, attr.end)}`;
                     }
                   }
@@ -291,13 +298,29 @@ export const preprocess = (text) => {
           }
           case "Slot":
           case "MustacheTag": {
-            if (parent.type === "Attribute") {
-              break;
-            }
-            htmlBlock.transformed_code += text.slice(node.start, node.end);
             break;
           }
-          case "EachBlock":
+          case "EachBlock": {
+            // {#each} -> <each>
+            htmlBlock.transformed_code += `<${
+              node.name || node.type.toLowerCase().replace("block", "")
+            }>`;
+            if (node.children && node.children.length) {
+              let eachEndsAt = node.children[0].start - 1;
+
+              while (text[eachEndsAt] && text[eachEndsAt] !== "}") {
+                eachEndsAt--;
+              }
+
+              if (text[eachEndsAt] === "}") {
+                htmlBlock.transformed_code += text.slice(
+                  eachEndsAt + 1,
+                  node.children[0].start
+                );
+              }
+            }
+            break;
+          }
           case "ThenBlock":
           case "CatchBlock":
           case "Head":
@@ -308,11 +331,10 @@ export const preprocess = (text) => {
             htmlBlock.transformed_code += `<${
               node.name || node.type.toLowerCase().replace("block", "")
             }>`;
-            // makes sure newlines are preserved
-            if (node.children && node.children.length) {
-              htmlBlock.transformed_code += pad(
-                get_offsets(text.slice(node.start, node.children[0].start))
-                  .lines - 1
+            if (node.expression && node.children && node.children.length) {
+              htmlBlock.transformed_code += text.slice(
+                node.expression.end + 1,
+                node.children[0].start
               );
             }
             break;
@@ -337,20 +359,21 @@ export const preprocess = (text) => {
           case "Head":
           case "IfBlock":
           case "ElseBlock":
-          case "AwaitBlock":
+          case "AwaitBlock": {
+            if (node.expression && node.children && node.children.length) {
+              htmlBlock.transformed_code += text.slice(
+                node.children[node.children.length - 1].end,
+                node.end - closingTagLength[node.type]
+              );
+            }
+            htmlBlock.transformed_code += `</${
+              node.name || node.type.toLowerCase().replace("block", "")
+            }>`;
+            break;
+          }
           case "InlineComponent":
           case "Title":
           case "Element": {
-            if (node.expression && node.children && node.children.length) {
-              htmlBlock.transformed_code += pad(
-                get_offsets(
-                  text.slice(
-                    node.children[node.children.length - 1].end,
-                    node.end
-                  )
-                ).lines - 1
-              );
-            }
             htmlBlock.transformed_code += `</${
               node.name || node.type.toLowerCase().replace("block", "")
             }>`;
@@ -362,9 +385,17 @@ export const preprocess = (text) => {
 
     htmlBlock.transformed_code += "</>);";
 
-    if (htmlBlock.transformed_code === "(<></>);") {
+    if (htmlBlock.transformed_code.match(/\(<>(\s+)?<\/>\);/mg)) {
       htmlBlock.transformed_code = "";
     }
+    if (htmlBlock.transformed_code) {
+      state.blocks.set(
+          `svelte${processor_options.typescript ? ".t" : ".j"}sx`,
+          htmlBlock
+      );
+    }
+    get_template_translation(text, htmlBlock, ast);
+
     block.transformed_code += `{${vars
       .filter((v) => v.referenced_from_script || v.name[0] === "$")
       .map((v) => v.name)}}`;

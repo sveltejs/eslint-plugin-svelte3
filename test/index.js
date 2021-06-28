@@ -1,7 +1,7 @@
 "use strict";
+
 require("eslint/lib/linter");
-const preprocess = require("eslint-plugin-svelte3").processors.svelte3
-  .preprocess;
+const svelte3 = require("eslint-plugin-svelte3").processors.svelte3;
 
 process.chdir(__dirname);
 
@@ -12,7 +12,7 @@ const fs = require("fs");
 const cli = new CLIEngine({ reportUnusedDisableDirectives: true });
 
 function checkPreprocessOutput(name, text) {
-  const preprocessed = preprocess(text);
+  const preprocessed = svelte3.preprocess(text);
   let expectedPreprocessorOutput;
 
   preprocessed.forEach((codeText, i) => {
@@ -34,6 +34,8 @@ function checkPreprocessOutput(name, text) {
       `${name}: ${filename}`
     );
   });
+
+  svelte3.postprocess([])
 }
 
 function jsonify(val) {

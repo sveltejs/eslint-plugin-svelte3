@@ -1,20 +1,49 @@
 (<>
 
 
-<header class="page-header" data-class-full-width={fullWidth='',fullWidth}>
-  <slot />
-
-  <div class="title">
-    <h2 data-class-keep-title-case={keepTitleCase='',keepTitleCase}>
-      <if>
-<a href={breadcrumbLink} class="breadcrumb">{breadcrumbLabel}</a>
+2
+<svelte:head>
+  <div>head</div>
+</svelte:head>
+3
+<h1 data-error-out></h1>
+<if>
+  <div>0</div>
 </if>
-      {title}
-    </h2>
-    <h1 data-error-out="1"></h1>
-  </div>
-</header>
-<div class="trapFocus" onKeydown={wrapFocus}>
-  <slot />
-</div>
-<a onClick data-transition-trapFocus target="_blank"></a></>);
+<each>
+  <div>each</div>
+  </each>
+4
+
+
+
+5
+
+<await>
+  <div>pending</div>
+  <then>
+  <div>then</div>
+  </then><catch>
+  <div>catch</div>
+  </catch></await>
+<svelte:component>
+  <div>component</div>
+</svelte:component>
+<if>
+<svelte:self>
+  <div>self</div>
+</svelte:self>
+
+  </if>
+
+
+6
+
+
+
+7
+
+  <div>options</div>
+
+
+8</>);
