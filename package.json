@@ -31,7 +31,10 @@
 	"scripts": {
 		"build": "rollup -c",
 		"dev": "rollup -cw",
-		"test": "npm run build && node test"
+		"test": "npm run build && node test",
+		"dev-test": "rollup -cm && node test",
+		"lint": "eslint --ext .svelte .",
+		"lint:prettier": "prettier --write ."
 	},
 	"devDependencies": {
 		"eslint-plugin-custom-rules": "file://./test/samples/html",
