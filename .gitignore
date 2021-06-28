@@ -4,3 +4,4 @@
 /pnpm-lock.yaml
 /test/samples/*/actual.json
 /yarn.lock
+.idea
