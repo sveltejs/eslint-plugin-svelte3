@@ -1,23 +1,5 @@
 [
 	{
-		"ruleId": "semi",
-		"severity": 2,
-		"message": "Missing semicolon.",
-		"line": 2,
-		"column": 9,
-		"nodeType": "VariableDeclaration",
-		"messageId": "missingSemi",
-		"endLine": 3,
-		"endColumn": 2,
-		"fix": {
-			"range": [
-				27,
-				27
-			],
-			"text": ";"
-		}
-	},
-	{
 		"ruleId": "module-script-reactive-declaration",
 		"severity": 1,
 		"message": "$: has no effect in a module script",
@@ -25,24 +7,6 @@
 		"column": 2,
 		"endLine": 3,
 		"endColumn": 12
-	},
-	{
-		"ruleId": "indent",
-		"severity": 2,
-		"message": "Expected indentation of 0 tabs but found 1.",
-		"line": 3,
-		"column": 2,
-		"nodeType": "Keyword",
-		"messageId": "wrongIndentation",
-		"endLine": 3,
-		"endColumn": 3,
-		"fix": {
-			"range": [
-				29,
-				30
-			],
-			"text": ""
-		}
 	},
 	{
 		"ruleId": "no-undef",
@@ -54,35 +18,6 @@
 		"messageId": "undef",
 		"endLine": 3,
 		"endColumn": 7
-	},
-	{
-		"ruleId": "@typescript-eslint/no-unused-vars",
-		"severity": 1,
-		"message": "'bar' is defined but never used.",
-		"line": 3,
-		"column": 7,
-		"nodeType": "Identifier",
-		"messageId": "unusedVar",
-		"endLine": 3,
-		"endColumn": 10
-	},
-	{
-		"ruleId": "semi",
-		"severity": 2,
-		"message": "Missing semicolon.",
-		"line": 3,
-		"column": 10,
-		"nodeType": "VariableDeclaration",
-		"messageId": "missingSemi",
-		"endLine": 4,
-		"endColumn": 2,
-		"fix": {
-			"range": [
-				37,
-				37
-			],
-			"text": ";"
-		}
 	},
 	{
 		"ruleId": "unused-export-let",

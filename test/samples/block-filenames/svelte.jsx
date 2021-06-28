@@ -2,4 +2,9 @@
 
 
 
-<div onClick={() => { if (foo) bar; }}>blah</div></>);
+
+
+
+
+
+<div onclick>blah</div></>);

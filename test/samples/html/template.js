@@ -1,15 +1,13 @@
-let trapFocus;let fullWidth;let keepTitleCase;let breadcrumbLink;let breadcrumbLabel;let title;let wrapFocus;let a;(
-fullWidth
+let a;(
+0
+);{let a=0,i=0;(
+[]
+);}(
+0
+);{let a=0;}{let e=0;}(
+0
 );(
-keepTitleCase
+0
 );(
-breadcrumbLink
-);(
-breadcrumbLink
-);(
-breadcrumbLabel
-);(
-title
-);(
-wrapFocus
+a
 );{}

@@ -1,4 +1,11 @@
 (<>
 
-<div onClick={() => new Thing2()}></div>
+
+
+
+
+
+
+
+<div onclick></div>
 <Component></Component></>);
