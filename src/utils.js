@@ -59,3 +59,9 @@ export const get_line_offsets = str => {
 	}
 	return offsets;
 };
+
+export const capitalize = (text) => text[0].toUpperCase() + text.slice(1);
+
+export const pad = (times) => {
+	return Array.from({ length: times }, () => "\n").join("");
+};
