@@ -35,7 +35,7 @@ function checkPreprocessOutput(name, text) {
     );
   });
 
-  svelte3.postprocess([])
+  svelte3.postprocess([]);
 }
 
 function jsonify(val) {
@@ -59,8 +59,9 @@ for (const name of fs.readdirSync("samples")) {
     }
     const result = cli.executeOnFiles([`samples/${name}/Input.svelte`]);
     const actual_messages = Object.values(
-      Object.fromEntries(
-        result.results[0].messages.map((m) => [JSON.stringify(m), m])
+      result.results[0].messages.reduce(
+        (mem, m) => Object.assign(mem, { [JSON.stringify(m)]: m }),
+        {}
       )
     );
     fs.writeFileSync(
