@@ -5,3 +5,8 @@
 /test/samples/*/actual.json
 /yarn.lock
 .idea
+/test/samples/*/instance.*
+/test/samples/*/module.*
+/test/samples/*/template.*
+/test/samples/*/svelte*.tsx
+/test/samples/*/svelte*.jsx
