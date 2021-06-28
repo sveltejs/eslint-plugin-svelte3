@@ -1,6 +1,8 @@
 [
 	{
 		"ruleId": "ParseError",
+		"severity": 2,
+		"message": "<script> must have a closing tag",
 		"line": 1,
 		"column": 9,
 		"endLine": 1,

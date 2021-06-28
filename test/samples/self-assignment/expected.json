@@ -1,8 +1,12 @@
 [
 	{
 		"ruleId": "no-self-assign",
+		"severity": 2,
+		"message": "'baz' is assigned to itself.",
 		"line": 6,
 		"column": 9,
+		"nodeType": "Identifier",
+		"messageId": "selfAssignment",
 		"endLine": 6,
 		"endColumn": 12
 	}

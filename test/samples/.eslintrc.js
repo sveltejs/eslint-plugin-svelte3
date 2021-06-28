@@ -1,4 +1,5 @@
 module.exports = {
+	"extends": ["plugin:svelte3/defaultWithJsx"],
 	root: true,
 	parserOptions: {
 		ecmaVersion: 2019,
@@ -14,5 +15,5 @@ module.exports = {
 			files: ['**/*.svelte'],
 			processor: 'svelte3/svelte3',
 		},
-	],
+	]
 };

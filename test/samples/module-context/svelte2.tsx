@@ -1,0 +1,1 @@
+let foo;let bar;let baz1;let baz2;let $foo;let $blah;{foo,$foo,$blah}

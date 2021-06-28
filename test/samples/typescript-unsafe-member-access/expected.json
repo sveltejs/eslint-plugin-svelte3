@@ -2,88 +2,121 @@
 	{
 		"ruleId": "@typescript-eslint/no-unsafe-member-access",
 		"severity": 2,
+		"message": "Unsafe member access .length on an `any` value.",
 		"line": 6,
 		"column": 14,
+		"nodeType": "MemberExpression",
+		"messageId": "unsafeMemberExpression",
 		"endLine": 6,
 		"endColumn": 35
 	},
 	{
 		"ruleId": "@typescript-eslint/no-unsafe-member-access",
 		"severity": 2,
+		"message": "Unsafe member access .length on an `any` value.",
 		"line": 20,
 		"column": 14,
+		"nodeType": "MemberExpression",
+		"messageId": "unsafeMemberExpression",
 		"endLine": 20,
 		"endColumn": 35
 	},
 	{
 		"ruleId": "@typescript-eslint/no-unsafe-member-access",
 		"severity": 2,
+		"message": "Unsafe member access .length on an `any` value.",
 		"line": 22,
 		"column": 14,
+		"nodeType": "MemberExpression",
+		"messageId": "unsafeMemberExpression",
 		"endLine": 22,
 		"endColumn": 36
 	},
 	{
 		"ruleId": "@typescript-eslint/no-unsafe-member-access",
 		"severity": 2,
+		"message": "Unsafe member access .length on an `any` value.",
 		"line": 24,
 		"column": 14,
+		"nodeType": "MemberExpression",
+		"messageId": "unsafeMemberExpression",
 		"endLine": 24,
 		"endColumn": 36
 	},
 	{
 		"ruleId": "@typescript-eslint/no-unsafe-member-access",
 		"severity": 2,
+		"message": "Unsafe member access .length on an `any` value.",
 		"line": 26,
 		"column": 14,
+		"nodeType": "MemberExpression",
+		"messageId": "unsafeMemberExpression",
 		"endLine": 26,
 		"endColumn": 36
 	},
 	{
 		"ruleId": "@typescript-eslint/no-unsafe-member-access",
 		"severity": 2,
+		"message": "Unsafe member access .length on an `any` value.",
 		"line": 28,
 		"column": 14,
+		"nodeType": "MemberExpression",
+		"messageId": "unsafeMemberExpression",
 		"endLine": 28,
 		"endColumn": 37
 	},
 	{
 		"ruleId": "@typescript-eslint/no-unsafe-member-access",
 		"severity": 2,
+		"message": "Unsafe member access .length on an `any` value.",
 		"line": 32,
 		"column": 2,
+		"nodeType": "MemberExpression",
+		"messageId": "unsafeMemberExpression",
 		"endLine": 32,
 		"endColumn": 23
 	},
 	{
 		"ruleId": "@typescript-eslint/no-unsafe-member-access",
 		"severity": 2,
+		"message": "Unsafe member access .length on an `any` value.",
 		"line": 34,
 		"column": 2,
+		"nodeType": "MemberExpression",
+		"messageId": "unsafeMemberExpression",
 		"endLine": 34,
 		"endColumn": 24
 	},
 	{
 		"ruleId": "@typescript-eslint/no-unsafe-member-access",
 		"severity": 2,
+		"message": "Unsafe member access .length on an `any` value.",
 		"line": 36,
 		"column": 2,
+		"nodeType": "MemberExpression",
+		"messageId": "unsafeMemberExpression",
 		"endLine": 36,
 		"endColumn": 24
 	},
 	{
 		"ruleId": "@typescript-eslint/no-unsafe-member-access",
 		"severity": 2,
+		"message": "Unsafe member access .length on an `any` value.",
 		"line": 38,
 		"column": 2,
+		"nodeType": "MemberExpression",
+		"messageId": "unsafeMemberExpression",
 		"endLine": 38,
 		"endColumn": 24
 	},
 	{
 		"ruleId": "@typescript-eslint/no-unsafe-member-access",
 		"severity": 2,
+		"message": "Unsafe member access .length on an `any` value.",
 		"line": 40,
 		"column": 2,
+		"nodeType": "MemberExpression",
+		"messageId": "unsafeMemberExpression",
 		"endLine": 40,
 		"endColumn": 25
 	}

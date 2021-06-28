@@ -1,12 +1,34 @@
 [
 	{
 		"ruleId": "curly",
+		"severity": 2,
+		"message": "Expected { after 'if' condition.",
 		"line": 2,
-		"column": 2
+		"column": 2,
+		"nodeType": "IfStatement",
+		"messageId": "missingCurlyAfterCondition",
+		"fix": {
+			"range": [
+				37,
+				42
+			],
+			"text": "{blah;}"
+		}
 	},
 	{
 		"ruleId": "curly",
+		"severity": 2,
+		"message": "Expected { after 'if' condition.",
 		"line": 7,
-		"column": 2
+		"column": 2,
+		"nodeType": "IfStatement",
+		"messageId": "missingCurlyAfterCondition",
+		"fix": {
+			"range": [
+				88,
+				92
+			],
+			"text": "{bar;}"
+		}
 	}
 ]

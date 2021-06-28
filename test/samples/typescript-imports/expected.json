@@ -2,24 +2,33 @@
 	{
 		"ruleId": "no-unused-vars",
 		"severity": 2,
+		"message": "'UnusedType' is defined but never used.",
 		"line": 2,
 		"column": 22,
+		"nodeType": "Identifier",
+		"messageId": "unusedVar",
 		"endLine": 2,
 		"endColumn": 32
 	},
 	{
 		"ruleId": "no-unused-vars",
 		"severity": 2,
+		"message": "'UnusedComponent' is defined but never used.",
 		"line": 4,
 		"column": 9,
+		"nodeType": "Identifier",
+		"messageId": "unusedVar",
 		"endLine": 4,
 		"endColumn": 24
 	},
 	{
 		"ruleId": "no-unused-vars",
 		"severity": 2,
+		"message": "'UnusedThing' is defined but never used.",
 		"line": 5,
 		"column": 27,
+		"nodeType": "Identifier",
+		"messageId": "unusedVar",
 		"endLine": 5,
 		"endColumn": 38
 	}

@@ -1,51 +1,81 @@
 [
 	{
 		"ruleId": "no-restricted-syntax",
+		"severity": 2,
+		"message": "Using 'LabeledStatement' is not allowed.",
 		"line": 2,
 		"column": 2,
+		"nodeType": "LabeledStatement",
+		"messageId": "restrictedSyntax",
 		"endLine": 2,
 		"endColumn": 11
 	},
 	{
 		"ruleId": "no-labels",
+		"severity": 2,
+		"message": "Unexpected labeled statement.",
 		"line": 2,
 		"column": 2,
+		"nodeType": "LabeledStatement",
+		"messageId": "unexpectedLabel",
 		"endLine": 2,
 		"endColumn": 11
 	},
 	{
 		"ruleId": "no-unused-labels",
+		"severity": 2,
+		"message": "'foo:' is defined but never used.",
 		"line": 2,
 		"column": 2,
+		"nodeType": "Identifier",
+		"messageId": "unused",
 		"endLine": 2,
 		"endColumn": 5,
 		"fix": {
-			"range": [10, 15],
+			"range": [
+				10,
+				15
+			],
 			"text": ""
 		}
 	},
 	{
 		"ruleId": "no-restricted-syntax",
+		"severity": 2,
+		"message": "Using 'LabeledStatement' is not allowed.",
 		"line": 4,
 		"column": 2,
+		"nodeType": "LabeledStatement",
+		"messageId": "restrictedSyntax",
 		"endLine": 4,
 		"endColumn": 13
 	},
 	{
 		"ruleId": "no-labels",
+		"severity": 2,
+		"message": "Unexpected labeled statement.",
 		"line": 4,
 		"column": 2,
+		"nodeType": "LabeledStatement",
+		"messageId": "unexpectedLabel",
 		"endLine": 4,
 		"endColumn": 13
 	},
 	{
 		"ruleId": "no-unused-labels",
+		"severity": 2,
+		"message": "'$baz:' is defined but never used.",
 		"line": 4,
 		"column": 2,
+		"nodeType": "Identifier",
+		"messageId": "unused",
 		"endLine": 4,
 		"endColumn": 6,
 		"fix": {
-			"range": [30, 36],
+			"range": [
+				30,
+				36
+			],
 			"text": ""
 		}
 	}

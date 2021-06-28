@@ -1,23 +1,37 @@
 [
 	{
 		"ruleId": "quotes",
+		"severity": 2,
+		"message": "Strings must use singlequote.",
 		"line": 2,
 		"column": 2,
+		"nodeType": "Literal",
+		"messageId": "wrongQuotes",
 		"endLine": 2,
 		"endColumn": 7,
 		"fix": {
-			"range": [9, 14],
+			"range": [
+				9,
+				14
+			],
 			"text": "'bar'"
 		}
 	},
 	{
 		"ruleId": "quotes",
+		"severity": 2,
+		"message": "Strings must use singlequote.",
 		"line": 3,
 		"column": 13,
+		"nodeType": "Literal",
+		"messageId": "wrongQuotes",
 		"endLine": 3,
 		"endColumn": 19,
 		"fix": {
-			"range": [28, 34],
+			"range": [
+				28,
+				34
+			],
 			"text": "'baz1'"
 		}
 	}

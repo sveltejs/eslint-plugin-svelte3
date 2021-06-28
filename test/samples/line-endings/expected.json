@@ -1,6 +1,8 @@
 [
 	{
 		"ruleId": "missing-declaration",
+		"severity": 1,
+		"message": "'foo' is not defined",
 		"line": 9,
 		"column": 2,
 		"endLine": 9,
