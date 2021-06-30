@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 let a;
 </script>
 2
@@ -33,9 +33,14 @@ let a;
 <svelte:self>
   <div>self</div>
 </svelte:self>
-
+  {:else}<div>else</div>
   {/if}
 {a}
+<!--
+
+comment
+
+-->
 
 6
 <script context="module">
