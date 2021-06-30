@@ -789,11 +789,12 @@ const preprocess = (text) => {
                           attr.modifiers.join("") || ""
                         }="${replaceWithWhitespaces(text, attr.expression)}"`;
                       }
+                      case "Spread":
                       case "Animation":
                       case "Let":
                       case "Transition": {
                         return `data-${attr.type.toLowerCase()}-${
-                          attr.name
+                          attr.name || ''
                         }="${replaceWithWhitespaces(text, attr.expression)}"`;
                       }
                       case "Class":

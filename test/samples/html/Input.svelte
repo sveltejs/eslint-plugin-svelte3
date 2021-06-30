@@ -53,3 +53,4 @@ comment
 </svelte:options>
 
 8
+<div {...a} />
