@@ -865,7 +865,7 @@ const preprocess = (text) => {
           case "ElseBlock":
           case "ThenBlock":
           case "CatchBlock": {
-            if (node.children && node.children.length) {
+            if (node.type === 'ElseBlock' && node.children && node.children.length) {
               let child = node.children[0];
               if (
                 child.type === "IfBlock" &&
