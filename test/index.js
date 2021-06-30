@@ -19,7 +19,7 @@ function checkPreprocessOutput(name, text) {
     const filename = preprocessed[i].filename || `svelte${i}.tsx`;
     const filepath = `samples/${name}/${filename}`;
 
-    if (!fs.existsSync(filepath) || 1) {
+    if (!fs.existsSync(filepath) || process.env.OVERWRITE_SNAPSHOTS) {
       console.log(`Overwriting ${filepath} snapshot`);
       fs.writeFileSync(filepath, preprocessed[i].text || preprocessed[i]);
     }
