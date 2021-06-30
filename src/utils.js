@@ -69,7 +69,7 @@ export const pad = (times) => {
 export const closingTagLength = new Proxy(
   {
     Head: 14,
-    Options: 17
+    Options: 17,
   },
   {
     get(source, name) {
@@ -109,40 +109,40 @@ export function findGaps(nodes, text) {
   }, []);
 }
 
-export function padCodeWithMissingNodesLines(ast, text) {
+// pad html block so we can map errors 1<->1;
+// eg error position in generated code equals to position in original code
+export function injectMissingAstNodes(ast, text) {
   if (!ast.html || !ast.html.children || !ast.html.children.length) {
     return;
   }
   if (!ast.instance && !ast.module && !ast.css) {
     return;
   }
-  const injectOrder = getInjectOrder([ast.instance, ast.module, ast.css].filter(_ => _));
-  // pad html block so we map 1<->1
+  const injectOrder = getInjectOrder(
+    [ast.instance, ast.module, ast.css].filter((_) => _)
+  );
 
   const textNodes = findGaps(ast.html.children, text);
   injectOrder.forEach((node, i) => {
     let textNode = textNodes[i] || textNodes[textNodes.length - 1];
 
     if (textNode.inject === "after") {
-      textNode.raw += pad(
-          get_offsets(text.slice(node.start, node.end)).lines - 1
-      );
+      textNode.raw += replaceNodeWithNewlines(text, node);
     }
 
     if (textNode.inject === "before") {
-      textNode.raw =
-          pad(get_offsets(text.slice(node.start, node.end)).lines - 1) +
-          textNode.raw;
+      textNode.raw = replaceNodeWithNewlines(text, node) + textNode.raw;
     }
   });
 }
 
-export function replaceWithWhitespaces(text, node) {
+function replaceNodeWithNewlines(text, node) {
+  return pad(get_offsets(text.slice(node.start, node.end)).lines - 1);
+}
+
+export function replaceNodeWithWhitespaces(text, node) {
   if (!text || !node) {
-    return '';
+    return "";
   }
-  return text.slice(
-      node.start,
-      node.end
-  ).replace(/\S/g, ' ')
+  return text.slice(node.start, node.end).replace(/\S/g, " ");
 }

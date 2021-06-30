@@ -8,8 +8,8 @@ import { state } from "./state.js";
 import { DocumentMapper } from "./mapping.js";
 import {
   closingTagLength,
-  padCodeWithMissingNodesLines,
-  replaceWithWhitespaces,
+  injectMissingAstNodes,
+  replaceNodeWithWhitespaces,
 } from "./utils";
 
 let default_compiler;
@@ -85,7 +85,7 @@ export const preprocess = (text) => {
   }
   const { ast, warnings, vars, mapper } = result;
 
-  padCodeWithMissingNodesLines(ast, text);
+  injectMissingAstNodes(ast, text);
 
   const references_and_reassignments = `{${vars
     .filter((v) => v.referenced || v.name[0] === "$")
@@ -262,7 +262,7 @@ export const preprocess = (text) => {
                       case "EventHandler": {
                         return `on${attr.name}${
                           attr.modifiers.join("") || ""
-                        }="${replaceWithWhitespaces(text, attr.expression)}"`;
+                        }="${replaceNodeWithWhitespaces(text, attr.expression)}"`;
                       }
                       case "Class":
                       case "Binding":
@@ -273,7 +273,7 @@ export const preprocess = (text) => {
                       case "Transition": {
                         return `data-${attr.type.toLowerCase()}-${
                           attr.name || ""
-                        }="${replaceWithWhitespaces(text, attr.expression)}"`;
+                        }="${replaceNodeWithWhitespaces(text, attr.expression)}"`;
                       }
                       case "Attribute": {
                         if (
@@ -307,12 +307,12 @@ export const preprocess = (text) => {
               break;
             }
             htmlBlock.transformed_code +=
-              node.raw || replaceWithWhitespaces(text, node);
+              node.raw || replaceNodeWithWhitespaces(text, node);
             break;
           }
           case "Slot":
           case "MustacheTag": {
-            htmlBlock.transformed_code += replaceWithWhitespaces(text, node);
+            htmlBlock.transformed_code += replaceNodeWithWhitespaces(text, node);
             break;
           }
           case "EachBlock": {
