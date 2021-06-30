@@ -136,6 +136,23 @@ function padCodeWithMissingNodesLines(ast, text) {
   });
 }
 
+function replaceWithWhitespaces(text, node) {
+  const sliced = text.slice(
+      node.start,
+      node.end
+  );
+  let result = '';
+  for (let i = 0; i < sliced.length; i++) {
+    const matches = sliced[i].match(/\s/);
+    if (matches) {
+      result += matches[0];
+    } else {
+      result += ' ';
+    }
+  }
+  return result;
+}
+
 // return a new block
 const new_block = () => ({
   transformed_code: "",
@@ -543,8 +560,8 @@ const preprocess = (text) => {
   if (processor_options.ignore_styles) {
     // wipe the appropriate <style> tags in the file
     text = text.replace(
-      /<style(\s[^]*?)?>[^]*?<\/style>/gi,
-      (match, attributes = "") => {
+      /<style(\s[^]*?)?>([^]*?)<\/style>/gi,
+      (match, attributes = "", content) => {
         const attrs = {};
         attributes
           .split(/\s+/)
@@ -560,7 +577,7 @@ const preprocess = (text) => {
             }
           });
         return processor_options.ignore_styles(attrs)
-          ? match.replace(/\S/g, " ")
+          ? `<style${attributes}>${content.replace(/\S/g, " ")}</style>`
           : match;
       }
     );
@@ -586,6 +603,8 @@ const preprocess = (text) => {
     return [];
   }
   const { ast, warnings, vars, mapper } = result;
+
+  padCodeWithMissingNodesLines(ast, text);
 
   const references_and_reassignments = `{${vars
     .filter((v) => v.referenced || v.name[0] === "$")
@@ -675,9 +694,7 @@ const preprocess = (text) => {
 
     const htmlBlock = new_block();
 
-    padCodeWithMissingNodesLines(ast, text);
-
-    htmlBlock.transformed_code += "(<>";
+    htmlBlock.transformed_code += "(";
 
     if (processor_options.typescript) {
       block.transformed_code = "";
@@ -749,45 +766,57 @@ const preprocess = (text) => {
           case "InlineComponent":
           case "Title":
           case "Element": {
-            htmlBlock.transformed_code += `<${node.name}`;
+            htmlBlock.transformed_code += `<${(node.name && node.name.replace(":", "-"))}`;
             if (node.attributes && node.attributes.length) {
-              htmlBlock.transformed_code += " ";
+              htmlBlock.transformed_code += text.slice(
+                node.start + 1 + node.name.length,
+                node.attributes[0].start
+              );
               htmlBlock.transformed_code += node.attributes
-                .map((attr) => {
-                  switch (attr.type) {
-                    case "EventHandler": {
-                      return `on${attr.name}`;
-                    }
-                    case "Let":
-                    case "Transition": {
-                      return `data-${attr.type.toLowerCase()}-${attr.name}`;
-                    }
-                    case "Class":
-                    case "Binding": {
-                      if (!attr.expression) {
-                        return `data-${attr.type.toLowerCase()}`;
+                .map((attr, i) => {
+                  function getString() {
+                    switch (attr.type) {
+                      case "EventHandler": {
+                        return `on${attr.name}${
+                          attr.modifiers.join("") || ""
+                        }="${replaceWithWhitespaces(text, attr.expression)}"`;
                       }
-                      const varName = text.slice(
-                        attr.expression.start,
-                        attr.expression.end
-                      );
-                      return `data-${attr.type.toLowerCase()}-${
-                        attr.name
-                      }="${varName}"`;
-                    }
-                    default: {
-                      if (
-                        attr.value &&
-                        attr.value.length &&
-                        attr.value[0].type !== "Text"
-                      ) {
-                        return attr.name;
+                      case "Let":
+                      case "Transition": {
+                        return `data-${attr.type.toLowerCase()}-${attr.name}`;
                       }
-                      return `${text.slice(attr.start, attr.end)}`;
+                      case "Class":
+                      case "Binding": {
+                        if (!attr.expression) {
+                          return `data-${attr.type.toLowerCase()}`;
+                        }
+                        const varName = text.slice(
+                          attr.expression.start,
+                          attr.expression.end
+                        );
+                        return `data-${attr.type.toLowerCase()}-${
+                          attr.name
+                        }="${varName}"`;
+                      }
+                      default: {
+                        if (
+                          attr.value &&
+                          attr.value.length &&
+                          attr.value[0].type !== "Text"
+                        ) {
+                          return attr.name;
+                        }
+                        return `${text.slice(attr.start, attr.end)}`;
+                      }
                     }
                   }
+                  let str = getString();
+                  if (i + 1 < node.attributes.length) {
+                    str += text.slice(attr.end, node.attributes[i + 1].start);
+                  }
+                  return str;
                 })
-                .join(" ");
+                .join("");
             }
             htmlBlock.transformed_code += ">";
             break;
@@ -796,11 +825,12 @@ const preprocess = (text) => {
             if (parent.type === "Attribute") {
               break;
             }
-            htmlBlock.transformed_code += node.raw;
+            htmlBlock.transformed_code += node.raw || node.data;
             break;
           }
           case "Slot":
           case "MustacheTag": {
+            htmlBlock.transformed_code += replaceWithWhitespaces(text, node);
             break;
           }
           case "EachBlock": {
@@ -824,15 +854,28 @@ const preprocess = (text) => {
             }
             break;
           }
-          case "ThenBlock":
-          case "CatchBlock":
-          case "Head":
-          case "IfBlock":
           case "ElseBlock":
+          case "ThenBlock":
+          case "CatchBlock": {
+            htmlBlock.transformed_code += `<${
+              node.name || node.type.toLowerCase().replace("block", "")
+            }/>`;
+            if (node.expression && node.children && node.children.length) {
+              htmlBlock.transformed_code += text.slice(
+                node.expression.end + 1,
+                node.children[0].start
+              );
+            }
+            break;
+          }
+          case "Head":
+          case 'Options':
+          case "IfBlock":
           case "AwaitBlock": {
             // {#if} -> <if>
             htmlBlock.transformed_code += `<${
-              node.name || node.type.toLowerCase().replace("block", "")
+              (node.name && node.name.replace(":", "-")) ||
+              node.type.toLowerCase().replace("block", "")
             }>`;
             if (node.expression && node.children && node.children.length) {
               htmlBlock.transformed_code += text.slice(
@@ -841,6 +884,10 @@ const preprocess = (text) => {
               );
             }
             break;
+          }
+          case 'Fragment': {
+            htmlBlock.transformed_code += '<>';
+            break
           }
         }
       },
@@ -854,21 +901,24 @@ const preprocess = (text) => {
         }
 
         switch (node.type) {
-          case "EachBlock":
-          case "ThenBlock":
-          case "CatchBlock":
           case "Head":
+          case 'Options':
+          case "EachBlock":
           case "IfBlock":
-          case "ElseBlock":
           case "AwaitBlock": {
             if (node.expression && node.children && node.children.length) {
+              let sliceFrom = node.children[node.children.length - 1].end;
+              if (node.else) {
+                sliceFrom = node.else.end;
+              }
               htmlBlock.transformed_code += text.slice(
-                node.children[node.children.length - 1].end,
+                sliceFrom,
                 node.end - closingTagLength[node.type]
               );
             }
             htmlBlock.transformed_code += `</${
-              node.name || node.type.toLowerCase().replace("block", "")
+              (node.name && node.name.replace(":", "-")) ||
+              node.type.toLowerCase().replace("block", "")
             }>`;
             break;
           }
@@ -876,17 +926,21 @@ const preprocess = (text) => {
           case "Title":
           case "Element": {
             htmlBlock.transformed_code += `</${
-              node.name || node.type.toLowerCase().replace("block", "")
+                (node.name && node.name.replace(":", "-")) || node.type.toLowerCase().replace("block", "")
             }>`;
             break;
+          }
+          case 'Fragment': {
+            htmlBlock.transformed_code += '</>';
+            break
           }
         }
       },
     });
 
-    htmlBlock.transformed_code += "</>);";
+    htmlBlock.transformed_code += ");";
 
-    if (htmlBlock.transformed_code.match(/\(<>(\s+)?<\/>\);/mg)) {
+    if (htmlBlock.transformed_code.match(/\(<>(\s+)?<\/>\);/gm)) {
       htmlBlock.transformed_code = "";
     }
     if (htmlBlock.transformed_code) {
