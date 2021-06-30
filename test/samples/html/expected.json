@@ -6,7 +6,7 @@
 		"line": 10,
 		"column": 1,
 		"endLine": 10,
-		"endColumn": 34
+		"endColumn": 59
 	},
 	{
 		"ruleId": "custom-rules/html-example",
@@ -16,7 +16,7 @@
 		"column": 1,
 		"nodeType": "JSXElement",
 		"endLine": 10,
-		"endColumn": 36
+		"endColumn": 74
 	},
 	{
 		"ruleId": "custom-rules/html-example",
@@ -26,6 +26,6 @@
 		"column": 1,
 		"nodeType": "JSXElement",
 		"endLine": 10,
-		"endColumn": 36
+		"endColumn": 74
 	}
 ]
