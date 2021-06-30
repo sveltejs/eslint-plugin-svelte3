@@ -3,29 +3,29 @@
 		"ruleId": "a11y-missing-content",
 		"severity": 1,
 		"message": "A11y: <h1> element should have child content",
-		"line": 9,
+		"line": 10,
 		"column": 1,
-		"endLine": 9,
+		"endLine": 10,
 		"endColumn": 34
 	},
 	{
 		"ruleId": "custom-rules/html-example",
 		"severity": 2,
 		"message": "Headings must have content and the content must be accessible by a screen reader.",
-		"line": 9,
+		"line": 10,
 		"column": 1,
 		"nodeType": "JSXElement",
-		"endLine": 9,
+		"endLine": 10,
 		"endColumn": 36
 	},
 	{
 		"ruleId": "custom-rules/html-example",
 		"severity": 2,
 		"message": "I am asked to error out...",
-		"line": 9,
+		"line": 10,
 		"column": 1,
 		"nodeType": "JSXElement",
-		"endLine": 9,
+		"endLine": 10,
 		"endColumn": 36
 	}
 ]

@@ -1,5 +1,6 @@
 <script lang="ts">
 let a;
+$: animationAction = { duration: 100 };
 </script>
 2
 <svelte:head>
@@ -10,8 +11,8 @@ let a;
 {#if 0}
   <div>0</div>
 {/if}
-{#each [] as a, i}
-  <div>each</div>
+{#each [] as a, i (a.id)}
+  <div animate:flip={animationAction}>each</div>
   {/each}
 4
 <style>

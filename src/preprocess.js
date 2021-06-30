@@ -264,9 +264,10 @@ export const preprocess = (text) => {
                           attr.modifiers.join("") || ""
                         }="${replaceWithWhitespaces(text, attr.expression)}"`;
                       }
+                      case 'Animation':
                       case "Let":
                       case "Transition": {
-                        return `data-${attr.type.toLowerCase()}-${attr.name}`;
+                        return `data-${attr.type.toLowerCase()}-${attr.name}="${replaceWithWhitespaces(text, attr.expression)}"`;
                       }
                       case "Class":
                       case "Binding": {
