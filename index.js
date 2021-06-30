@@ -789,10 +789,12 @@ const preprocess = (text) => {
                           attr.modifiers.join("") || ""
                         }="${replaceWithWhitespaces(text, attr.expression)}"`;
                       }
-                      case 'Animation':
+                      case "Animation":
                       case "Let":
                       case "Transition": {
-                        return `data-${attr.type.toLowerCase()}-${attr.name}="${replaceWithWhitespaces(text, attr.expression)}"`;
+                        return `data-${attr.type.toLowerCase()}-${
+                          attr.name
+                        }="${replaceWithWhitespaces(text, attr.expression)}"`;
                       }
                       case "Class":
                       case "Binding": {
@@ -835,7 +837,8 @@ const preprocess = (text) => {
             if (parent.type === "Attribute") {
               break;
             }
-            htmlBlock.transformed_code += node.raw || replaceWithWhitespaces(text, node);
+            htmlBlock.transformed_code +=
+              node.raw || replaceWithWhitespaces(text, node);
             break;
           }
           case "Slot":
@@ -868,10 +871,10 @@ const preprocess = (text) => {
           case "ThenBlock":
           case "CatchBlock": {
             if (node.children && node.children.length) {
-                htmlBlock.transformed_code += text.slice(
-                    node.children[node.children.length - 1].end,
-                    node.end,
-                );
+              htmlBlock.transformed_code += text.slice(
+                node.children[node.children.length - 1].end,
+                node.end
+              );
             }
             htmlBlock.transformed_code += `<${
               node.name || node.type.toLowerCase().replace("block", "")
