@@ -133,3 +133,20 @@ export function padCodeWithMissingNodesLines(ast, text) {
     }
   });
 }
+
+export function replaceWithWhitespaces(text, node) {
+  const sliced = text.slice(
+      node.start,
+      node.end
+  );
+  let result = '';
+  for (let i = 0; i < sliced.length; i++) {
+    const matches = sliced[i].match(/\s/);
+    if (matches) {
+      result += matches[0]
+    } else {
+      result += ' '
+    }
+  }
+  return result;
+}
