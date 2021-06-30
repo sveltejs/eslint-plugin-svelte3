@@ -143,20 +143,10 @@ function replaceWithWhitespaces(text, node) {
   if (!text || !node) {
     return '';
   }
-  const sliced = text.slice(
+  return text.slice(
       node.start,
       node.end
-  );
-  let result = '';
-  for (let i = 0; i < sliced.length; i++) {
-    const matches = sliced[i].match(/\s/);
-    if (matches) {
-      result += matches[0];
-    } else {
-      result += ' ';
-    }
-  }
-  return result;
+  ).replace(/\S/g, ' ')
 }
 
 // return a new block
