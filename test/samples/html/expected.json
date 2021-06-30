@@ -1,193 +1,31 @@
 [
 	{
-		"ruleId": "prefer-const",
-		"severity": 2,
-		"message": "'body' is never reassigned. Use 'const' instead.",
-		"line": 48,
-		"column": 9,
-		"nodeType": "Identifier",
-		"messageId": "useConst",
-		"endLine": 48,
-		"endColumn": 13,
-		"fix": {
-			"range": [
-				1655,
-				1657
-			],
-			"text": "cons"
-		}
-	},
-	{
-		"ruleId": "prefer-const",
-		"severity": 2,
-		"message": "'desirelessSession' is never reassigned. Use 'const' instead.",
-		"line": 167,
-		"column": 23,
-		"nodeType": "Identifier",
-		"messageId": "useConst",
-		"endLine": 167,
-		"endColumn": 40,
-		"fix": {
-			"range": [
-				6315,
-				6317
-			],
-			"text": "cons"
-		}
-	},
-	{
-		"ruleId": "no-undef",
-		"severity": 2,
-		"message": "'process' is not defined.",
-		"line": 222,
-		"column": 67,
-		"nodeType": "Identifier",
-		"messageId": "undef",
-		"endLine": 222,
-		"endColumn": 74
-	},
-	{
-		"ruleId": "@typescript-eslint/no-unused-vars",
-		"severity": 1,
-		"message": "'_' is defined but never used.",
-		"line": 237,
-		"column": 23,
-		"nodeType": "Identifier",
-		"messageId": "unusedVar",
-		"endLine": 237,
-		"endColumn": 24
-	},
-	{
-		"ruleId": "no-undef",
-		"severity": 2,
-		"message": "'process' is not defined.",
-		"line": 269,
-		"column": 9,
-		"nodeType": "Identifier",
-		"messageId": "undef",
-		"endLine": 269,
-		"endColumn": 16
-	},
-	{
-		"ruleId": "prefer-const",
-		"severity": 2,
-		"message": "'navigator' is never reassigned. Use 'const' instead.",
-		"line": 335,
-		"column": 7,
-		"nodeType": "Identifier",
-		"messageId": "useConst",
-		"endLine": 335,
-		"endColumn": 16,
-		"fix": {
-			"range": [
-				11585,
-				11587
-			],
-			"text": "cons"
-		}
-	},
-	{
-		"ruleId": "no-undef",
-		"severity": 2,
-		"message": "'process' is not defined.",
-		"line": 335,
-		"column": 19,
-		"nodeType": "Identifier",
-		"messageId": "undef",
-		"endLine": 335,
-		"endColumn": 26
-	},
-	{
 		"ruleId": "a11y-missing-content",
 		"severity": 1,
 		"message": "A11y: <h1> element should have child content",
-		"line": 339,
-		"column": 29,
-		"endLine": 340,
-		"endColumn": 10
+		"line": 9,
+		"column": 1,
+		"endLine": 9,
+		"endColumn": 25
 	},
 	{
 		"ruleId": "custom-rules/html-example",
 		"severity": 2,
 		"message": "Headings must have content and the content must be accessible by a screen reader.",
-		"line": 342,
+		"line": 9,
 		"column": 1,
 		"nodeType": "JSXElement",
-		"endLine": 342,
+		"endLine": 9,
 		"endColumn": 25
 	},
 	{
 		"ruleId": "custom-rules/html-example",
 		"severity": 2,
 		"message": "I am asked to error out...",
-		"line": 342,
+		"line": 9,
 		"column": 1,
 		"nodeType": "JSXElement",
-		"endLine": 342,
+		"endLine": 9,
 		"endColumn": 25
-	},
-	{
-		"ruleId": "no-undef",
-		"severity": 2,
-		"message": "'a' is not defined.",
-		"line": 506,
-		"column": 2,
-		"nodeType": "Identifier",
-		"messageId": "undef",
-		"endLine": 506,
-		"endColumn": 3
-	},
-	{
-		"ruleId": "no-undef",
-		"severity": 2,
-		"message": "'SignedOutHeader' is not defined.",
-		"line": 521,
-		"column": 6,
-		"nodeType": "JSXIdentifier",
-		"messageId": "undef",
-		"endLine": 521,
-		"endColumn": 21
-	},
-	{
-		"ruleId": "a11y-autofocus",
-		"severity": 1,
-		"message": "A11y: Avoid using autofocus",
-		"line": 528,
-		"column": 19,
-		"endLine": 528,
-		"endColumn": 28
-	},
-	{
-		"ruleId": "no-undef",
-		"severity": 2,
-		"message": "'LoaderIcon' is not defined.",
-		"line": 549,
-		"column": 12,
-		"nodeType": "JSXIdentifier",
-		"messageId": "undef",
-		"endLine": 549,
-		"endColumn": 22
-	},
-	{
-		"ruleId": "no-undef",
-		"severity": 2,
-		"message": "'GoogleLogoSvg' is not defined.",
-		"line": 581,
-		"column": 18,
-		"nodeType": "JSXIdentifier",
-		"messageId": "undef",
-		"endLine": 581,
-		"endColumn": 31
-	},
-	{
-		"ruleId": "no-undef",
-		"severity": 2,
-		"message": "'SignedOutFooter' is not defined.",
-		"line": 623,
-		"column": 8,
-		"nodeType": "JSXIdentifier",
-		"messageId": "undef",
-		"endLine": 623,
-		"endColumn": 23
 	}
 ]
