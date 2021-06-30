@@ -27,5 +27,16 @@
 		"nodeType": "JSXElement",
 		"endLine": 10,
 		"endColumn": 74
+	},
+	{
+		"ruleId": "no-irregular-whitespace",
+		"severity": 2,
+		"message": "Irregular whitespace not allowed.",
+		"line": 75,
+		"column": 9,
+		"nodeType": "Program",
+		"messageId": "noIrregularWhitespace",
+		"endLine": 75,
+		"endColumn": 11
 	}
 ]
