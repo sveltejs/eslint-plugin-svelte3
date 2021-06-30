@@ -336,23 +336,35 @@ export const preprocess = (text) => {
             }
             break;
           }
+
           case "ElseBlock":
           case "ThenBlock":
           case "CatchBlock": {
             if (node.children && node.children.length) {
-              htmlBlock.transformed_code += text.slice(
-                node.children[node.children.length - 1].end,
-                node.end
-              );
+              let child = node.children[0];
+              if (
+                child.type === "IfBlock" &&
+                child.children &&
+                child.children.length
+              ) {
+                child = child.children[0];
+              }
+              htmlBlock.transformed_code += text.slice(node.start, child.start);
             }
             htmlBlock.transformed_code += `<${
-              node.name || node.type.toLowerCase().replace("block", "")
+              (node.name && node.name.replace(":", "-")) ||
+              node.type.toLowerCase().replace("block", "")
             }/>`;
             if (node.children && node.children.length) {
               if (node.expression) {
                 htmlBlock.transformed_code += text.slice(
                   node.expression.end + 1,
                   node.children[0].start
+                );
+              } else {
+                htmlBlock.transformed_code += text.slice(
+                  node.children[node.children.length - 1].end,
+                  node.end
                 );
               }
             }
