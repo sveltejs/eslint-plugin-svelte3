@@ -264,28 +264,18 @@ export const preprocess = (text) => {
                           attr.modifiers.join("") || ""
                         }="${replaceWithWhitespaces(text, attr.expression)}"`;
                       }
+                      case "Class":
+                      case "Binding":
+                      case "Action":
                       case "Spread":
                       case "Animation":
                       case "Let":
                       case "Transition": {
                         return `data-${attr.type.toLowerCase()}-${
-                          attr.name || ''
+                          attr.name || ""
                         }="${replaceWithWhitespaces(text, attr.expression)}"`;
                       }
-                      case "Class":
-                      case "Binding": {
-                        if (!attr.expression) {
-                          return `data-${attr.type.toLowerCase()}`;
-                        }
-                        const varName = text.slice(
-                          attr.expression.start,
-                          attr.expression.end
-                        );
-                        return `data-${attr.type.toLowerCase()}-${
-                          attr.name
-                        }="${varName}"`;
-                      }
-                      default: {
+                      case "Attribute": {
                         if (
                           attr.value &&
                           attr.value.length &&
@@ -294,6 +284,9 @@ export const preprocess = (text) => {
                           return attr.name;
                         }
                         return `${text.slice(attr.start, attr.end)}`;
+                      }
+                      default: {
+                        console.log(attr.type);
                       }
                     }
                   }

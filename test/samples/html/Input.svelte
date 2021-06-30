@@ -1,5 +1,5 @@
 <script lang="ts">
-let a;
+let a = '';
 $: animationAction = { duration: 100 };
 </script>
 2
@@ -53,4 +53,8 @@ comment
 </svelte:options>
 
 8
-<div {...a} />
+<input {...a}
+       type="checkbox"
+     use:a={focus && a === 0}
+     focus={focus && a === 0}
+     bind:group={a} />
