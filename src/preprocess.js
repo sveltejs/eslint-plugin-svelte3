@@ -247,7 +247,9 @@ export const preprocess = (text) => {
           case "InlineComponent":
           case "Title":
           case "Element": {
-            htmlBlock.transformed_code += `<${(node.name && node.name.replace(":", "-"))}`;
+            htmlBlock.transformed_code += `<${
+              node.name && node.name.replace(":", "-")
+            }`;
             if (node.attributes && node.attributes.length) {
               htmlBlock.transformed_code += text.slice(
                 node.start + 1 + node.name.length,
@@ -302,11 +304,12 @@ export const preprocess = (text) => {
             htmlBlock.transformed_code += ">";
             break;
           }
+          case "Comment":
           case "Text": {
             if (parent.type === "Attribute") {
               break;
             }
-            htmlBlock.transformed_code += node.raw || node.data;
+            htmlBlock.transformed_code += node.raw || replaceWithWhitespaces(text, node);
             break;
           }
           case "Slot":
@@ -338,19 +341,27 @@ export const preprocess = (text) => {
           case "ElseBlock":
           case "ThenBlock":
           case "CatchBlock": {
+            if (node.children && node.children.length) {
+                htmlBlock.transformed_code += text.slice(
+                    node.children[node.children.length - 1].end,
+                    node.end,
+                );
+            }
             htmlBlock.transformed_code += `<${
               node.name || node.type.toLowerCase().replace("block", "")
             }/>`;
-            if (node.expression && node.children && node.children.length) {
-              htmlBlock.transformed_code += text.slice(
-                node.expression.end + 1,
-                node.children[0].start
-              );
+            if (node.children && node.children.length) {
+              if (node.expression) {
+                htmlBlock.transformed_code += text.slice(
+                  node.expression.end + 1,
+                  node.children[0].start
+                );
+              }
             }
             break;
           }
           case "Head":
-          case 'Options':
+          case "Options":
           case "IfBlock":
           case "AwaitBlock": {
             // {#if} -> <if>
@@ -366,17 +377,17 @@ export const preprocess = (text) => {
             }
             break;
           }
-          case 'Fragment': {
-            htmlBlock.transformed_code += '<>';
-            break
+          case "Fragment": {
+            htmlBlock.transformed_code += "<>";
+            break;
           }
-          case 'PendingBlock':
-          case 'ArrayPattern':
-          case 'EventHandler':
-          case 'Binding':
-          case 'Class':
-          case 'Attribute':
-          case 'Identifier': {
+          case "PendingBlock":
+          case "ArrayPattern":
+          case "EventHandler":
+          case "Binding":
+          case "Class":
+          case "Attribute":
+          case "Identifier": {
             break;
           }
           default: {
@@ -395,12 +406,13 @@ export const preprocess = (text) => {
 
         switch (node.type) {
           case "Head":
-          case 'Options':
+          case "Options":
           case "EachBlock":
           case "IfBlock":
           case "AwaitBlock": {
-            if (node.expression && node.children && node.children.length) {
+            if (node.children && node.children.length) {
               let sliceFrom = node.children[node.children.length - 1].end;
+
               if (node.else) {
                 sliceFrom = node.else.end;
               }
@@ -419,13 +431,25 @@ export const preprocess = (text) => {
           case "Title":
           case "Element": {
             htmlBlock.transformed_code += `</${
-                (node.name && node.name.replace(":", "-")) || node.type.toLowerCase().replace("block", "")
+              (node.name && node.name.replace(":", "-")) ||
+              node.type.toLowerCase().replace("block", "")
             }>`;
             break;
           }
-          case 'Fragment': {
-            htmlBlock.transformed_code += '</>';
-            break
+          case "Fragment": {
+            htmlBlock.transformed_code += "</>";
+            break;
+          }
+          case "ElseBlock":
+          case "ThenBlock":
+          case "CatchBlock": {
+            if (node.children && node.children.length) {
+              htmlBlock.transformed_code += text.slice(
+                node.children[node.children.length - 1].end,
+                node.end
+              );
+            }
+            break;
           }
         }
       },
@@ -438,8 +462,8 @@ export const preprocess = (text) => {
     }
     if (htmlBlock.transformed_code) {
       state.blocks.set(
-          `svelte${processor_options.typescript ? ".t" : ".j"}sx`,
-          htmlBlock
+        `svelte${processor_options.typescript ? ".t" : ".j"}sx`,
+        htmlBlock
       );
     }
     get_template_translation(text, htmlBlock, ast);

@@ -67,7 +67,10 @@ export const pad = (times) => {
 };
 
 export const closingTagLength = new Proxy(
-  {},
+  {
+    Head: 14,
+    Options: 17
+  },
   {
     get(source, name) {
       return source[name] || name.length - 2;
