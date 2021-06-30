@@ -43,7 +43,7 @@ function jsonify(val) {
 }
 
 for (const name of fs.readdirSync("samples")) {
-  if (name[0] !== "." && name === 'html') {
+  if (name[0] !== ".") {
     console.log(name);
     if (
       process.platform === "win32" &&
