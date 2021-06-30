@@ -869,6 +869,7 @@ const preprocess = (text) => {
               let child = node.children[0];
               if (
                 child.type === "IfBlock" &&
+                node.start === child.start &&
                 child.children &&
                 child.children.length
               ) {

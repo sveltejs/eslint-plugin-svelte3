@@ -65,7 +65,9 @@ comment
         {#if 1 && 1}
           <label class="access-token"></label>
         {:else}
+          {#if 1}
           <p>You haven't connected any accounts yet.</p>
+            {/if}
         {/if}
       </div>
     {:else if '' === 'shared'}
