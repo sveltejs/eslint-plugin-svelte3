@@ -137,6 +137,9 @@ function padCodeWithMissingNodesLines(ast, text) {
 }
 
 function replaceWithWhitespaces(text, node) {
+  if (!text || !node) {
+    return '';
+  }
   const sliced = text.slice(
       node.start,
       node.end

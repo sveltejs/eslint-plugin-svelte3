@@ -6,7 +6,7 @@ let a;
   <div>head</div>
 </svelte:head>
 3
-<h1 data-error-out></h1>
+<h1 data-error-out on:click></h1>
 {#if 0}
   <div>0</div>
 {/if}
