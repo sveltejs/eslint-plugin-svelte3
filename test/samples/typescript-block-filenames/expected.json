@@ -2,11 +2,11 @@
 	{
 		"ruleId": "curly",
 		"line": 2,
-		"column": 2
+		"column": 12
 	},
 	{
 		"ruleId": "curly",
 		"line": 7,
-		"column": 2
+		"column": 11
 	}
 ]
