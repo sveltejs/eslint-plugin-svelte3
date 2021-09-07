@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { f, g } from './store';
 	for (const a in []) {
 		a;
 	}
@@ -8,4 +9,7 @@
 	}
 
 	foo().hello();
+	$f();
 </script>
+
+{$g().slice(2)}
