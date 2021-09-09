@@ -99,6 +99,7 @@ const is_valid_message = (block, message, translation) => {
 		case 'no-restricted-syntax': return message.nodeType !== 'LabeledStatement' || get_identifier(get_referenced_string(block, message)) !== '$';
 		case 'no-self-assign': return !state.var_names.has(get_identifier(get_referenced_string(block, message)));
 		case 'no-unused-labels': return get_referenced_string(block, message) !== '$';
+		case 'no-undef': return get_referenced_string(block, message) !== '$$Generic';
 		case '@typescript-eslint/quotes':
 		case 'quotes': return !translation.options.in_quoted_attribute;
 	}
