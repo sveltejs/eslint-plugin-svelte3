@@ -17,6 +17,7 @@ const { verify } = Linter.prototype;
 Linter.prototype.verify = function(code, config, options) {
 	// fetch settings
 	const settings = config && (typeof config.extractConfig === 'function' ? config.extractConfig(options.filename) : config).settings || {};
+	processor_options.preprocess = settings['svelte3/preprocess'];
 	processor_options.custom_compiler = settings['svelte3/compiler'];
 	processor_options.ignore_warnings = settings['svelte3/ignore-warnings'];
 	processor_options.ignore_styles = settings['svelte3/ignore-styles'];

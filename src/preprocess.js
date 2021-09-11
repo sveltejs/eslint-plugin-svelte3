@@ -26,6 +26,9 @@ const find_contextual_names = (compiler, node) => {
 // extract scripts to lint from component definition
 export const preprocess = text => {
 	const compiler = processor_options.custom_compiler || default_compiler || (default_compiler = require('svelte/compiler'));
+	if (processor_options.preprocess) {
+		text = processor_options.preprocess(text)
+	}
 	if (processor_options.ignore_styles) {
 		// wipe the appropriate <style> tags in the file
 		text = text.replace(/<style(\s[^]*?)?>[^]*?<\/style>/gi, (match, attributes = '') => {
