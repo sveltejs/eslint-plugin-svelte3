@@ -22,11 +22,14 @@ const find_contextual_names = (compiler, node) => {
 		}
 	}
 };
+// ignore_styles when a `lang=` or `type=` attribute is present on the <style> tag
+const ignoreStylesFallback = ({ type, lang }) => !!type || !!lang;
 
 // extract scripts to lint from component definition
 export const preprocess = text => {
 	const compiler = processor_options.custom_compiler || default_compiler || (default_compiler = require('svelte/compiler'));
-	if (processor_options.ignore_styles) {
+	const ignore_styles = typeof processor_options.ignore_styles !== 'undefined' ? processor_options.ignore_styles : ignoreStylesFallback;
+	if (ignore_styles) {
 		// wipe the appropriate <style> tags in the file
 		text = text.replace(/<style(\s[^]*?)?>[^]*?<\/style>/gi, (match, attributes = '') => {
 			const attrs = {};
@@ -38,7 +41,7 @@ export const preprocess = text => {
 					attrs[attr.slice(0, p)] = '\'"'.includes(attr[p + 1]) ? attr.slice(p + 2, -1) : attr.slice(p + 1);
 				}
 			});
-			return processor_options.ignore_styles(attrs) ? match.replace(/\S/g, ' ') : match;
+			return ignore_styles(attrs) ? match.replace(/\S/g, ' ') : match;
 		});
 	}
 
