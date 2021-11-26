@@ -159,7 +159,7 @@ export const preprocess = text => {
 					find_contextual_names(compiler, parent.value);
 				} else if (node.type === 'CatchBlock') {
 					find_contextual_names(compiler, parent.error);
-				} else if (node.type === 'Element' || node.type === 'InlineComponent') {
+				} else if (node.type === 'Element' || node.type === 'InlineComponent' || node.type === 'SlotTemplate') {
 					node.attributes.forEach(node => node.type === 'Let' && find_contextual_names(compiler, node.expression || node.name));
 				}
 				if (contextual_names.length) {
