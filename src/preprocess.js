@@ -193,6 +193,7 @@ export const preprocess = text => {
 
 // https://github.com/sveltejs/svelte-preprocess/blob/main/src/transformers/typescript.ts
 // TypeScript transformer for preserving imports correctly when preprocessing TypeScript files
+// Only needed if TS < 4.5
 const ts_import_transformer = (context) => {
 	const ts = processor_options.typescript;
 	const visit = (node) => {
@@ -230,20 +231,29 @@ function compile_code(text, compiler, processor_options) {
 	if (!ts) {
 		return compiler.compile(text, { generate: false, ...processor_options.compiler_options });
 	} else {
+		const ts_options = {
+			reportDiagnostics: false,
+			compilerOptions: {
+				target: ts.ScriptTarget.ESNext,
+				importsNotUsedAsValues: ts.ImportsNotUsedAsValues.Preserve,
+				sourceMap: true
+			},
+			transformers: {
+				before: [ts_import_transformer]
+			}
+		}
+
+		// See if we can use `preserveValueImports` instead of the transformer (TS >= 4.5)
+		const ts_version = ts.version.split(".").map(str => parseInt(str, 10));
+		if (ts_version[0] > 4 || (ts_version[0] === 4 && ts_version[1] >= 5)) {
+			ts_options.compilerOptions.preserveValueImports = true;
+			ts_options.transformers = {};
+		}
+
 		const diffs = [];
 		let accumulated_diff = 0;
 		const transpiled = text.replace(/<script(\s[^]*?)?>([^]*?)<\/script>/gi, (match, attributes = '', content) => {
-			const output = ts.transpileModule(content, {
-				reportDiagnostics: false,
-				compilerOptions: {
-					target: ts.ScriptTarget.ESNext,
-					importsNotUsedAsValues: ts.ImportsNotUsedAsValues.Preserve,
-					sourceMap: true
-				},
-				transformers: {
-					before: [ts_import_transformer]
-				}
-			});
+			const output = ts.transpileModule(content, ts_options);
 			const original_start = text.indexOf(content);
 			const generated_start = accumulated_diff + original_start;
 			accumulated_diff += output.outputText.length - content.length;
