@@ -4,12 +4,12 @@ process.chdir(__dirname);
 
 const { ESLint } = require('eslint');
 const assert = require('assert');
-const fs = require('fs/promises');
+const fs = require('fs');
 
 const linter = new ESLint({ reportUnusedDisableDirectives: "error" });
 
 async function run() {
-	const tests = (await fs.readdir('samples')).filter(name => name[0] !== '.');
+	const tests = fs.readdirSync('samples').filter(name => name[0] !== '.');
 
 	for (const name of tests) {
 		console.log(name);
@@ -19,17 +19,17 @@ async function run() {
 		const path_expected = `samples/${name}/expected.json`;
 		const path_actual = `samples/${name}/actual.json`;
 
-		if (process.platform === 'win32' && !(await exists(path_ple))) {
-			const file = await fs.readFile(path_input, "utf-8");
-			await fs.writeFile(path_input, file.replace(/\r/g, ''));
+		if (process.platform === 'win32' && !exists(path_ple)) {
+			const file = fs.readFileSync(path_input, "utf-8");
+			fs.writeFileSync(path_input, file.replace(/\r/g, ''));
 		}
 
 		const result = await linter.lintFiles(path_input);
 
 		const actual = result[0] ? result[0].messages : [];
-		const expected = JSON.parse(await fs.readFile(path_expected, "utf-8"));
+		const expected = JSON.parse(fs.readFileSync(path_expected, "utf-8"));
 
-		await fs.writeFile(path_actual, JSON.stringify(actual, null, '\t'));
+		fs.writeFileSync(path_actual, JSON.stringify(actual, null, '\t'));
 
 		assert.equal(actual.length, expected.length);
 		assert.deepStrictEqual(actual, actual.map((msg, i) => ({ ...msg, ...expected[i] })));
@@ -37,9 +37,9 @@ async function run() {
 	}
 }
 
-async function exists(path) {
+function exists(path) {
 	try {
-		await fs.access(path);
+		fs.accessSync(path);
 		return true;
 	} catch (err) {
 		return false;
