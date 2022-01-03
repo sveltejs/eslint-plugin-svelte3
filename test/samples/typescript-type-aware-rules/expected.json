@@ -27,8 +27,8 @@
 				"messageId": "suggestUnknown",
 				"fix": {
 					"range": [
-						221,
-						224
+						269,
+						272
 					],
 					"text": "unknown"
 				},
@@ -38,8 +38,8 @@
 				"messageId": "suggestNever",
 				"fix": {
 					"range": [
-						221,
-						224
+						269,
+						272
 					],
 					"text": "never"
 				},
