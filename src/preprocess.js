@@ -22,8 +22,15 @@ const find_contextual_names = (compiler, node) => {
 		}
 	}
 };
+// let-declaration when using TypeScript which is able to infer the type value of a autosubscribed store
+const tsLet = (name) =>
+	name[0] === '$' ?
+	// Disable eslint on that line because it may result in a "used before defined" error
+	`declare let ${name}:Parameters<Parameters<typeof ${name.slice(1)}.subscribe>[0]>[0]; // eslint-disable-line\n` :
+	`let ${name};`;
 // ignore_styles when a `lang=` or `type=` attribute is present on the <style> tag
 const ignoreStylesFallback = ({ type, lang }) => !!type || !!lang;
+
 
 // extract scripts to lint from component definition
 export const preprocess = text => {
@@ -115,10 +122,14 @@ export const preprocess = text => {
 		state.blocks.set(with_file_ending('instance'), block);
 
 		if (ast.module && processor_options.typescript) {
-			block.transformed_code = vars.filter(v => v.injected).map(v => `let ${v.name};`).join('');
+			block.transformed_code = vars.filter(v => v.injected).map(v => tsLet(v.name)).join('');
 			block.transformed_code += text.slice(ast.module.content.start, ast.module.content.end);
 		} else {
-			block.transformed_code = vars.filter(v => v.injected || v.module).map(v => `let ${v.name};`).join('');
+			if (processor_options.typescript) {
+				block.transformed_code = vars.filter(v => v.injected || v.module).map(v => tsLet(v.name)).join('');
+			} else {
+				block.transformed_code = vars.filter(v => v.injected || v.module).map(v => `let ${v.name};`).join('');
+			}
 		}
 
 		get_translation(text, block, ast.instance.content);
@@ -138,7 +149,7 @@ export const preprocess = text => {
 			}
 			if (ast.instance) {
 				block.transformed_code += '\n';
-				block.transformed_code += vars.filter(v => v.injected).map(v => `let ${v.name};`).join('');
+				block.transformed_code += vars.filter(v => v.injected).map(v => tsLet(v.name)).join('');
 				block.transformed_code += text.slice(ast.instance.content.start, ast.instance.content.end);
 			}
 		} else {

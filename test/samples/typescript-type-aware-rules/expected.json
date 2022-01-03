@@ -2,33 +2,33 @@
 	{
 		"ruleId": "@typescript-eslint/no-for-in-array",
 		"severity": 2,
-		"line": 2,
+		"line": 3,
 		"column": 2,
-		"endLine": 4,
+		"endLine": 5,
 		"endColumn": 3
 	},
 	{
 		"ruleId": "@typescript-eslint/no-unsafe-return",
 		"severity": 2,
-		"line": 7,
+		"line": 8,
 		"column": 3,
-		"endLine": 7,
+		"endLine": 8,
 		"endColumn": 19
 	},
 	{
 		"ruleId": "@typescript-eslint/no-explicit-any",
 		"severity": 1,
-		"line": 7,
+		"line": 8,
 		"column": 15,
-		"endLine": 7,
+		"endLine": 8,
 		"endColumn": 18,
 		"suggestions": [
 			{
 				"messageId": "suggestUnknown",
 				"fix": {
 					"range": [
-						61,
-						64
+						269,
+						272
 					],
 					"text": "unknown"
 				},
@@ -38,8 +38,8 @@
 				"messageId": "suggestNever",
 				"fix": {
 					"range": [
-						61,
-						64
+						269,
+						272
 					],
 					"text": "never"
 				},
@@ -50,17 +50,25 @@
 	{
 		"ruleId": "@typescript-eslint/no-unsafe-member-access",
 		"severity": 2,
-		"line": 10,
+		"line": 11,
 		"column": 2,
-		"endLine": 10,
+		"endLine": 11,
 		"endColumn": 13
 	},
 	{
 		"ruleId": "@typescript-eslint/no-unsafe-call",
 		"severity": 2,
-		"line": 10,
+		"line": 11,
 		"column": 2,
-		"endLine": 10,
+		"endLine": 11,
 		"endColumn": 13
+	},
+	{
+		"ruleId": "@typescript-eslint/no-floating-promises",
+		"severity": 2,
+		"line": 12,
+		"column": 2,
+		"endLine": 12,
+		"endColumn": 7
 	}
 ]
