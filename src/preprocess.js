@@ -28,7 +28,7 @@ const ignoreStylesFallback = ({ type, lang }) => !!type || !!lang;
 // extract scripts to lint from component definition
 export const preprocess = text => {
 	const compiler = processor_options.custom_compiler || default_compiler || (default_compiler = require('svelte/compiler'));
-	const ignore_styles = typeof processor_options.ignore_styles !== 'undefined' ? processor_options.ignore_styles : ignoreStylesFallback;
+	const ignore_styles = processor_options.ignore_styles ? processor_options.ignore_styles : ignoreStylesFallback;
 	if (ignore_styles) {
 		// wipe the appropriate <style> tags in the file
 		text = text.replace(/<style(\s[^]*?)?>[^]*?<\/style>/gi, (match, attributes = '') => {
