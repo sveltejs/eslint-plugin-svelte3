@@ -31,6 +31,13 @@
 	</div>
 </Component2>
 
+<Component2>
+	<svelte:fragment slot='foo' let:blah={blah2}>
+		{blah1}
+		{blah2}
+	</svelte:fragment>
+</Component2>
+
 {#await foo}
 	xxx
 {:then blah1}

@@ -29,16 +29,23 @@
 	},
 	{
 		"ruleId": "no-undef",
-		"line": 38,
+		"line": 36,
+		"column": 4,
+		"endLine": 36,
+		"endColumn": 9
+	},
+	{
+		"ruleId": "no-undef",
+		"line": 45,
 		"column": 3,
-		"endLine": 38,
+		"endLine": 45,
 		"endColumn": 8
 	},
 	{
 		"ruleId": "no-undef",
-		"line": 40,
+		"line": 47,
 		"column": 3,
-		"endLine": 40,
+		"endLine": 47,
 		"endColumn": 8
 	}
 ]
