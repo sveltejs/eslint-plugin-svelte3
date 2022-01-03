@@ -1,3 +1,7 @@
+# 3.2.1
+
+- Filter `no-undef` messages about `$$Generic`
+
 # 3.2.0
 
 - Support lazy-loading TypeScript compiler

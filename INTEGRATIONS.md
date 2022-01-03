@@ -2,29 +2,17 @@
 
 You'll need the [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) extension installed.
 
-Unless you're using `.html` for your Svelte components, you'll need to configure `files.associations` to associate the appropriate file extension with the `html` language. For example, to associate `.svelte`, put this in your `settings.json`:
-
-```json
-{
-  "files.associations": {
-    "*.svelte": "html"
-  }
-}
-```
-
-Then, you'll need to tell the ESLint extension to also lint files with language `html`. If you haven't adjusted the `eslint.validate` setting, it defaults to `[ "javascript", "javascriptreact" ]`, so put this in your `settings.json`:
+Then, you'll need to tell the ESLint extension to also lint files with language `svelte`. If you haven't adjusted the `eslint.validate` setting, it defaults to `[ "javascript", "javascriptreact" ]`, so put this in your `settings.json`:
 
 ```json
 {
   "eslint.validate": [
     "javascript",
     "javascriptreact",
-    "html"
+    "svelte"
   ]
 }
 ```
-
-If you are using an extension that provides Svelte syntax highlighting, don't associate `*.svelte` files with the `html` language, and instead enable the ESLint extension on `"svelte"`.
 
 Reload VS Code and give it a go!
 
