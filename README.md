@@ -134,7 +134,7 @@ Passing a function as a value for a setting (which some of the settings below re
 
 ### `svelte3/ignore-warnings`
 
-This setting can be given a function that indicates whether to ignore a warning in the linting. The function will be passed a warning object and should return a boolean.
+This setting can be given a function that indicates whether to ignore a warning in the linting. The function will be passed a warning object and should return a boolean. Only warnings of the Svelte compiler itself can be filtered out through this function. Regular ESLint rules are configured/disabled through the corresponding ESLint settings.
 
 The default is to not ignore any warnings.
 
