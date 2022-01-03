@@ -1,3 +1,12 @@
+# 3.3.0 (unreleased)
+
+- Add injected globals when there's no instance script when using TypeScript
+- Allow `$$Props`, `$$Slots`, `$$Events` interface/type usage
+- Improve type inference for autosubscribed stores
+- Silence false positives for `<svelte:fragment let:x>`
+- Use TS 4.5 `preserveValueImports` if it's available
+- Improve default setting for `svelte3/ignore-styles`: Now ignores styles if its tag has a `lang` or `type` attribute
+
 # 3.2.1
 
 - Filter `no-undef` messages about `$$Generic`
