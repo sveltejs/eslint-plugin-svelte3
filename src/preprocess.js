@@ -23,7 +23,11 @@ const find_contextual_names = (compiler, node) => {
 	}
 };
 // let-declaration when using TypeScript which is able to infer the type value of a autosubscribed store
-const tsLet = (name) => name[0] === '$' ? `declare let ${name}:Parameters<Parameters<typeof ${name.slice(1)}.subscribe>[0]>[0];` : `let ${name};`;
+const tsLet = (name) =>
+	name[0] === '$' ?
+	// Disable eslint on that line because it may result in a "used before defined" error
+	`declare let ${name}:Parameters<Parameters<typeof ${name.slice(1)}.subscribe>[0]>[0]; // eslint-disable-line\n` :
+	`let ${name};`;
 // ignore_styles when a `lang=` or `type=` attribute is present on the <style> tag
 const ignoreStylesFallback = ({ type, lang }) => !!type || !!lang;
 
