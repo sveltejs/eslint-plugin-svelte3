@@ -2,7 +2,7 @@
 	type T = $$Generic;
 	type U = $$Generic<string>;
 
-	interfacce $$Slots {
+	interface $$Slots {
 		default: {
 			foo: string;
 		}
