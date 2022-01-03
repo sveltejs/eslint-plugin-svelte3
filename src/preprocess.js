@@ -22,11 +22,14 @@ const find_contextual_names = (compiler, node) => {
 		}
 	}
 };
+// ignore_styles when a `lang=` or `type=` attribute is present on the <style> tag
+const ignoreStylesFallback = ({ type, lang }) => !!type || !!lang;
 
 // extract scripts to lint from component definition
 export const preprocess = text => {
 	const compiler = processor_options.custom_compiler || default_compiler || (default_compiler = require('svelte/compiler'));
-	if (processor_options.ignore_styles) {
+	const ignore_styles = processor_options.ignore_styles ? processor_options.ignore_styles : ignoreStylesFallback;
+	if (ignore_styles) {
 		// wipe the appropriate <style> tags in the file
 		text = text.replace(/<style(\s[^]*?)?>[^]*?<\/style>/gi, (match, attributes = '') => {
 			const attrs = {};
@@ -38,7 +41,7 @@ export const preprocess = text => {
 					attrs[attr.slice(0, p)] = '\'"'.includes(attr[p + 1]) ? attr.slice(p + 2, -1) : attr.slice(p + 1);
 				}
 			});
-			return processor_options.ignore_styles(attrs) ? match.replace(/\S/g, ' ') : match;
+			return ignore_styles(attrs) ? match.replace(/\S/g, ' ') : match;
 		});
 	}
 
@@ -193,6 +196,7 @@ export const preprocess = text => {
 
 // https://github.com/sveltejs/svelte-preprocess/blob/main/src/transformers/typescript.ts
 // TypeScript transformer for preserving imports correctly when preprocessing TypeScript files
+// Only needed if TS < 4.5
 const ts_import_transformer = (context) => {
 	const ts = processor_options.typescript;
 	const visit = (node) => {
@@ -230,20 +234,29 @@ function compile_code(text, compiler, processor_options) {
 	if (!ts) {
 		return compiler.compile(text, { generate: false, ...processor_options.compiler_options });
 	} else {
+		const ts_options = {
+			reportDiagnostics: false,
+			compilerOptions: {
+				target: ts.ScriptTarget.ESNext,
+				importsNotUsedAsValues: ts.ImportsNotUsedAsValues.Preserve,
+				sourceMap: true
+			},
+			transformers: {
+				before: [ts_import_transformer]
+			}
+		}
+
+		// See if we can use `preserveValueImports` instead of the transformer (TS >= 4.5)
+		const ts_version = ts.version.split(".").map(str => parseInt(str, 10));
+		if (ts_version[0] > 4 || (ts_version[0] === 4 && ts_version[1] >= 5)) {
+			ts_options.compilerOptions.preserveValueImports = true;
+			ts_options.transformers = {};
+		}
+
 		const diffs = [];
 		let accumulated_diff = 0;
 		const transpiled = text.replace(/<script(\s[^]*?)?>([^]*?)<\/script>/gi, (match, attributes = '', content) => {
-			const output = ts.transpileModule(content, {
-				reportDiagnostics: false,
-				compilerOptions: {
-					target: ts.ScriptTarget.ESNext,
-					importsNotUsedAsValues: ts.ImportsNotUsedAsValues.Preserve,
-					sourceMap: true
-				},
-				transformers: {
-					before: [ts_import_transformer]
-				}
-			});
+			const output = ts.transpileModule(content, ts_options);
 			const original_start = text.indexOf(content);
 			const generated_start = accumulated_diff + original_start;
 			accumulated_diff += output.outputText.length - content.length;

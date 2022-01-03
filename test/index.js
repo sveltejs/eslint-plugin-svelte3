@@ -2,23 +2,48 @@
 
 process.chdir(__dirname);
 
-const { CLIEngine } = require('eslint');
+const { ESLint } = require('eslint');
 const assert = require('assert');
 const fs = require('fs');
 
-const cli = new CLIEngine({ reportUnusedDisableDirectives: true });
+const linter = new ESLint({ reportUnusedDisableDirectives: "error" });
 
-for (const name of fs.readdirSync('samples')) {
-	if (name[0] !== '.') {
+async function run() {
+	const tests = fs.readdirSync('samples').filter(name => name[0] !== '.');
+
+	for (const name of tests) {
 		console.log(name);
-		if (process.platform === 'win32' && !fs.existsSync(`samples/${name}/preserve_line_endings`)) {
-			fs.writeFileSync(`samples/${name}/Input.svelte`, fs.readFileSync(`samples/${name}/Input.svelte`).toString().replace(/\r/g, ''));
+
+		const path_input = `samples/${name}/Input.svelte`;
+		const path_ple = `samples/${name}/preserve_line_endings`;
+		const path_expected = `samples/${name}/expected.json`;
+		const path_actual = `samples/${name}/actual.json`;
+
+		if (process.platform === 'win32' && !exists(path_ple)) {
+			const file = fs.readFileSync(path_input, "utf-8");
+			fs.writeFileSync(path_input, file.replace(/\r/g, ''));
 		}
-		const actual_messages = cli.executeOnFiles([`samples/${name}/Input.svelte`]).results[0].messages;
-		fs.writeFileSync(`samples/${name}/actual.json`, JSON.stringify(actual_messages, null, '\t'));
-		const expected_messages = JSON.parse(fs.readFileSync(`samples/${name}/expected.json`).toString());
-		assert.equal(actual_messages.length, expected_messages.length);
-		assert.deepStrictEqual(actual_messages, actual_messages.map((message, i) => ({ ...message, ...expected_messages[i] })));
+
+		const result = await linter.lintFiles(path_input);
+
+		const actual = result[0] ? result[0].messages : [];
+		const expected = JSON.parse(fs.readFileSync(path_expected, "utf-8"));
+
+		fs.writeFileSync(path_actual, JSON.stringify(actual, null, '\t'));
+
+		assert.equal(actual.length, expected.length);
+		assert.deepStrictEqual(actual, actual.map((msg, i) => ({ ...msg, ...expected[i] })));
 		console.log('passed!\n');
 	}
 }
+
+function exists(path) {
+	try {
+		fs.accessSync(path);
+		return true;
+	} catch (err) {
+		return false;
+	}
+}
+
+run();
