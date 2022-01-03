@@ -147,9 +147,11 @@ export const preprocess = text => {
 			if (ast.module) {
 				block.transformed_code += text.slice(ast.module.content.start, ast.module.content.end);
 			}
-			if (ast.instance) {
+			if (ast.instance || vars.length) {
 				block.transformed_code += '\n';
-				block.transformed_code += vars.filter(v => v.injected).map(v => tsLet(v.name)).join('');
+			}
+			block.transformed_code += vars.filter(v => v.injected).map(v => tsLet(v.name)).join('');
+			if (ast.instance) {
 				block.transformed_code += text.slice(ast.instance.content.start, ast.instance.content.end);
 			}
 		} else {
