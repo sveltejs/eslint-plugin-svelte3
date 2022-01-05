@@ -6,6 +6,7 @@
 - Silence false positives for `<svelte:fragment let:x>`
 - Use TS 4.5 `preserveValueImports` if it's available
 - Improve default setting for `svelte3/ignore-styles`: Now ignores styles if its tag has a `lang` or `type` attribute
+- Improve fix range handling
 
 # 3.2.1
 
