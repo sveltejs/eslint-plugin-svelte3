@@ -46,7 +46,7 @@ export const dedent_code = str => {
 		}
 		dedented += str[i];
 	}
-	return { dedented, offsets: { offsets, total_offsets } };
+	return { dedented, offsets: { offsets, total_offsets }, indentation };
 };
 
 // get character offsets of each line in a string
