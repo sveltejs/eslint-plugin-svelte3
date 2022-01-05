@@ -134,7 +134,7 @@ Passing a function as a value for a setting (which some of the settings below re
 
 ### `svelte3/ignore-warnings`
 
-This setting can be given a function that indicates whether to ignore a warning in the linting. The function will be passed a warning object and should return a boolean. Only warnings of the Svelte compiler itself can be filtered out through this function. Regular ESLint rules are configured/disabled through the corresponding ESLint settings.
+This setting can be given a function that indicates whether to ignore a warning in the linting. The function will be passed a warning object and should return a boolean. Only warnings from the Svelte compiler itself can be filtered out through this function. Regular ESLint rules are configured/disabled through the corresponding ESLint settings.
 
 The default is to not ignore any warnings.
 
@@ -152,7 +152,7 @@ If you're using some sort of preprocessor on the component styles, then it's lik
 
 This setting can be given a function that accepts an object of attributes on a `<style>` tag (like that passed to a Svelte preprocessor) and returns whether to ignore the style block for the purposes of linting.
 
-The default is to not ignore any styles.
+The default is to ignore styles when the `<style>` tag has a `lang=` or `type=` attribute.
 
 ### `svelte3/named-blocks`
 
