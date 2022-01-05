@@ -15,6 +15,7 @@ const transform_message = ({ transformed_code }, { unoffsets, dedent, offsets, r
 		}
 	}
 	// shift position reference backward according to unoffsets
+	// (aka: throw out the generated code lines prior to the original code)
 	{
 		const { length, lines, last } = unoffsets;
 		if (message.line === lines) {
@@ -33,6 +34,7 @@ const transform_message = ({ transformed_code }, { unoffsets, dedent, offsets, r
 		}
 	}
 	// adjust position reference according to the previous dedenting
+	// (aka: re-add the stripped indentation)
 	{
 		const { offsets, total_offsets } = dedent;
 		message.column += offsets[message.line - 1];
@@ -45,6 +47,7 @@ const transform_message = ({ transformed_code }, { unoffsets, dedent, offsets, r
 		}
 	}
 	// shift position reference forward according to offsets
+	// (aka: re-add the code that is originally prior to the code)
 	{
 		const { length, lines, last } = offsets;
 		if (message.line === 1) {
