@@ -1,4 +1,4 @@
-# 3.3.0 (unreleased)
+# 3.3.0
 
 - Add injected globals when there's no instance script when using TypeScript
 - Allow `$$Props`, `$$Slots`, `$$Events` interface/type usage
