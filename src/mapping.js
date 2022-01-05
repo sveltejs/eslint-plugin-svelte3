@@ -12,7 +12,7 @@ class GeneratedFragmentMapper {
 	}
 
 	offset_in_fragment(offset) {
-		return offset - this.diff.generated_start
+		return offset - this.diff.generated_start;
 	}
 }
 
@@ -91,7 +91,7 @@ export class DocumentMapper {
 				generated_fragment_mapper: new GeneratedFragmentMapper(generated_code, diff),
 				source_mapper: new SourceMapper(diff.map),
 				original_fragment_mapper: new OriginalFragmentMapper(original_code, diff)
-			}
+			};
 		});
 	}
 

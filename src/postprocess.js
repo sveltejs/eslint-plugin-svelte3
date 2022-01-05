@@ -57,7 +57,7 @@ const transform_message = ({ transformed_code }, { unoffsets, dedent, indentatio
 			// We need the offset at the line relative to dedent's total_offsets. The dedents
 			// start at the point in the total transformed code where a subset of the code was transformed.
 			// Therefore substract (unoffsets.lines + 1) which marks the start of that transformation.
-			// Add +1 afterwards because total_offsets are 1-index-based. 
+			// Add +1 afterwards because total_offsets are 1-index-based.
 			message.fix.range[0] += total_offsets[fix_pos_start.line - unoffsets.lines + 2];
 			message.fix.range[1] += total_offsets[fix_pos_end.line - unoffsets.lines + 2];
 		}
@@ -120,9 +120,9 @@ const is_valid_message = (block, message, translation) => {
 		case 'no-restricted-syntax': return message.nodeType !== 'LabeledStatement' || get_identifier(get_referenced_string(block, message)) !== '$';
 		case 'no-self-assign': return !state.var_names.has(get_identifier(get_referenced_string(block, message)));
 		case 'no-undef': return get_referenced_string(block, message) !== '$$Generic';
+		case 'no-unused-labels': return get_referenced_string(block, message) !== '$';
 		case '@typescript-eslint/no-unused-vars':
 		case 'no-unused-vars': return !['$$Props', '$$Slots', '$$Events'].includes(get_referenced_string(block, message));
-		case 'no-unused-labels': return get_referenced_string(block, message) !== '$';
 		case '@typescript-eslint/quotes':
 		case 'quotes': return !translation.options.in_quoted_attribute;
 	}

@@ -22,20 +22,20 @@ const find_contextual_names = (compiler, node) => {
 		}
 	}
 };
-// let-declaration when using TypeScript which is able to infer the type value of a autosubscribed store
-const tsLet = (name) =>
-	name[0] === '$' ?
+// let-declaration that (when using TypeScript) is able to infer the type value of a autosubscribed store
+const make_let = (name, is_typescript) =>
+	is_typescript && name[0] === '$' ?
 	// Disable eslint on that line because it may result in a "used before defined" error
 	`declare let ${name}:Parameters<Parameters<typeof ${name.slice(1)}.subscribe>[0]>[0]; // eslint-disable-line\n` :
 	`let ${name};`;
-// ignore_styles when a `lang=` or `type=` attribute is present on the <style> tag
-const ignoreStylesFallback = ({ type, lang }) => !!type || !!lang;
 
+	// ignore_styles when a `lang=` or `type=` attribute is present on the <style> tag
+const ignore_styles_fallback = ({ type, lang }) => !!type || !!lang;
 
 // extract scripts to lint from component definition
 export const preprocess = text => {
 	const compiler = processor_options.custom_compiler || default_compiler || (default_compiler = require('svelte/compiler'));
-	const ignore_styles = processor_options.ignore_styles ? processor_options.ignore_styles : ignoreStylesFallback;
+	const ignore_styles = processor_options.ignore_styles ? processor_options.ignore_styles : ignore_styles_fallback;
 	if (ignore_styles) {
 		// wipe the appropriate <style> tags in the file
 		text = text.replace(/<style(\s[^]*?)?>[^]*?<\/style>/gi, (match, attributes = '') => {
@@ -121,15 +121,9 @@ export const preprocess = text => {
 		const block = new_block();
 		state.blocks.set(with_file_ending('instance'), block);
 
+		block.transformed_code = vars.filter(v => v.injected || !processor_options.typescript && v.module).map(v => make_let(v.name, processor_options.typescript)).join('');
 		if (ast.module && processor_options.typescript) {
-			block.transformed_code = vars.filter(v => v.injected).map(v => tsLet(v.name)).join('');
 			block.transformed_code += text.slice(ast.module.content.start, ast.module.content.end);
-		} else {
-			if (processor_options.typescript) {
-				block.transformed_code = vars.filter(v => v.injected || v.module).map(v => tsLet(v.name)).join('');
-			} else {
-				block.transformed_code = vars.filter(v => v.injected || v.module).map(v => `let ${v.name};`).join('');
-			}
 		}
 
 		get_translation(text, block, ast.instance.content);
@@ -150,7 +144,7 @@ export const preprocess = text => {
 			if (ast.instance || vars.length) {
 				block.transformed_code += '\n';
 			}
-			block.transformed_code += vars.filter(v => v.injected).map(v => tsLet(v.name)).join('');
+			block.transformed_code += vars.filter(v => v.injected).map(v => make_let(v.name, true)).join('');
 			if (ast.instance) {
 				block.transformed_code += text.slice(ast.instance.content.start, ast.instance.content.end);
 			}
@@ -257,10 +251,10 @@ function compile_code(text, compiler, processor_options) {
 			transformers: {
 				before: [ts_import_transformer]
 			}
-		}
+		};
 
 		// See if we can use `preserveValueImports` instead of the transformer (TS >= 4.5)
-		const ts_version = ts.version.split(".").map(str => parseInt(str, 10));
+		const ts_version = ts.version.split('.').map(str => parseInt(str, 10));
 		if (ts_version[0] > 4 || (ts_version[0] === 4 && ts_version[1] >= 5)) {
 			ts_options.compilerOptions.preserveValueImports = true;
 			ts_options.transformers = {};
@@ -307,7 +301,7 @@ function compile_code(text, compiler, processor_options) {
 		// if we do a full recompile Svelte can fail due to the blank script tag not declaring anything
 		// so instead we just parse for the AST (which is likely faster, anyways)
 		const ast = compiler.parse(text, { ...processor_options.compiler_options });
-		const{ warnings, vars } = ts_result;
+		const { warnings, vars } = ts_result;
 		return { ast, warnings, vars, mapper };
 	}
 }

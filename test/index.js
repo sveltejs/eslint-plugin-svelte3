@@ -35,7 +35,7 @@ async function run() {
 
 		assert.equal(actual.length, expected.length);
 		assert.deepStrictEqual(actual, actual.map((msg, i) => ({ ...msg, ...expected[i] })));
-		
+
 		if (fs.existsSync(path_fixed)) {
 			const fixed = SourceCodeFixer.applyFixes(fs.readFileSync(path_input, 'utf-8'), actual).output;
 			assert.deepStrictEqual(fixed, fs.readFileSync(path_fixed, 'utf-8'))
