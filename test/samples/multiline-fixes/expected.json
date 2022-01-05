@@ -1,0 +1,56 @@
+[
+	{
+		"ruleId": "curly",
+		"severity": 2,
+		"message": "Expected { after 'if' condition.",
+		"line": 3,
+		"column": 9,
+		"nodeType": "IfStatement",
+		"messageId": "missingCurlyAfterCondition",
+		"endLine": 7,
+		"endColumn": 25,
+		"fix": {
+			"range": [
+				37,
+				174
+			],
+			"text": "{window.foo =\n            window.bar\n                .toLowerCase()\n                .replace('something', 'else')\n                .trim();}"
+		}
+	},
+	{
+		"ruleId": "no-else-return",
+		"severity": 2,
+		"message": "Unnecessary 'else' after 'return'.",
+		"line": 12,
+		"column": 16,
+		"nodeType": "BlockStatement",
+		"messageId": "unexpected",
+		"endLine": 14,
+		"endColumn": 10,
+		"fix": {
+			"range": [
+				264,
+				306
+			],
+			"text": "\n            return 'bar';\n        "
+		}
+	},
+	{
+		"ruleId": "no-lonely-if",
+		"severity": 2,
+		"message": "Unexpected if as the only statement in an else block.",
+		"line": 21,
+		"column": 13,
+		"nodeType": "IfStatement",
+		"messageId": "unexpectedLonelyIf",
+		"endLine": 23,
+		"endColumn": 14,
+		"fix": {
+			"range": [
+				398,
+				468
+			],
+			"text": "if (!window) {\n                doY();\n        "
+		}
+	}
+]
