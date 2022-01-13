@@ -172,6 +172,9 @@ export const preprocess = text => {
 				} else if (node.type === 'Element' || node.type === 'InlineComponent' || node.type === 'SlotTemplate') {
 					node.attributes.forEach(node => node.type === 'Let' && find_contextual_names(compiler, node.expression || node.name));
 				}
+				if (Array.isArray(node.children)) {
+					node.children.forEach(node => node.type === 'ConstTag' && find_contextual_names(compiler, node.expression.left.name));
+				}
 				if (contextual_names.length) {
 					nodes_with_contextual_scope.add(node);
 					block.transformed_code += `{let ${contextual_names.map(name => `${name}=0`).join(',')};`;
