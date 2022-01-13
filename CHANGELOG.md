@@ -1,6 +1,6 @@
 # 3.4.0
 
-- Support for the new `@const` tag
+- Support `{@const}` tag
 
 # 3.3.0
 
