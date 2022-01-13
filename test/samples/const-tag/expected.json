@@ -1,0 +1,9 @@
+[
+	{
+		"ruleId": "no-undef",
+		"line": 11,
+		"column": 2,
+		"endLine": 11,
+		"endColumn": 6
+	}
+]
