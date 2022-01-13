@@ -1,3 +1,7 @@
+# 3.4.0
+
+- Support for the new `@const` tag
+
 # 3.3.0
 
 - Add injected globals when there's no instance script when using TypeScript
