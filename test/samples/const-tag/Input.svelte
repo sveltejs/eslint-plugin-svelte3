@@ -15,7 +15,7 @@
 	{@const { width, height } = dimension}
 	{width}
 	{height}
-	{unknown}
+	{unknown} <!-- undef -->
 {/each}
 
 {#await p}
