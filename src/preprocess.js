@@ -173,7 +173,7 @@ export const preprocess = text => {
 					node.attributes.forEach(node => node.type === 'Let' && find_contextual_names(compiler, node.expression || node.name));
 				}
 				if (Array.isArray(node.children)) {
-					node.children.forEach(node => node.type === 'ConstTag' && find_contextual_names(compiler, node.expression.left.name));
+					node.children.forEach(node => node.type === 'ConstTag' && find_contextual_names(compiler, node.expression.left.name || node.expression.left));
 				}
 				if (contextual_names.length) {
 					nodes_with_contextual_scope.add(node);

@@ -1,6 +1,7 @@
 <script>
 	export let boxes;
 	let p;
+	let dimensions = [{ width: 100, height: 20 }];
 </script>
 
 {#each boxes as box}
@@ -9,6 +10,13 @@
 {/each}
 
 {area} <!-- undef -->
+
+{#each dimensions as dimension}
+	{@const { width, height } = dimension}
+	{width}
+	{height}
+	{unknown}
+{/each}
 
 {#await p}
 	wait
