@@ -73,7 +73,7 @@ export const preprocess = text => {
 	}
 	const { ast, warnings, vars, mapper } = result;
 
-	const references_and_reassignments = `{${vars.filter(v => v.referenced || v.name[0] === '$').map(v => v.name)};${vars.filter(v => v.reassigned || v.export_name).map(v => v.name + '=0')}}`;
+	const references_and_reassignments = `\n;{${vars.filter(v => v.referenced || v.name[0] === '$').map(v => v.name)};${vars.filter(v => v.reassigned || v.export_name).map(v => v.name + '=0')}}`;
 	state.var_names = new Set(vars.map(v => v.name));
 
 	// convert warnings to linting messages

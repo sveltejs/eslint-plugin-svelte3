@@ -18,14 +18,5 @@
 			"range": [29, 30],
 			"text": ""
 		}
-	},
-	{
-		"ruleId": "semi",
-		"line": 3,
-		"column": 10,
-		"fix": {
-			"range": [37, 37],
-			"text": ";"
-		}
 	}
 ]
