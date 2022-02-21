@@ -1,9 +1,16 @@
 [
 	{
 		"ruleId": "no-undef",
-		"line": 11,
+		"line": 12,
 		"column": 2,
-		"endLine": 11,
+		"endLine": 12,
 		"endColumn": 6
+	},
+	{
+		"ruleId": "no-undef",
+		"line": 18,
+		"column": 3,
+		"endLine": 18,
+		"endColumn": 10
 	}
 ]
