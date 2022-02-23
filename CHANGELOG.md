@@ -1,4 +1,4 @@
-# 3.4.1 (Unreleased)
+# 3.4.1
 
 - Support destructuring in `{@const}` tag
 
