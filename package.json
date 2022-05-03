@@ -12,9 +12,6 @@
 		"index.js"
 	],
 	"main": "index.js",
-	"engines": {
-		"node": ">=10"
-	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/sveltejs/eslint-plugin-svelte3.git"
@@ -25,7 +22,7 @@
 		"url": "https://github.com/sveltejs/eslint-plugin-svelte3/issues"
 	},
 	"peerDependencies": {
-		"eslint": ">=6.0.0",
+		"eslint": ">=8.0.0",
 		"svelte": "^3.2.0"
 	},
 	"scripts": {
