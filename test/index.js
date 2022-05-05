@@ -3,7 +3,8 @@
 process.chdir(__dirname);
 
 const { ESLint } = require('eslint');
-const { SourceCodeFixer } = require('eslint/lib/linter');
+const path = require('path');
+const { SourceCodeFixer } = require(path.join(require.resolve('eslint/package.json'), '../lib/linter'));
 const assert = require('assert');
 const fs = require('fs');
 

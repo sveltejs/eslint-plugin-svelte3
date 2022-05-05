@@ -12,7 +12,7 @@ An ESLint plugin for Svelte v3 components.
 ## Requirements
 
 - Svelte 3.2+
-- ESLint 6+
+- ESLint 8+
 
 ## Installation
 
