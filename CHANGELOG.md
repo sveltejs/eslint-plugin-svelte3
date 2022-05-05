@@ -1,3 +1,7 @@
+# 4.0.0
+
+- Breaking change: ESLint 8+ is now required
+
 # 3.4.1
 
 - Support destructuring in `{@const}` tag
