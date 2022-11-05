@@ -39,6 +39,9 @@ module.exports = {
   plugins: [
     'svelte3'
   ],
+  globals: {
+    svelte: true
+  },
   overrides: [
     {
       files: ['*.svelte'],
