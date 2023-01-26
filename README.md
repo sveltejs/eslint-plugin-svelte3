@@ -85,7 +85,7 @@ module.exports = {
 };
 ```
 
-If you also want to be able to use type-aware linting rules (which will result in slower linting, because the whole program needs to be compiled and type-checked), then you also need to add some `parserOptions` configuration. The values below assume that your ESLint config is at the root of your project next to your `tsconfig.json`. For more information, see [here](https://github.com/typescript-eslint/typescript-eslint/blob/master/docs/getting-started/linting/TYPED_LINTING.md).
+If you also want to be able to use type-aware linting rules (which will result in slower linting, because the whole program needs to be compiled and type-checked), then you also need to add some `parserOptions` configuration. The values below assume that your ESLint config is at the root of your project next to your `tsconfig.json`. For more information, see [here](https://github.com/typescript-eslint/typescript-eslint/blob/main/docs/linting/Typed_Linting.md).
 
 ```javascript
 module.exports = {
