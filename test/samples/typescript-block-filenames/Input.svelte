@@ -7,4 +7,4 @@
 	if (foo) bar;
 </script>
 
-<div on:click={() => { if (foo) bar; }}>blah</div>
+<div on:click={() => { if (foo) bar; }} on:keyup={() => { if (foo) bar; }}>blah</div>

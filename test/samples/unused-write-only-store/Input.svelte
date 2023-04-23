@@ -9,4 +9,4 @@
 
 	$imported = 'some value';
 </script>
-<div on:click={() => $imported = 'clicked' }/>
+<div on:click={() => $imported = 'clicked' } on:keyup={() => $imported = 'clicked' } />

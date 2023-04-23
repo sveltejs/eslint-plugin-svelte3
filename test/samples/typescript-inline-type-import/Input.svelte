@@ -6,5 +6,5 @@
 	a;
 </script>
 
-<div on:click={() => new Thing2()}></div>
+<div on:click={() => new Thing2()} on:keyup={() => new Thing2()}></div>
 <Component />
