@@ -1,7 +1,7 @@
 # ⚠️ Please use [`eslint-plugin-svelte`](https://github.com/sveltejs/eslint-plugin-svelte) instead
 
 This ESLint plugin is deprecated.<br>
-Now [`eslint-plugin-svelte`](https://github.com/sveltejs/eslint-plugin-svelte) is official plugin for Svelte.
+[`eslint-plugin-svelte`](https://github.com/sveltejs/eslint-plugin-svelte) is the new official ESLint plugin for Svelte.
 
 # eslint-plugin-svelte3
 
