@@ -3,8 +3,8 @@
 This ESLint plugin is deprecated.<br>
 [`eslint-plugin-svelte`](https://github.com/sveltejs/eslint-plugin-svelte) is the new official ESLint plugin for Svelte.
 
-This plugin has supported Svelte's development for a long time. However, it does not handle the AST of the template, which makes it very difficult to create custom ESLint rules.
-To solve this issue, [ota-meshi](https://github.com/ota-meshi) developed [svelte-eslint-parser](https://github.com/sveltejs/svelte-eslint-parser) and [`eslint-plugin-svelte`](https://github.com/sveltejs/eslint-plugin-svelte) and Svelte team decided that we will switch our official plugin to [`eslint-plugin-svelte`](https://github.com/sveltejs/eslint-plugin-svelte).
+This plugin has supported Svelte's development for a long time. However, it does not handle the AST of the template well, which results in false positives/negatives and makes it very difficult to create custom ESLint rules.
+To solve this issue, [ota-meshi](https://github.com/ota-meshi) developed [svelte-eslint-parser](https://github.com/sveltejs/svelte-eslint-parser) and [`eslint-plugin-svelte`](https://github.com/sveltejs/eslint-plugin-svelte) which has proven to be more reliable and successful. The Svelte team therefore decided to switch the official plugin to [`eslint-plugin-svelte`](https://github.com/sveltejs/eslint-plugin-svelte).
 
 # eslint-plugin-svelte3
 
