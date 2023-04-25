@@ -73,12 +73,17 @@ export const preprocess = text => {
 	}
 	const { ast, warnings, vars, mapper } = result;
 
+  const global_style = result.ast?.css?.attributes.some(attr => attr.name === 'global');
+
 	const references_and_reassignments = `{${vars.filter(v => v.referenced || v.name[0] === '$').map(v => v.name)};${vars.filter(v => v.reassigned || v.export_name).map(v => v.name + '=0')}}`;
 	state.var_names = new Set(vars.map(v => v.name));
 
 	// convert warnings to linting messages
 	const filtered_warnings = processor_options.ignore_warnings ? warnings.filter(warning => !processor_options.ignore_warnings(warning)) : warnings;
-	state.messages = filtered_warnings.map(({ code, message, start, end }) => {
+  state.messages = filtered_warnings.filter(warning => {
+		// ignore "css-unused-selector" warnings if `<style global>`
+		return !(global_style && warning.code === 'css-unused-selector');
+  }).map(({ code, message, start, end }) => {
 		const start_pos = processor_options.typescript && start ?
 			mapper.get_original_position(start) :
 			start && { line: start.line, column: start.column + 1 };
